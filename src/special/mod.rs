@@ -2,9 +2,11 @@ use crate::expression::{Expression, Value};
 use std::{collections::HashMap, sync::Mutex};
 
 // Various special, forms
+mod arithmetic;
+mod boolean;
+mod comparison;
 mod control_flow;
 mod define;
-mod operators;
 mod print;
 
 pub trait SpecialForm<'a> {
@@ -21,6 +23,7 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
 
     // Insert language statements
     map.insert("define", Box::new(define::Define));
+    map.insert("typeof", Box::new(define::TypeOf));
 
     // Printing
     map.insert("print_line", Box::new(print::PrintLine));
@@ -32,20 +35,17 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("while", Box::new(control_flow::While));
     map.insert("repeat", Box::new(control_flow::Repeat));
 
-    // Type checking
-    map.insert("typeof", Box::new(operators::TypeOf));
-
     // Comparison
-    map.insert("equals", Box::new(operators::Equals));
-    map.insert("not_equals", Box::new(operators::NotEquals));
-    map.insert("greater_than", Box::new(operators::GreaterThan));
-    map.insert("less_than", Box::new(operators::LessThan));
+    map.insert("equals", Box::new(comparison::Equals));
+    map.insert("not_equals", Box::new(comparison::NotEquals));
+    map.insert("greater_than", Box::new(comparison::GreaterThan));
+    map.insert("less_than", Box::new(comparison::LessThan));
 
     // Arithmetic
-    map.insert("add", Box::new(operators::Add));
-    map.insert("subtract", Box::new(operators::Subtract));
-    map.insert("divide", Box::new(operators::Divide));
-    map.insert("multiply", Box::new(operators::Multiply));
+    map.insert("add", Box::new(arithmetic::Add));
+    map.insert("subtract", Box::new(arithmetic::Subtract));
+    map.insert("divide", Box::new(arithmetic::Divide));
+    map.insert("multiply", Box::new(arithmetic::Multiply));
 
     map
 }
