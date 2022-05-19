@@ -14,14 +14,16 @@ pub fn evaluate<'a>(
         Expression::Word { name } => scope
             .lock()
             .unwrap()
-            .get(name.as_str())
-            .expect(format!("Undefined binding: {name}").as_str())
+            .get(name)
+            .unwrap_or_else(|| panic!("Undefined binding: {name}"))
             .clone(),
         Expression::Apply { operator, operands } => {
             if let Expression::Word { name } = operator.as_ref() {
+                // UNSAFE: Forced shared mutability, never runs in two threads. So no data races, also Egg can do whatever it wants whenever
                 let form = unsafe { &mut *special_forms };
+
                 let application = form.get(name.as_str()).expect("Undefined operator!");
-                return application.evaluate(operands, scope, unsafe { &mut *special_forms });
+                application.evaluate(operands, scope, unsafe { &mut *special_forms })
             } else {
                 panic!("Can only call operators based on operator")
             }

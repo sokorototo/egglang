@@ -17,9 +17,9 @@ impl<'a> SpecialForm<'a> for Do {
     ) -> expression::Value {
         let mut result = expression::Value::Isize(-1);
 
-        args.into_iter().for_each(|arg| {
+        for arg in args.iter() {
             result = evaluate(arg, scope, special_forms);
-        });
+        }
 
         result
     }
@@ -73,7 +73,7 @@ impl<'a> SpecialForm<'a> for While {
         let mut loop_value = expression::Value::Isize(-1);
 
         loop {
-            if iterations >= usize::MAX {
+            if iterations == usize::MAX {
                 panic!("Max loop iterations met");
             }
 
@@ -121,12 +121,8 @@ impl<'a> SpecialForm<'a> for Repeat {
 
         loop {
             // Repeat X times
-            if iterations >= max_iter {
+            if iterations >= max_iter || iterations == isize::MAX {
                 break loop_value;
-            }
-
-            if iterations >= isize::MAX {
-                panic!("Max loop iterations met");
             }
 
             // Evaluate expression

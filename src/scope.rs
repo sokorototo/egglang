@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Mutex};
 
 use crate::expression::Value;
 
-pub fn build_default_scope<'a>() -> Mutex<HashMap<String, Value>> {
+pub fn build_default_scope() -> Mutex<HashMap<String, Value>> {
     let mut map = HashMap::new();
 
     map.insert("true".to_string(), Value::Isize(1));

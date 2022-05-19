@@ -42,17 +42,3 @@ impl<'a> SpecialForm<'a> for Define {
         }
     }
 }
-
-struct DefineFunction;
-
-impl<'a> SpecialForm<'a> for DefineFunction {
-    fn evaluate(
-        &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
-    ) -> Value {
-        let function_name = evaluate(&args[0], scope, special_forms);
-        todo!()
-    }
-}

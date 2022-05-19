@@ -1,12 +1,7 @@
 use crate::expression::{Expression, Value};
 
 pub fn parse(source: &str, regexi: &[regex::Regex; 3]) -> Expression {
-    let (expr, res) = parse_expression(source, regexi);
-
-    if res.trim_start().len() > 0 {
-        println!("Error?");
-    };
-
+    let (expr, _) = parse_expression(source, regexi);
     expr
 }
 
@@ -50,7 +45,7 @@ pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 3]) -> (Exp
         panic!("Syntax error! Unknown syntax {}", source)
     };
 
-    return parse_apply(expr, &source[len..], regexi);
+    parse_apply(expr, &source[len..], regexi)
 }
 
 pub fn parse_apply<'t>(
@@ -91,5 +86,5 @@ pub fn parse_apply<'t>(
         operands: args,
     };
 
-    return parse_apply(expr, &source[1..], regexi);
+    parse_apply(expr, &source[1..], regexi)
 }
