@@ -1,3 +1,4 @@
+use super::SpecialForm;
 use crate::{
     evaluator::evaluate,
     expression::{Expression, Value},
@@ -10,9 +11,9 @@ pub struct TypeOf;
 impl<'a> super::SpecialForm<'a> for TypeOf {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<(dyn super::SpecialForm<'a> + 'a)>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 1);
 
@@ -31,9 +32,9 @@ pub struct Add;
 impl<'a> super::SpecialForm<'a> for Add {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         args.iter()
             .map(|arg| evaluate(arg, scope, special_forms))
@@ -51,9 +52,9 @@ pub struct Multiply;
 impl<'a> super::SpecialForm<'a> for Multiply {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         args.iter()
             .map(|arg| evaluate(arg, scope, special_forms))
@@ -71,9 +72,9 @@ pub struct Subtract;
 impl<'a> super::SpecialForm<'a> for Subtract {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -93,9 +94,9 @@ pub struct Divide;
 impl<'a> super::SpecialForm<'a> for Divide {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -115,9 +116,9 @@ pub struct Equals;
 impl<'a> super::SpecialForm<'a> for Equals {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -138,9 +139,9 @@ pub struct NotEquals;
 impl<'a> super::SpecialForm<'a> for NotEquals {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -161,9 +162,9 @@ pub struct GreaterThan;
 impl<'a> super::SpecialForm<'a> for GreaterThan {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -183,9 +184,9 @@ pub struct LessThan;
 impl<'a> super::SpecialForm<'a> for LessThan {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 

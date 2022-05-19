@@ -11,9 +11,9 @@ pub struct Define;
 impl<'a> SpecialForm<'a> for Define {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
         let name = &args[0];
@@ -21,14 +21,14 @@ impl<'a> SpecialForm<'a> for Define {
         match name {
             expression::Expression::Word { name } => {
                 let value = evaluate(&args[1], scope, special_forms);
-                scope.lock().unwrap().insert(name, value.clone());
+                scope.lock().unwrap().insert(name.clone(), value.clone());
 
                 value
             }
             expression::Expression::Value { value } => match value {
                 expression::Value::String(name) => {
                     let value = evaluate(&args[1], scope, special_forms);
-                    scope.lock().unwrap().insert(name, value.clone());
+                    scope.lock().unwrap().insert(name.clone(), value.clone());
 
                     value
                 }
@@ -48,11 +48,11 @@ struct DefineFunction;
 impl<'a> SpecialForm<'a> for DefineFunction {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
-        let function_name = evaluate(&args[1], scope, special_forms);
+        let function_name = evaluate(&args[0], scope, special_forms);
         todo!()
     }
 }

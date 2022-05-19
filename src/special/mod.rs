@@ -10,9 +10,9 @@ mod print;
 pub trait SpecialForm<'a> {
     fn evaluate(
         &self,
-        args: &'a [Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+        args: &[Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
     ) -> Value;
 }
 

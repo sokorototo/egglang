@@ -11,9 +11,9 @@ pub struct Do;
 impl<'a> SpecialForm<'a> for Do {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         let mut result = expression::Value::Isize(-1);
 
@@ -31,9 +31,9 @@ pub struct If;
 impl<'a> SpecialForm<'a> for If {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
         assert_eq!(args.len(), 3);
@@ -61,9 +61,9 @@ pub struct While;
 impl<'a> SpecialForm<'a> for While {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
         assert_eq!(args.len(), 2);
@@ -103,9 +103,9 @@ pub struct Repeat;
 impl<'a> SpecialForm<'a> for Repeat {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
         assert_eq!(args.len(), 2);

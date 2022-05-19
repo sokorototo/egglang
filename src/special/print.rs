@@ -12,9 +12,9 @@ pub struct PrintLine;
 impl<'a> SpecialForm<'a> for PrintLine {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {
             match evaluate(arg, scope, special_forms) {
@@ -33,9 +33,9 @@ pub struct Print;
 impl<'a> SpecialForm<'a> for Print {
     fn evaluate(
         &self,
-        args: &'a [expression::Expression],
-        scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {
             match evaluate(arg, scope, special_forms) {
