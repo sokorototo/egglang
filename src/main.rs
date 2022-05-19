@@ -14,11 +14,12 @@ fn main() {
     let code = r#"do(
         define(x, 10),
         if(
-            0,
-            print(x),
-            print("small")
+            equals(x, 10),
+            printline("x is 10"),
+            printline("x is not 10")
         ),
-        repeat(10, print("We are done here"))
+        repeat(10, printline("We are done here")),
+        true
     )"#;
 
     // Parse the expression
