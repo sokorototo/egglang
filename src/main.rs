@@ -1,18 +1,14 @@
-use std::{collections::HashMap, sync::Mutex};
-
-use regex::Regex;
-
 mod evaluator;
 mod expression;
 mod parser;
-mod special;
 mod scope;
+mod special;
 
 fn main() {
     let regexi = [
-        Regex::new("^\"([^\"]*)\"").unwrap(),
-        Regex::new(r"^\d+\b").unwrap(),
-        Regex::new(r#"^[^\s\(\),#"]+"#).unwrap(),
+        regex::Regex::new("^\"([^\"]*)\"").unwrap(),
+        regex::Regex::new(r"^\d+\b").unwrap(),
+        regex::Regex::new(r#"^[^\s\(\),#"]+"#).unwrap(),
     ];
 
     let code = r#"do(
