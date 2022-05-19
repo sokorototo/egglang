@@ -13,12 +13,16 @@ fn main() {
 
     let code = r#"do(
         define(x, 10),
+        define(x2, multiply(x, 2)),
+        define(res, 0),
         if(
             equals(typeof(x), NUMBER),
-            printline("x is a number"),
-            printline("x is not a number")
+            print_line("x is a number"),
+            print_line("x is not a number")
         ),
-        repeat(5, printline("We are done here")),
+        repeat(x2, define(res, add(res, 5))),
+        print_line(typeof(x)),
+        print_line(res),
         true
     )"#;
 
