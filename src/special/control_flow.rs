@@ -36,17 +36,12 @@ impl<'a> SpecialForm<'a> for If {
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
-        if args.len() != 3 {
-            panic!(
-                "If has wrong number of arguments: {}, expected 3",
-                args.len()
-            );
-        }
+        assert_eq!(args.len(), 3);
 
         // Evaluate
         let res = evaluate(&args[0], scope, special_forms);
         let value = match res {
-            expression::Value::Isize(num) => num == 0,
+            expression::Value::Isize(num) => num != 0,
             expression::Value::String(str) => {
                 panic!("Expected `isize` found String: {str}")
             }
@@ -71,12 +66,7 @@ impl<'a> SpecialForm<'a> for While {
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
-        if args.len() != 2 {
-            panic!(
-                "While has wrong number of arguments: {}, expected 2",
-                args.len()
-            );
-        }
+        assert_eq!(args.len(), 2);
 
         // Loop
         let mut iterations = 0usize;
@@ -118,12 +108,7 @@ impl<'a> SpecialForm<'a> for Repeat {
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
-        if args.len() != 2 {
-            panic!(
-                "Repeat has wrong number of arguments: {}, expected 2",
-                args.len()
-            );
-        }
+        assert_eq!(args.len(), 2);
 
         // Loop
         let mut iterations = 0;

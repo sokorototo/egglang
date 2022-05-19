@@ -13,7 +13,7 @@ pub enum Expression {
 }
 
 // BUG: Values should not always be cloned everywhere, plus use string slices instead of heap strings here
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Isize(isize),
     String(String),

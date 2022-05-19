@@ -14,10 +14,7 @@ impl<'a> SpecialForm<'a> for Define {
         scope: &'a Mutex<HashMap<&'a str, Value>>,
         special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
     ) -> expression::Value {
-        if args.len() != 2 {
-            panic!("Incorrect number of arguments passed to define function");
-        };
-
+        assert_eq!(args.len(), 2);
         let name = &args[0];
 
         match name {
