@@ -12,7 +12,7 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         &self,
         args: &'a [Expression],
         scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
+        special_forms: &HashMap<&'a str, Box<(dyn super::SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 1);
 
@@ -35,15 +35,13 @@ impl<'a> super::SpecialForm<'a> for Add {
         scope: &'a Mutex<HashMap<&'a str, Value>>,
         special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
     ) -> Value {
-        assert_eq!(args.len(), 2);
-
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
-
-        match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => Value::Isize(a + b),
-            _ => panic!("please provide numbers as arguments for mathematical operations"),
-        }
+        args.iter()
+            .map(|arg| evaluate(arg, scope, special_forms))
+            .reduce(|a, b| match (a, b) {
+                (Value::Isize(a), Value::Isize(b)) => Value::Isize(a + b),
+                _ => panic!("please provide numbers as arguments for mathematical operations"),
+            })
+            .unwrap_or(Value::Isize(0))
     }
 }
 
@@ -57,15 +55,13 @@ impl<'a> super::SpecialForm<'a> for Multiply {
         scope: &'a Mutex<HashMap<&'a str, Value>>,
         special_forms: &HashMap<&'a str, Box<dyn super::SpecialForm<'a> + 'a>>,
     ) -> Value {
-        assert_eq!(args.len(), 2);
-
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
-
-        match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => Value::Isize(a * b),
-            _ => panic!("please provide numbers as arguments for mathematical operations"),
-        }
+        args.iter()
+            .map(|arg| evaluate(arg, scope, special_forms))
+            .reduce(|a, b| match (a, b) {
+                (Value::Isize(a), Value::Isize(b)) => Value::Isize(a * b),
+                _ => panic!("please provide numbers as arguments for mathematical operations"),
+            })
+            .unwrap_or(Value::Isize(1))
     }
 }
 

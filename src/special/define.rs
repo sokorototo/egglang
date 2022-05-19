@@ -5,6 +5,7 @@ use crate::{
 };
 use std::{collections::HashMap, sync::Mutex};
 
+/// Defines a new variable
 pub struct Define;
 
 impl<'a> SpecialForm<'a> for Define {
@@ -12,7 +13,7 @@ impl<'a> SpecialForm<'a> for Define {
         &self,
         args: &'a [expression::Expression],
         scope: &'a Mutex<HashMap<&'a str, Value>>,
-        special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
         let name = &args[0];
@@ -39,5 +40,18 @@ impl<'a> SpecialForm<'a> for Define {
                 panic!("Applications cannot be used as variable names for obvious reasons");
             }
         }
+    }
+}
+
+struct DefineFunction;
+
+impl<'a> SpecialForm<'a> for DefineFunction {
+    fn evaluate(
+        &self,
+        args: &'a [expression::Expression],
+        scope: &'a Mutex<HashMap<&'a str, Value>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+    ) -> Value {
+        todo!()
     }
 }
