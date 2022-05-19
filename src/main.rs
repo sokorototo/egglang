@@ -14,11 +14,11 @@ fn main() {
     let code = r#"do(
         define(x, 10),
         if(
-            equals(x, 10),
-            printline("x is 10"),
-            printline("x is not 10")
+            equals(typeof(x), NUMBER),
+            printline("x is a number"),
+            printline("x is not a number")
         ),
-        repeat(10, printline("We are done here")),
+        repeat(5, printline("We are done here")),
         true
     )"#;
 

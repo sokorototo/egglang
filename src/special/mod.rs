@@ -31,6 +31,7 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("repeat", Box::new(control_flow::Repeat));
 
     map.insert("equals", Box::new(operators::Equals));
+    map.insert("typeof", Box::new(operators::TypeOf));
 
     map
 }
