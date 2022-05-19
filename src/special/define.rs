@@ -52,6 +52,7 @@ impl<'a> SpecialForm<'a> for DefineFunction {
         scope: &'a Mutex<HashMap<&'a str, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
+        let function_name = evaluate(&args[1], scope, special_forms);
         todo!()
     }
 }

@@ -15,15 +15,16 @@ pub fn evaluate<'a>(
             .lock()
             .unwrap()
             .get(name.as_str())
-            .expect(format!("Undefined biding: {name}").as_str())
+            .expect(format!("Undefined binding: {name}").as_str())
             .clone(),
         Expression::Apply { operator, operands } => {
             if let Expression::Word { name } = operator.as_ref() {
-                let form = special_forms.get(name.as_str()).unwrap();
+                let form = special_forms
+                    .get(name.as_str())
+                    .expect("Undefined operator!");
                 return form.evaluate(operands, scope, special_forms);
             } else {
-                //  let op = evaluate(expr, scope, special_forms);
-                todo!()
+                panic!("Can only call operators based on operator")
             }
         }
     }
