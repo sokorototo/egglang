@@ -20,8 +20,9 @@ fn main() {
             print_line("x is a number"),
             print_line("x is not a number")
         ),
-        repeat(x2, define(res, add(res, 5))),
+        repeat(x2, mutate(res, add(res, 5))),
         print_line(typeof(x)),
+        print_line(res),
         print_line(res),
         true
     )"#;
