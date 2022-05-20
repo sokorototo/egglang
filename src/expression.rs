@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 #[derive(Debug)]
 pub enum Expression {
     Value {
@@ -15,7 +17,7 @@ pub enum Expression {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
     Number(isize),
-    String(String),
+    String(Rc<str>),
 }
 
 impl Into<Value> for bool {

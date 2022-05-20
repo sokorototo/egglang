@@ -3,7 +3,7 @@ use crate::{
     evaluator::evaluate,
     expression::{self, Value},
 };
-use std::{collections::HashMap, sync::Mutex};
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 /// Defines a new variable
 pub struct Define;
@@ -11,8 +11,8 @@ pub struct Define;
 impl<'a> SpecialForm<'a> for Define {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
@@ -23,10 +23,11 @@ impl<'a> SpecialForm<'a> for Define {
                 let value = evaluate(&args[1], scope, special_forms);
                 let mut map = scope.lock().unwrap();
 
-                if map.contains_key(name) {
+                if map.contains_key(name.as_str()) {
                     panic!("Attempting to re-declare a variable: {name}")
                 } else {
-                    map.insert(name.clone(), value.clone());
+                    // THIS IS BASICALLY A CLONE
+                    map.insert(name.as_str().into(), value.clone());
                 }
 
                 value
@@ -36,7 +37,7 @@ impl<'a> SpecialForm<'a> for Define {
                     let value = evaluate(&args[1], scope, special_forms);
                     let mut map = scope.lock().unwrap();
 
-                    if map.contains_key(name) {
+                    if map.contains_key(name.as_ref()) {
                         panic!("Attempting to re-declare a variable: {name}")
                     } else {
                         map.insert(name.clone(), value.clone());
@@ -61,34 +62,36 @@ pub struct Mutate;
 impl<'a> SpecialForm<'a> for Mutate {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
-        let name = &args[0];
+        let variable_name = &args[0];
+        let old_value;
 
-        match name {
-            expression::Expression::Word { name } => {
+        match variable_name {
+            expression::Expression::Word { name: word } => {
                 let value = evaluate(&args[1], scope, special_forms);
+                old_value = evaluate(variable_name, scope, special_forms);
+
                 scope
                     .lock()
                     .unwrap()
-                    .get_mut(name)
+                    .get_mut(word.as_str())
                     .map(|val| *val = value.clone());
-
-                value
             }
-            expression::Expression::Value { value } => match value {
+            expression::Expression::Value { value: string } => match string {
                 expression::Value::String(name) => {
                     let value = evaluate(&args[1], scope, special_forms);
+
                     scope
                         .lock()
                         .unwrap()
-                        .get_mut(name)
+                        .get_mut(name.as_ref())
                         .map(|val| *val = value.clone());
 
-                    value
+                    old_value = value;
                 }
                 expression::Value::Number(_) => {
                     panic!("Numbers cannot be used as variable names for obvious reasons")
@@ -98,6 +101,8 @@ impl<'a> SpecialForm<'a> for Mutate {
                 panic!("Applications cannot be used as variable names for obvious reasons");
             }
         }
+
+        old_value
     }
 }
 
@@ -108,16 +113,16 @@ impl<'a> SpecialForm<'a> for Delete {
     fn evaluate(
         &self,
         args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         _: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 1);
         let name = &args[0];
 
         let res = match name {
-            expression::Expression::Word { name } => scope.lock().unwrap().remove(name),
+            expression::Expression::Word { name } => scope.lock().unwrap().remove(name.as_str()),
             expression::Expression::Value { value } => match value {
-                expression::Value::String(name) => scope.lock().unwrap().remove(name),
+                expression::Value::String(name) => scope.lock().unwrap().remove(name.as_ref()),
                 expression::Value::Number(_) => {
                     panic!("Numbers cannot be used as variable names for obvious reasons")
                 }
@@ -138,16 +143,20 @@ impl<'a> SpecialForm<'a> for Exists {
     fn evaluate(
         &self,
         args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         _: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 1);
         let name = &args[0];
 
         let res = match name {
-            expression::Expression::Word { name } => scope.lock().unwrap().contains_key(name),
+            expression::Expression::Word { name } => {
+                scope.lock().unwrap().contains_key(name.as_str())
+            }
             expression::Expression::Value { value } => match value {
-                expression::Value::String(name) => scope.lock().unwrap().contains_key(name),
+                expression::Value::String(name) => {
+                    scope.lock().unwrap().contains_key(name.as_ref())
+                }
                 expression::Value::Number(_) => {
                     panic!("Numbers cannot be used as variable names for obvious reasons")
                 }
@@ -167,8 +176,8 @@ pub struct TypeOf;
 impl<'a> super::SpecialForm<'a> for TypeOf {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 1);
@@ -176,8 +185,8 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         let value = evaluate(&args[0], scope, special_forms);
 
         match value {
-            Value::Number(_) => Value::String("__number".to_string()),
-            Value::String(_) => Value::String("__string".to_string()),
+            Value::Number(_) => Value::String("__number".into()),
+            Value::String(_) => Value::String("__string".into()),
         }
     }
 }

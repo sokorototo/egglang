@@ -2,11 +2,11 @@ use crate::{
     expression::{Expression, Value},
     special::SpecialForm,
 };
-use std::{collections::HashMap, sync::Mutex};
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 pub fn evaluate<'a>(
-    expr: &Expression,
-    scope: &Mutex<HashMap<String, Value>>,
+    expr: &'a Expression,
+    scope: &Mutex<HashMap<Rc<str>, Value>>,
     special_forms: *mut HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
 ) -> Value {
     match expr {
@@ -14,7 +14,7 @@ pub fn evaluate<'a>(
         Expression::Word { name } => scope
             .lock()
             .unwrap()
-            .get(name)
+            .get(name.as_str())
             .unwrap_or_else(|| panic!("Undefined binding: {name}"))
             .clone(),
         Expression::Apply { operator, operands } => {

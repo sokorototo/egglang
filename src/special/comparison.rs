@@ -3,7 +3,7 @@ use crate::{
     evaluator::evaluate,
     expression::{Expression, Value},
 };
-use std::{collections::HashMap, sync::Mutex};
+use std::{collections::HashMap, sync::Mutex, rc::Rc};
 
 // Checks for equality
 pub struct Equals;
@@ -11,8 +11,8 @@ pub struct Equals;
 impl<'a> super::SpecialForm<'a> for Equals {
     fn evaluate(
         &self,
-        args: &[Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -30,8 +30,8 @@ pub struct NotEquals;
 impl<'a> super::SpecialForm<'a> for NotEquals {
     fn evaluate(
         &self,
-        args: &[Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -49,8 +49,8 @@ pub struct GreaterThan;
 impl<'a> super::SpecialForm<'a> for GreaterThan {
     fn evaluate(
         &self,
-        args: &[Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -71,8 +71,8 @@ pub struct LessThan;
 impl<'a> super::SpecialForm<'a> for LessThan {
     fn evaluate(
         &self,
-        args: &[Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);

@@ -25,7 +25,7 @@ pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Exp
 
         (
             Expression::Value {
-                value: Value::String(str.to_string()),
+                value: Value::String(str.into()),
             },
             full.len(),
         )

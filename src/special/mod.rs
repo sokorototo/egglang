@@ -1,5 +1,5 @@
 use crate::expression::{Expression, Value};
-use std::{collections::HashMap, sync::Mutex};
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 // Various special, forms
 mod arithmetic;
@@ -12,8 +12,8 @@ mod print;
 pub trait SpecialForm<'a> {
     fn evaluate(
         &self,
-        args: &[Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
     ) -> Value;
 }

@@ -14,20 +14,23 @@ fn main() {
 
     let code = r#"do(
         # Variable definitions
-        define(x, 10),
+        define(x, "11"),
         define(res, 20),
 
         # Basic conditional
         if(
             equals(typeof(x), NUMBER),
-            print_line("x is a number"),
+            if(
+                greater_than(x, 10),
+                print_line("x is a number and is greater than 10"),
+                print_line("x is a number, but is not greater than 10")
+            ),
             print_line("x is not a number")
         ),
 
         # Demonstration of repeat
-        repeat(10000,
-            repeat(10000, mutate(res, multiply(res, 1))),
-        ),
+        mutate(res, 0),
+        repeat(10000, repeat(10000, mutate(res, multiply(res, 1)))),
 
         # Demonstration of println
         print_line(typeof(x)),

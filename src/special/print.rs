@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Mutex};
+use std::{collections::HashMap, sync::Mutex, rc::Rc};
 
 use super::SpecialForm;
 use crate::{
@@ -12,8 +12,8 @@ pub struct PrintLine;
 impl<'a> SpecialForm<'a> for PrintLine {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {
@@ -33,8 +33,8 @@ pub struct Print;
 impl<'a> SpecialForm<'a> for Print {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {

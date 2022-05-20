@@ -3,7 +3,7 @@ use crate::{
     evaluator::evaluate,
     expression::{self, Value},
 };
-use std::{collections::HashMap, sync::Mutex};
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 // Task evaluator
 pub struct Do;
@@ -11,8 +11,8 @@ pub struct Do;
 impl<'a> SpecialForm<'a> for Do {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         let mut result = expression::Value::Number(-1);
@@ -31,8 +31,8 @@ pub struct If;
 impl<'a> SpecialForm<'a> for If {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
@@ -61,8 +61,8 @@ pub struct While;
 impl<'a> SpecialForm<'a> for While {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
@@ -103,8 +103,8 @@ pub struct Repeat;
 impl<'a> SpecialForm<'a> for Repeat {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
-        scope: &Mutex<HashMap<String, Value>>,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
