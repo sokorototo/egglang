@@ -15,7 +15,7 @@ impl<'a> SpecialForm<'a> for Do {
         scope: &Mutex<HashMap<String, Value>>,
         special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
-        let mut result = expression::Value::Isize(-1);
+        let mut result = expression::Value::Number(-1);
 
         for arg in args.iter() {
             result = evaluate(arg, scope, special_forms);
@@ -41,7 +41,7 @@ impl<'a> SpecialForm<'a> for If {
         // Evaluate
         let res = evaluate(&args[0], scope, special_forms);
         let value = match res {
-            expression::Value::Isize(num) => num != 0,
+            expression::Value::Number(num) => num != 0,
             expression::Value::String(str) => {
                 panic!("Expected `isize` found String: {str}")
             }
@@ -70,7 +70,7 @@ impl<'a> SpecialForm<'a> for While {
 
         // Loop
         let mut iterations = 0usize;
-        let mut loop_value = expression::Value::Isize(-1);
+        let mut loop_value = expression::Value::Number(-1);
 
         loop {
             if iterations == usize::MAX {
@@ -79,7 +79,7 @@ impl<'a> SpecialForm<'a> for While {
 
             let res = evaluate(&args[0], scope, special_forms);
             let value = match res {
-                expression::Value::Isize(num) => num == 0,
+                expression::Value::Number(num) => num == 0,
                 expression::Value::String(str) => {
                     panic!("Expected `isize` found String: {str}")
                 }
@@ -112,10 +112,10 @@ impl<'a> SpecialForm<'a> for Repeat {
 
         // Loop
         let mut iterations = 0;
-        let mut loop_value = expression::Value::Isize(-1);
+        let mut loop_value = expression::Value::Number(-1);
 
         let max_iter = match evaluate(&args[0], scope, special_forms) {
-            Value::Isize(num) => num,
+            Value::Number(num) => num,
             Value::String(_) => panic!("Repeat expects a number as it's argument"),
         };
 

@@ -14,16 +14,16 @@ pub enum Expression {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Value {
-    Isize(isize),
+    Number(isize),
     String(String),
 }
 
 impl Into<Value> for bool {
     fn into(self) -> Value {
         if self {
-            Value::Isize(1)
+            Value::Number(1)
         } else {
-            Value::Isize(0)
+            Value::Number(0)
         }
     }
 }

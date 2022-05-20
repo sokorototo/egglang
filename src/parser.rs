@@ -34,7 +34,7 @@ pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Exp
 
         (
             Expression::Value {
-                value: Value::Isize(str.parse().unwrap()),
+                value: Value::Number(str.parse().unwrap()),
             },
             str.len(),
         )

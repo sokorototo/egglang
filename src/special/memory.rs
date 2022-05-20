@@ -44,7 +44,7 @@ impl<'a> SpecialForm<'a> for Define {
 
                     value
                 }
-                expression::Value::Isize(_) => {
+                expression::Value::Number(_) => {
                     panic!("Numbers cannot be used as variable names for obvious reasons")
                 }
             },
@@ -90,7 +90,7 @@ impl<'a> SpecialForm<'a> for Mutate {
 
                     value
                 }
-                expression::Value::Isize(_) => {
+                expression::Value::Number(_) => {
                     panic!("Numbers cannot be used as variable names for obvious reasons")
                 }
             },
@@ -118,7 +118,7 @@ impl<'a> SpecialForm<'a> for Delete {
             expression::Expression::Word { name } => scope.lock().unwrap().remove(name),
             expression::Expression::Value { value } => match value {
                 expression::Value::String(name) => scope.lock().unwrap().remove(name),
-                expression::Value::Isize(_) => {
+                expression::Value::Number(_) => {
                     panic!("Numbers cannot be used as variable names for obvious reasons")
                 }
             },
@@ -127,7 +127,7 @@ impl<'a> SpecialForm<'a> for Delete {
             }
         };
 
-        res.unwrap_or(expression::Value::Isize(-1))
+        res.unwrap_or(expression::Value::Number(-1))
     }
 }
 
@@ -148,7 +148,7 @@ impl<'a> SpecialForm<'a> for Exists {
             expression::Expression::Word { name } => scope.lock().unwrap().contains_key(name),
             expression::Expression::Value { value } => match value {
                 expression::Value::String(name) => scope.lock().unwrap().contains_key(name),
-                expression::Value::Isize(_) => {
+                expression::Value::Number(_) => {
                     panic!("Numbers cannot be used as variable names for obvious reasons")
                 }
             },
@@ -176,7 +176,7 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         let value = evaluate(&args[0], scope, special_forms);
 
         match value {
-            Value::Isize(_) => Value::String("__number".to_string()),
+            Value::Number(_) => Value::String("__number".to_string()),
             Value::String(_) => Value::String("__string".to_string()),
         }
     }

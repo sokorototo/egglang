@@ -18,10 +18,10 @@ impl<'a> super::SpecialForm<'a> for Add {
         args.iter()
             .map(|arg| evaluate(arg, scope, special_forms))
             .reduce(|a, b| match (a, b) {
-                (Value::Isize(a), Value::Isize(b)) => Value::Isize(a + b),
+                (Value::Number(a), Value::Number(b)) => Value::Number(a + b),
                 _ => panic!("please provide numbers as arguments for mathematical operations"),
             })
-            .unwrap_or(Value::Isize(0))
+            .unwrap_or(Value::Number(0))
     }
 }
 
@@ -38,10 +38,10 @@ impl<'a> super::SpecialForm<'a> for Multiply {
         args.iter()
             .map(|arg| evaluate(arg, scope, special_forms))
             .reduce(|a, b| match (a, b) {
-                (Value::Isize(a), Value::Isize(b)) => Value::Isize(a * b),
+                (Value::Number(a), Value::Number(b)) => Value::Number(a * b),
                 _ => panic!("please provide numbers as arguments for mathematical operations"),
             })
-            .unwrap_or(Value::Isize(1))
+            .unwrap_or(Value::Number(1))
     }
 }
 
@@ -61,7 +61,7 @@ impl<'a> super::SpecialForm<'a> for Subtract {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => Value::Isize(a - b),
+            (Value::Number(a), Value::Number(b)) => Value::Number(a - b),
             _ => panic!("please provide numbers as arguments for mathematical operations"),
         }
     }
@@ -83,7 +83,7 @@ impl<'a> super::SpecialForm<'a> for Divide {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => Value::Isize(a / b),
+            (Value::Number(a), Value::Number(b)) => Value::Number(a / b),
             _ => panic!("please provide numbers as arguments for mathematical operations"),
         }
     }

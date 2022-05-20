@@ -21,7 +21,7 @@ impl<'a> super::SpecialForm<'a> for AND {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => (a != 0 && b != 0).into(),
+            (Value::Number(a), Value::Number(b)) => (a != 0 && b != 0).into(),
             _ => panic!("please provide numbers as arguments for boolean operations"),
         }
     }
@@ -43,7 +43,7 @@ impl<'a> super::SpecialForm<'a> for OR {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => (a != 0 || b != 0).into(),
+            (Value::Number(a), Value::Number(b)) => (a != 0 || b != 0).into(),
             _ => panic!("please provide numbers as arguments for boolean operations"),
         }
     }
@@ -63,7 +63,7 @@ impl<'a> super::SpecialForm<'a> for NOT {
         let value = evaluate(&args[0], scope, special_forms);
 
         match value {
-            Value::Isize(a) => (a != 0).into(),
+            Value::Number(a) => (a != 0).into(),
             _ => panic!("please provide numbers as arguments for boolean operations"),
         }
     }

@@ -59,7 +59,7 @@ impl<'a> super::SpecialForm<'a> for GreaterThan {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => (a > b).into(),
+            (Value::Number(a), Value::Number(b)) => (a > b).into(),
             _ => panic!("please provide numbers as arguments for mathematical operations"),
         }
     }
@@ -81,7 +81,7 @@ impl<'a> super::SpecialForm<'a> for LessThan {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => (a < b).into(),
+            (Value::Number(a), Value::Number(b)) => (a < b).into(),
             _ => panic!("please provide numbers as arguments for mathematical operations"),
         }
     }

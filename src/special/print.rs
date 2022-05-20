@@ -18,12 +18,12 @@ impl<'a> SpecialForm<'a> for PrintLine {
     ) -> expression::Value {
         for arg in args {
             match evaluate(arg, scope, special_forms) {
-                expression::Value::Isize(num) => println!("{num}"),
+                expression::Value::Number(num) => println!("{num}"),
                 expression::Value::String(string) => println!("{string}"),
             }
         }
 
-        expression::Value::Isize(args.len() as isize)
+        expression::Value::Number(args.len() as isize)
     }
 }
 
@@ -39,11 +39,11 @@ impl<'a> SpecialForm<'a> for Print {
     ) -> expression::Value {
         for arg in args {
             match evaluate(arg, scope, special_forms) {
-                expression::Value::Isize(num) => print!("{num}"),
+                expression::Value::Number(num) => print!("{num}"),
                 expression::Value::String(string) => print!("{string}"),
             }
         }
 
-        expression::Value::Isize(args.len() as isize)
+        expression::Value::Number(args.len() as isize)
     }
 }

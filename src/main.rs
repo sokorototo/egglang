@@ -15,8 +15,7 @@ fn main() {
     let code = r#"do(
         # Variable definitions
         define(x, 10),
-        define(x2, multiply(10, 2)),
-        define(res, 0),
+        define(res, 20),
 
         # Basic conditional
         if(
@@ -26,9 +25,11 @@ fn main() {
         ),
 
         # Demonstration of repeat
-        repeat(x2, mutate(res, add(res, 5))),
+        repeat(10000,
+            repeat(10000, mutate(res, multiply(res, 1))),
+        ),
 
-        # Demonstration of repeat
+        # Demonstration of println
         print_line(typeof(x)),
         print_line(res),
 
