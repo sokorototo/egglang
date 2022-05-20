@@ -1,17 +1,23 @@
 use crate::expression::{Expression, Value};
 
-pub fn parse(source: &str, regexi: &[regex::Regex; 3]) -> Expression {
+pub fn parse(source: &str, regexi: &[regex::Regex; 4]) -> Expression {
     let (expr, _) = parse_expression(source, regexi);
     expr
 }
 
-pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 3]) -> (Expression, &'t str) {
-    let source = source.trim_start();
+pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Expression, &'t str) {
+    let mut source = source.trim_start();
 
     // Get regex definitions
     let string_regex = &regexi[0];
     let number_regex = &regexi[1];
     let word_regex = &regexi[2];
+
+    // Trims comments
+    let comment_regex = &regexi[3];
+    if let Some(captures) = comment_regex.captures(source) {
+        source = &source[captures[0].len()..];
+    };
 
     let (expr, len) = if let Some(captures) = string_regex.captures(source) {
         let str = &captures[1];
@@ -51,7 +57,7 @@ pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 3]) -> (Exp
 pub fn parse_apply<'t>(
     expr: Expression,
     source: &'t str,
-    regexi: &[regex::Regex; 3],
+    regexi: &[regex::Regex; 4],
 ) -> (Expression, &'t str) {
     let source = source.trim_start();
 
