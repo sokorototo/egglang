@@ -131,6 +131,36 @@ impl<'a> SpecialForm<'a> for Delete {
     }
 }
 
+/// Checks if a variable exists
+pub struct Exists;
+
+impl<'a> SpecialForm<'a> for Exists {
+    fn evaluate(
+        &self,
+        args: &[expression::Expression],
+        scope: &Mutex<HashMap<String, Value>>,
+        _: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+    ) -> expression::Value {
+        assert_eq!(args.len(), 1);
+        let name = &args[0];
+
+        let res = match name {
+            expression::Expression::Word { name } => scope.lock().unwrap().contains_key(name),
+            expression::Expression::Value { value } => match value {
+                expression::Value::String(name) => scope.lock().unwrap().contains_key(name),
+                expression::Value::Isize(_) => {
+                    panic!("Numbers cannot be used as variable names for obvious reasons")
+                }
+            },
+            _ => {
+                panic!("Applications cannot be used as variable names for obvious reasons");
+            }
+        };
+
+        res.into()
+    }
+}
+
 // Returns the value's type
 pub struct TypeOf;
 

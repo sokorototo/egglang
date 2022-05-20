@@ -25,6 +25,7 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("define", Box::new(memory::Define));
     map.insert("mutate", Box::new(memory::Mutate));
     map.insert("delete", Box::new(memory::Delete));
+    map.insert("exists", Box::new(memory::Exists));
     map.insert("typeof", Box::new(memory::TypeOf));
 
     // Printing

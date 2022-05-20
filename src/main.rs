@@ -23,8 +23,8 @@ fn main() {
         repeat(x2, mutate(res, add(res, 5))),
         print_line(typeof(x)),
         print_line(res),
-        print_line(res),
-        true
+        delete(res),
+        exists(res),
     )"#;
 
     // Parse the expression

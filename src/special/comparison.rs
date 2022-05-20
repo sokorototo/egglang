@@ -20,11 +20,7 @@ impl<'a> super::SpecialForm<'a> for Equals {
         let val1 = evaluate(&args[0], scope, special_forms);
         let val2 = evaluate(&args[1], scope, special_forms);
 
-        if val1 == val2 {
-            Value::Isize(1)
-        } else {
-            Value::Isize(0)
-        }
+        (val1 == val2).into()
     }
 }
 
@@ -43,11 +39,7 @@ impl<'a> super::SpecialForm<'a> for NotEquals {
         let val1 = evaluate(&args[0], scope, special_forms);
         let val2 = evaluate(&args[1], scope, special_forms);
 
-        if val1 != val2 {
-            Value::Isize(1)
-        } else {
-            Value::Isize(0)
-        }
+        (val1 != val2).into()
     }
 }
 
@@ -67,7 +59,7 @@ impl<'a> super::SpecialForm<'a> for GreaterThan {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => Value::Isize(if a > b { 1 } else { 0 }),
+            (Value::Isize(a), Value::Isize(b)) => (a > b).into(),
             _ => panic!("please provide numbers as arguments for mathematical operations"),
         }
     }
@@ -89,7 +81,7 @@ impl<'a> super::SpecialForm<'a> for LessThan {
         let val2 = evaluate(&args[1], scope, special_forms);
 
         match (val1, val2) {
-            (Value::Isize(a), Value::Isize(b)) => Value::Isize(if a < b { 1 } else { 0 }),
+            (Value::Isize(a), Value::Isize(b)) => (a < b).into(),
             _ => panic!("please provide numbers as arguments for mathematical operations"),
         }
     }

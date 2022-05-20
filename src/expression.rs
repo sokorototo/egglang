@@ -17,3 +17,13 @@ pub enum Value {
     Isize(isize),
     String(String),
 }
+
+impl Into<Value> for bool {
+    fn into(self) -> Value {
+        if self {
+            Value::Isize(1)
+        } else {
+            Value::Isize(0)
+        }
+    }
+}
