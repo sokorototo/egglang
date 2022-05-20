@@ -23,11 +23,11 @@ impl<'a> SpecialForm<'a> for Define {
                 let value = evaluate(&args[1], scope, special_forms);
                 let mut map = scope.lock().unwrap();
 
-                if map.contains_key(name.as_str()) {
+                if map.contains_key(name) {
                     panic!("Attempting to re-declare a variable: {name}")
                 } else {
                     // THIS IS BASICALLY A CLONE
-                    map.insert(name.as_str().into(), value.clone());
+                    map.insert(name.clone(), value.clone());
                 }
 
                 value
@@ -78,7 +78,7 @@ impl<'a> SpecialForm<'a> for Mutate {
                 scope
                     .lock()
                     .unwrap()
-                    .get_mut(word.as_str())
+                    .get_mut(word)
                     .map(|val| *val = value.clone());
             }
             expression::Expression::Value { value: string } => match string {
@@ -120,7 +120,7 @@ impl<'a> SpecialForm<'a> for Delete {
         let name = &args[0];
 
         let res = match name {
-            expression::Expression::Word { name } => scope.lock().unwrap().remove(name.as_str()),
+            expression::Expression::Word { name } => scope.lock().unwrap().remove(name.as_ref()),
             expression::Expression::Value { value } => match value {
                 expression::Value::String(name) => scope.lock().unwrap().remove(name.as_ref()),
                 expression::Value::Number(_) => {
@@ -151,7 +151,7 @@ impl<'a> SpecialForm<'a> for Exists {
 
         let res = match name {
             expression::Expression::Word { name } => {
-                scope.lock().unwrap().contains_key(name.as_str())
+                scope.lock().unwrap().contains_key(name.as_ref())
             }
             expression::Expression::Value { value } => match value {
                 expression::Value::String(name) => {

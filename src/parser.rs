@@ -43,7 +43,7 @@ pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Exp
 
         (
             Expression::Word {
-                name: str.to_string(),
+                name: str.into(),
             },
             str.len(),
         )

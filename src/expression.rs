@@ -6,7 +6,7 @@ pub enum Expression {
         value: Value,
     },
     Word {
-        name: String,
+        name: Rc<str>,
     },
     Apply {
         operator: Box<Expression>,
