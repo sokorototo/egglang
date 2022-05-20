@@ -24,7 +24,7 @@ fn main() {
         print_line(typeof(x)),
         print_line(res),
         delete(res),
-        exists(res),
+        print_line(exists(res)),
     )"#;
 
     // Parse the expression
