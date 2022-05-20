@@ -13,7 +13,7 @@ impl<'a> SpecialForm<'a> for Do {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         let mut result = expression::Value::Number(-1);
 
@@ -33,7 +33,7 @@ impl<'a> SpecialForm<'a> for If {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
         assert_eq!(args.len(), 3);
@@ -63,7 +63,7 @@ impl<'a> SpecialForm<'a> for While {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
         assert_eq!(args.len(), 2);
@@ -105,7 +105,7 @@ impl<'a> SpecialForm<'a> for Repeat {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
         assert_eq!(args.len(), 2);

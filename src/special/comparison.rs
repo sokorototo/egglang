@@ -13,7 +13,7 @@ impl<'a> super::SpecialForm<'a> for Equals {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -32,7 +32,7 @@ impl<'a> super::SpecialForm<'a> for NotEquals {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -51,7 +51,7 @@ impl<'a> super::SpecialForm<'a> for GreaterThan {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -73,7 +73,7 @@ impl<'a> super::SpecialForm<'a> for LessThan {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 

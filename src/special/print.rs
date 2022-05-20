@@ -14,7 +14,7 @@ impl<'a> SpecialForm<'a> for PrintLine {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {
             match evaluate(arg, scope, special_forms) {
@@ -35,7 +35,7 @@ impl<'a> SpecialForm<'a> for Print {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {
             match evaluate(arg, scope, special_forms) {

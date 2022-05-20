@@ -13,7 +13,7 @@ impl<'a> super::SpecialForm<'a> for Add {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         args.iter()
             .map(|arg| evaluate(arg, scope, special_forms))
@@ -33,7 +33,7 @@ impl<'a> super::SpecialForm<'a> for Multiply {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         args.iter()
             .map(|arg| evaluate(arg, scope, special_forms))
@@ -53,7 +53,7 @@ impl<'a> super::SpecialForm<'a> for Subtract {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -75,7 +75,7 @@ impl<'a> super::SpecialForm<'a> for Divide {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 

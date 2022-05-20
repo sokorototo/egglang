@@ -1,9 +1,11 @@
+#![allow(clippy::upper_case_acronyms)]
+
 use super::SpecialForm;
 use crate::{
     evaluator::evaluate,
     expression::{Expression, Value},
 };
-use std::{collections::HashMap, sync::Mutex, rc::Rc};
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 // AND
 pub struct AND;
@@ -13,7 +15,7 @@ impl<'a> super::SpecialForm<'a> for AND {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -35,7 +37,7 @@ impl<'a> super::SpecialForm<'a> for OR {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
@@ -57,7 +59,7 @@ impl<'a> super::SpecialForm<'a> for NOT {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 1);
         let value = evaluate(&args[0], scope, special_forms);

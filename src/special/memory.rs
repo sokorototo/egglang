@@ -13,7 +13,7 @@ impl<'a> SpecialForm<'a> for Define {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
         let name = &args[0];
@@ -64,7 +64,7 @@ impl<'a> SpecialForm<'a> for Mutate {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
         let variable_name = &args[0];
@@ -75,21 +75,17 @@ impl<'a> SpecialForm<'a> for Mutate {
                 let value = evaluate(&args[1], scope, special_forms);
                 old_value = evaluate(variable_name, scope, special_forms);
 
-                scope
-                    .lock()
-                    .unwrap()
-                    .get_mut(word)
-                    .map(|val| *val = value.clone());
+                if let Some(val) = scope.lock().unwrap().get_mut(word) {
+                    *val = value;
+                };
             }
             expression::Expression::Value { value: string } => match string {
                 expression::Value::String(name) => {
                     let value = evaluate(&args[1], scope, special_forms);
 
-                    scope
-                        .lock()
-                        .unwrap()
-                        .get_mut(name.as_ref())
-                        .map(|val| *val = value.clone());
+                    if let Some(val) = scope.lock().unwrap().get_mut(name.as_ref()) {
+                        *val = value.clone()
+                    };
 
                     old_value = value;
                 }
@@ -114,7 +110,7 @@ impl<'a> SpecialForm<'a> for Delete {
         &self,
         args: &[expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        _: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        _: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 1);
         let name = &args[0];
@@ -144,7 +140,7 @@ impl<'a> SpecialForm<'a> for Exists {
         &self,
         args: &[expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        _: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        _: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 1);
         let name = &args[0];
@@ -178,7 +174,7 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         &self,
         args: &'a [expression::Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 1);
 

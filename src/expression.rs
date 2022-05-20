@@ -20,9 +20,9 @@ pub enum Value {
     String(Rc<str>),
 }
 
-impl Into<Value> for bool {
-    fn into(self) -> Value {
-        if self {
+impl From<bool> for Value {
+    fn from(val: bool) -> Self {
+        if val {
             Value::Number(1)
         } else {
             Value::Number(0)

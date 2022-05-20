@@ -14,7 +14,7 @@ pub trait SpecialForm<'a> {
         &self,
         args: &'a [Expression],
         scope: &Mutex<HashMap<Rc<str>, Value>>,
-        special_forms: &mut HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+        special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
     ) -> Value;
 }
 
