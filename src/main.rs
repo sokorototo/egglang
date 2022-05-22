@@ -8,9 +8,13 @@ mod special;
 
 fn main() {
     let regexi = [
+        // String
         regex::Regex::new("^\"([^\"]*)\"").unwrap(),
+        // Number
         regex::Regex::new(r"^\d+\b").unwrap(),
+        // Word
         regex::Regex::new(r#"^[^\s\(\),#"]+"#).unwrap(),
+        // Comment
         regex::Regex::new(r"^#.*\n\s+").unwrap(),
     ];
 

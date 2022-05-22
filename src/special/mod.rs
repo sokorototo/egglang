@@ -8,6 +8,7 @@ mod comparison;
 mod control_flow;
 mod memory;
 mod print;
+mod table;
 
 pub trait SpecialForm<'a> {
     fn evaluate(
