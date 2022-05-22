@@ -1,3 +1,5 @@
+use std::fs::read_to_string;
+
 mod evaluator;
 mod expression;
 mod parser;
@@ -12,35 +14,7 @@ fn main() {
         regex::Regex::new(r"^#.*\n\s+").unwrap(),
     ];
 
-    let code = r#"do(
-        # Variable definitions
-        define(x, "11"),
-        define(res, 20),
-
-        # Basic conditional
-        if(
-            equals(typeof(x), NUMBER),
-            if(
-                greater_than(x, 10),
-                print_line("x is a number and is greater than 10"),
-                print_line("x is a number, but is not greater than 10")
-            ),
-            print_line("x is not a number")
-        ),
-
-        # Demonstration of repeat
-        mutate(res, 0),
-        repeat(10000, mutate(res, multiply(res, 1))),
-
-        # Demonstration of println
-        print_line(typeof(x)),
-        print_line(res),
-
-        # Memory manipulation
-        delete(res),
-        print_line(exists(res)),
-        sleep(multiply(5, 1000)),
-    )"#;
+    let code = read_to_string("scripts/simple.egg").unwrap();
 
     // Parse the expression
     let expr = parser::parse(code, &regexi);

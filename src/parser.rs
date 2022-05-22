@@ -1,11 +1,13 @@
 use crate::expression::{Expression, Value};
 
-pub fn parse(source: &str, regexi: &[regex::Regex; 4]) -> Expression {
-    let (expr, _) = parse_expression(source, regexi);
+// Parse a string into an expression
+pub fn parse<S: AsRef<str>>(source: S, regexi: &[regex::Regex; 4]) -> Expression {
+    let (expr, _) = parse_expression(source.as_ref(), regexi);
     expr
 }
 
-pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Expression, &'t str) {
+// Given an expression, returns the token type
+fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Expression, &'t str) {
     let mut source = source.trim_start();
 
     // Get regex definitions
@@ -41,12 +43,7 @@ pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Exp
     } else if let Some(captures) = word_regex.captures(source) {
         let str = &captures[0];
 
-        (
-            Expression::Word {
-                name: str.into(),
-            },
-            str.len(),
-        )
+        (Expression::Word { name: str.into() }, str.len())
     } else {
         panic!("Syntax error! Unknown syntax {}", source)
     };
@@ -54,7 +51,8 @@ pub fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Exp
     parse_apply(expr, &source[len..], regexi)
 }
 
-pub fn parse_apply<'t>(
+// Given a stream of characters, separates characters into valid chucks to be parsed into expressions
+fn parse_apply<'t>(
     expr: Expression,
     source: &'t str,
     regexi: &[regex::Regex; 4],
