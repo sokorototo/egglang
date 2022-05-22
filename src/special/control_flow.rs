@@ -5,7 +5,7 @@ use crate::{
 };
 use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
-// Task evaluator
+// Block evaluator
 pub struct Do;
 
 impl<'a> SpecialForm<'a> for Do {
@@ -129,6 +129,63 @@ impl<'a> SpecialForm<'a> for Repeat {
             loop_value = evaluate(&args[1], scope, special_forms);
 
             iterations += 1;
+        }
+    }
+}
+
+// Sleep for x milliseconds
+pub struct Sleep;
+
+impl<'a> SpecialForm<'a> for Sleep {
+    fn evaluate(
+        &self,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+    ) -> Value {
+        use std::{thread::sleep, time::Duration};
+
+        // Assert correct length of arguments
+        assert_eq!(args.len(), 1);
+
+        // Loop
+        let sleep_time = evaluate(&args[0], scope, special_forms);
+        if let Value::Number(value) = sleep_time {
+            if value < 0 {
+                panic!("Cannot call sleep(--) with a negative time");
+            } else {
+                let duration = Duration::from_millis(value as u64);
+                sleep(duration)
+            }
+        } else {
+            panic!("Please provide a number as the parameter to sleep(--)")
+        }
+
+        sleep_time
+    }
+}
+
+// Sleep for x milliseconds
+pub struct Panic;
+
+impl<'a> SpecialForm<'a> for Panic {
+    fn evaluate(
+        &self,
+        args: &'a [expression::Expression],
+        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+    ) -> Value {
+        // Assert correct length of arguments
+        assert_eq!(args.len(), 1);
+
+        // Loop
+        let error_message = evaluate(&args[0], scope, special_forms);
+
+        match error_message {
+            Value::Number(error_code) => {
+                panic!("Program has met an unexpected error: ErrorCode: {error_code}")
+            }
+            Value::String(message) => panic!("{message}"),
         }
     }
 }

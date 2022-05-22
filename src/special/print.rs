@@ -1,11 +1,10 @@
-use std::{collections::HashMap, sync::Mutex, rc::Rc};
+use std::{collections::HashMap, rc::Rc, sync::Mutex};
 
 use super::SpecialForm;
 use crate::{
     evaluator::evaluate,
     expression::{self, Value},
 };
-
 // Prints it's data and a newline
 pub struct PrintLine;
 

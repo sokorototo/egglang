@@ -30,7 +30,7 @@ fn main() {
 
         # Demonstration of repeat
         mutate(res, 0),
-        repeat(10000, repeat(10000, mutate(res, multiply(res, 1)))),
+        repeat(10000, mutate(res, multiply(res, 1))),
 
         # Demonstration of println
         print_line(typeof(x)),
@@ -39,6 +39,7 @@ fn main() {
         # Memory manipulation
         delete(res),
         print_line(exists(res)),
+        sleep(multiply(5, 1000)),
     )"#;
 
     // Parse the expression
@@ -49,4 +50,5 @@ fn main() {
     let special_forms = special::build_special_forms();
 
     evaluator::evaluate(&expr, &scope, &special_forms);
+    dbg!(scope);
 }
