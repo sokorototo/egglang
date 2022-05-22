@@ -5,13 +5,13 @@ do (
 
 	# Basic conditional
 	if (
-		equals(typeof (x), NUMBER),
+		equals(typeof(x), NUMBER),
 		if (
 			greater_than(x, 10),
 			print_line("x is a number and is greater than 10"),
 			print_line("x is a number, but is not greater than 10")
 		),
-		print_line("x is not a number")
+		panic("x is not a number")
 	),
 
 	# Demonstration of repeat
@@ -24,7 +24,7 @@ do (
 	print_line(res),
 
 	# Memory manipulation
-	delete (res),
+	delete(res),
 	print_line(exists(res)),
 	sleep(multiply(5, 1000)),
 )
