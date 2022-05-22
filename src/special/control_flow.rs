@@ -3,7 +3,7 @@ use crate::{
     evaluator::evaluate,
     expression::{self, Value},
 };
-use std::{collections::HashMap, rc::Rc, sync::Mutex};
+use std::{collections::HashMap, rc::Rc, cell::RefCell};
 
 // Block evaluator
 pub struct Do;
@@ -12,7 +12,7 @@ impl<'a> SpecialForm<'a> for Do {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         let mut result = expression::Value::Number(-1);
@@ -32,7 +32,7 @@ impl<'a> SpecialForm<'a> for If {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
@@ -62,7 +62,7 @@ impl<'a> SpecialForm<'a> for While {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
@@ -104,7 +104,7 @@ impl<'a> SpecialForm<'a> for Repeat {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments
@@ -140,7 +140,7 @@ impl<'a> SpecialForm<'a> for Sleep {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         use std::{thread::sleep, time::Duration};
@@ -172,7 +172,7 @@ impl<'a> SpecialForm<'a> for Panic {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         // Assert correct length of arguments

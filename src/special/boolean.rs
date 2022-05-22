@@ -5,7 +5,7 @@ use crate::{
     evaluator::evaluate,
     expression::{Expression, Value},
 };
-use std::{collections::HashMap, rc::Rc, sync::Mutex};
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 // AND
 pub struct AND;
@@ -14,7 +14,7 @@ impl<'a> super::SpecialForm<'a> for AND {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -36,7 +36,7 @@ impl<'a> super::SpecialForm<'a> for OR {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -58,7 +58,7 @@ impl<'a> super::SpecialForm<'a> for NOT {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &Mutex<HashMap<Rc<str>, Value>>,
+        scope: &RefCell<HashMap<Rc<str>, Value>>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 1);

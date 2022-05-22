@@ -1,8 +1,8 @@
-use std::{collections::HashMap, rc::Rc, sync::Mutex};
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use crate::expression::Value;
 
-pub fn build_default_scope() -> Mutex<HashMap<Rc<str>, Value>> {
+pub fn build_default_scope() -> RefCell<HashMap<Rc<str>, Value>> {
     let mut map = HashMap::new();
 
     map.insert("true".into(), true.into());
@@ -11,5 +11,5 @@ pub fn build_default_scope() -> Mutex<HashMap<Rc<str>, Value>> {
     map.insert("NUMBER".into(), Value::String("__number".into()));
     map.insert("STRING".into(), Value::String("__string".into()));
 
-    Mutex::new(map)
+    RefCell::new(map)
 }
