@@ -11,7 +11,6 @@ pub fn build_default_scope() -> RefCell<HashMap<Rc<str>, Value>> {
     // Globals identifying type
     map.insert("NUMBER".into(), Value::String("__number".into()));
     map.insert("STRING".into(), Value::String("__string".into()));
-    map.insert("TABLE".into(), Value::String("__table".into()));
 
     RefCell::new(map)
 }

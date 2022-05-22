@@ -1,4 +1,4 @@
-use std::{collections::HashMap, rc::Rc};
+use std::rc::Rc;
 
 #[derive(Debug)]
 pub enum Expression {
@@ -18,7 +18,6 @@ pub enum Expression {
 pub enum Value {
     Number(isize),
     String(Rc<str>),
-    Table(Rc<HashMap<Rc<str>, Value>>),
 }
 
 impl From<bool> for Value {

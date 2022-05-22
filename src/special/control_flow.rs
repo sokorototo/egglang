@@ -182,7 +182,6 @@ impl<'a> SpecialForm<'a> for Panic {
                 panic!("Program has met an unexpected error: ErrorCode: {error_code}")
             }
             Value::String(message) => panic!("{message}"),
-            Value::Table(_) => panic!("Program encountered an unexpected error"),
         }
     }
 }

@@ -45,7 +45,7 @@ impl<'a> SpecialForm<'a> for Define {
 
                     value
                 }
-                _ => panic!("Numbers and Tables cannot be used as variable names as the would conflict with normal numbers")
+                _ => panic!("Numbers cannot be used as variable names as the would conflict with normal numbers")
             },
             _ => {
                 panic!("Applications cannot be used as variable names");
@@ -171,7 +171,6 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         match value {
             Value::Number(_) => Value::String("__number".into()),
             Value::String(_) => Value::String("__string".into()),
-            Value::Table(_) => Value::String("__table".into()),
         }
     }
 }
