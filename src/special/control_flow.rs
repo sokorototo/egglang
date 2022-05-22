@@ -42,9 +42,7 @@ impl<'a> SpecialForm<'a> for If {
         let res = evaluate(&args[0], scope, special_forms);
         let value = match res {
             expression::Value::Number(num) => num != 0,
-            expression::Value::String(str) => {
-                panic!("Expected `isize` found String: {str}")
-            }
+            _ => panic!("if(--) expects a number as it's parameter"),
         };
 
         if value {
@@ -80,9 +78,7 @@ impl<'a> SpecialForm<'a> for While {
             let res = evaluate(&args[0], scope, special_forms);
             let value = match res {
                 expression::Value::Number(num) => num == 0,
-                expression::Value::String(str) => {
-                    panic!("Expected `isize` found String: {str}")
-                }
+                _ => panic!("while(--) expects a number as it's parameter"),
             };
 
             if !value {
@@ -116,7 +112,7 @@ impl<'a> SpecialForm<'a> for Repeat {
 
         let max_iter = match evaluate(&args[0], scope, special_forms) {
             Value::Number(num) => num,
-            Value::String(_) => panic!("Repeat expects a number as it's argument"),
+            _ => panic!("repeat(--) expects a number as it's argument"),
         };
 
         loop {
@@ -186,6 +182,7 @@ impl<'a> SpecialForm<'a> for Panic {
                 panic!("Program has met an unexpected error: ErrorCode: {error_code}")
             }
             Value::String(message) => panic!("{message}"),
+            Value::Table(_) => panic!("Program encountered an unexpected error"),
         }
     }
 }

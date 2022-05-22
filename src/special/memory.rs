@@ -45,12 +45,10 @@ impl<'a> SpecialForm<'a> for Define {
 
                     value
                 }
-                expression::Value::Number(_) => {
-                    panic!("Numbers cannot be used as variable names for obvious reasons")
-                }
+                _ => panic!("Numbers and Tables cannot be used as variable names as the would conflict with normal numbers")
             },
             _ => {
-                panic!("Applications cannot be used as variable names for obvious reasons");
+                panic!("Applications cannot be used as variable names");
             }
         }
     }
@@ -89,9 +87,7 @@ impl<'a> SpecialForm<'a> for Mutate {
 
                     old_value = value;
                 }
-                expression::Value::Number(_) => {
-                    panic!("Numbers cannot be used as variable names for obvious reasons")
-                }
+                _ => panic!("Please provide a word or a string as a variable name"),
             },
             _ => {
                 panic!("Applications cannot be used as variable names for obvious reasons");
@@ -119,9 +115,7 @@ impl<'a> SpecialForm<'a> for Delete {
             expression::Expression::Word { name } => scope.borrow_mut().remove(name.as_ref()),
             expression::Expression::Value { value } => match value {
                 expression::Value::String(name) => scope.borrow_mut().remove(name.as_ref()),
-                expression::Value::Number(_) => {
-                    panic!("Numbers cannot be used as variable names for obvious reasons")
-                }
+                val => panic!("Invalid value given to delete: {val:?}"),
             },
             _ => {
                 panic!("Applications cannot be used as variable names for obvious reasons");
@@ -149,9 +143,7 @@ impl<'a> SpecialForm<'a> for Exists {
             expression::Expression::Word { name } => scope.borrow().contains_key(name.as_ref()),
             expression::Expression::Value { value } => match value {
                 expression::Value::String(name) => scope.borrow().contains_key(name.as_ref()),
-                expression::Value::Number(_) => {
-                    panic!("Numbers cannot be used as variable names for obvious reasons")
-                }
+                val => panic!("Invalid value passed to exists(--): {val:?}"),
             },
             _ => {
                 panic!("Applications cannot be used as variable names for obvious reasons");
@@ -179,6 +171,7 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         match value {
             Value::Number(_) => Value::String("__number".into()),
             Value::String(_) => Value::String("__string".into()),
+            Value::Table(_) => Value::String("__table".into()),
         }
     }
 }

@@ -19,6 +19,7 @@ impl<'a> SpecialForm<'a> for PrintLine {
             match evaluate(arg, scope, special_forms) {
                 expression::Value::Number(num) => println!("{num}"),
                 expression::Value::String(string) => println!("{string}"),
+                expression::Value::Table(table) => println!("{table:?}"),
             }
         }
 
@@ -40,6 +41,7 @@ impl<'a> SpecialForm<'a> for Print {
             match evaluate(arg, scope, special_forms) {
                 expression::Value::Number(num) => print!("{num}"),
                 expression::Value::String(string) => print!("{string}"),
+                expression::Value::Table(table) => print!("{table:?}"),
             }
         }
 
