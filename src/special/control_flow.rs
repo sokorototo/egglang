@@ -3,7 +3,7 @@ use crate::{
     evaluator::evaluate,
     expression::{self, Value},
 };
-use std::{collections::HashMap, rc::Rc, cell::RefCell};
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 // Block evaluator
 pub struct Do;
