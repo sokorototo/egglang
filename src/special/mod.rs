@@ -30,7 +30,7 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
 
     // Printing
     map.insert("print_line", Box::new(print::PrintLine));
-    map.insert("print", Box::new(print::PrintLine));
+    map.insert("print", Box::new(print::Print));
 
     // Control flow
     map.insert("if", Box::new(control_flow::If));

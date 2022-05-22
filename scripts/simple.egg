@@ -17,7 +17,12 @@ do (
 	# Demonstration of repeat
 	mutate(res, 0),
 
-	repeat(10000, mutate(res, multiply(res, 1))),
+	# Print 0-10
+	define(i, 0),
+	repeat(10, do(
+		print(i),
+		mutate(i, add(i, 1)),
+	)),
 
 	# Demonstration of println
 	print_line(typeof (x)),
@@ -26,5 +31,4 @@ do (
 	# Memory manipulation
 	delete(res),
 	print_line(exists(res)),
-	sleep(multiply(5, 1000)),
 )

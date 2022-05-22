@@ -18,13 +18,16 @@ fn main() {
         regex::Regex::new(r"^#.*\n\s+").unwrap(),
     ];
 
-    let args = std::env::args().collect::<Vec<_>>();
-    let path = match args.get(1) {
-        Some(path) => path,
-        None => panic!("Please provide a path to read code from"),
-    };
+    // Read data
+    let code = {
+        let args = std::env::args().collect::<Vec<_>>();
+        let path = match args.get(1) {
+            Some(path) => path,
+            None => panic!("Please provide a path to read code from"),
+        };
 
-    let code = read_to_string(path).unwrap();
+        read_to_string(path).unwrap()
+    };
 
     // Parse the expression
     let expr = parser::parse(code, &regexi);
@@ -34,5 +37,4 @@ fn main() {
     let special_forms = special::build_special_forms();
 
     evaluator::evaluate(&expr, &scope, &special_forms);
-    dbg!(scope);
 }
