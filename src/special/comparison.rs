@@ -3,7 +3,7 @@ use crate::{
     evaluator::evaluate,
     expression::{Expression, Value},
 };
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{collections::HashMap, rc::Rc};
 
 // Checks for equality
 pub struct Equals;
@@ -12,7 +12,7 @@ impl<'a> super::SpecialForm<'a> for Equals {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &RefCell<HashMap<Rc<str>, Value>>,
+        scope: &mut HashMap<Rc<str>, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -31,7 +31,7 @@ impl<'a> super::SpecialForm<'a> for NotEquals {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &RefCell<HashMap<Rc<str>, Value>>,
+        scope: &mut HashMap<Rc<str>, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -50,7 +50,7 @@ impl<'a> super::SpecialForm<'a> for GreaterThan {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &RefCell<HashMap<Rc<str>, Value>>,
+        scope: &mut HashMap<Rc<str>, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
@@ -72,7 +72,7 @@ impl<'a> super::SpecialForm<'a> for LessThan {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &RefCell<HashMap<Rc<str>, Value>>,
+        scope: &mut HashMap<Rc<str>, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 2);

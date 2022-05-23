@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{collections::HashMap, rc::Rc};
 
 use super::SpecialForm;
 use crate::{
@@ -12,7 +12,7 @@ impl<'a> SpecialForm<'a> for PrintLine {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &RefCell<HashMap<Rc<str>, Value>>,
+        scope: &mut HashMap<Rc<str>, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {
@@ -33,7 +33,7 @@ impl<'a> SpecialForm<'a> for Print {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &RefCell<HashMap<Rc<str>, Value>>,
+        scope: &mut HashMap<Rc<str>, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         for arg in args {
