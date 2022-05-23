@@ -1,5 +1,5 @@
 use crate::expression::{Expression, Value};
-use std::{collections::HashMap, rc::Rc};
+use std::collections::HashMap;
 
 // Various special, forms
 mod arithmetic;
@@ -13,7 +13,7 @@ pub trait SpecialForm<'a> {
     fn evaluate(
         &self,
         args: &'a [Expression],
-        scope: &mut HashMap<Rc<str>, Value>,
+        scope: &mut HashMap<String, Value>,
         special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
     ) -> Value;
 }

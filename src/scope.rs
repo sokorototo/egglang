@@ -1,8 +1,8 @@
-use std::{collections::HashMap, rc::Rc};
+use std::collections::HashMap;
 
 use crate::expression::Value;
 
-pub fn build_default_scope() -> HashMap<Rc<str>, Value> {
+pub fn build_default_scope() -> HashMap<String, Value> {
     let mut map = HashMap::new();
 
     map.insert("true".into(), true.into());

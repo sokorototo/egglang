@@ -3,7 +3,7 @@ use crate::{
     evaluator::evaluate,
     expression::{self, Value},
 };
-use std::{collections::HashMap, rc::Rc};
+use std::collections::HashMap;
 
 /// Defines a new variable
 pub struct Define;
@@ -12,7 +12,7 @@ impl<'a> SpecialForm<'a> for Define {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &mut HashMap<Rc<str>, Value>,
+        scope: &mut HashMap<String, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
@@ -22,11 +22,11 @@ impl<'a> SpecialForm<'a> for Define {
             expression::Expression::Word { name } => {
                 let value = evaluate(&args[1], scope, special_forms);
 
-                if scope.contains_key(name) {
+                if scope.contains_key(name.as_ref()) {
                     panic!("Attempting to re-declare a variable: {name}")
                 } else {
                     // THIS IS BASICALLY A CLONE
-                    scope.insert(name.clone(), value.clone());
+                    scope.insert(name.to_string(), value.clone());
                 }
 
                 value
@@ -38,7 +38,7 @@ impl<'a> SpecialForm<'a> for Define {
                     if scope.contains_key(name.as_ref()) {
                         panic!("Attempting to re-declare a variable: {name}")
                     } else {
-                        scope.insert(name.clone(), value.clone());
+                        scope.insert(name.to_string(), value.clone());
                     }
 
                     value
@@ -59,7 +59,7 @@ impl<'a> SpecialForm<'a> for Mutate {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &mut HashMap<Rc<str>, Value>,
+        scope: &mut HashMap<String, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 2);
@@ -71,7 +71,7 @@ impl<'a> SpecialForm<'a> for Mutate {
                 let value = evaluate(&args[1], scope, special_forms);
                 old_value = evaluate(variable_name, scope, special_forms);
 
-                if let Some(val) = scope.get_mut(word) {
+                if let Some(val) = scope.get_mut(word.as_ref()) {
                     *val = value;
                 };
             }
@@ -103,7 +103,7 @@ impl<'a> SpecialForm<'a> for Delete {
     fn evaluate(
         &self,
         args: &[expression::Expression],
-        scope: &mut HashMap<Rc<str>, Value>,
+        scope: &mut HashMap<String, Value>,
         _: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 1);
@@ -131,7 +131,7 @@ impl<'a> SpecialForm<'a> for Exists {
     fn evaluate(
         &self,
         args: &[expression::Expression],
-        scope: &mut HashMap<Rc<str>, Value>,
+        scope: &mut HashMap<String, Value>,
         _: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
         assert_eq!(args.len(), 1);
@@ -159,7 +159,7 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],
-        scope: &mut HashMap<Rc<str>, Value>,
+        scope: &mut HashMap<String, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> Value {
         assert_eq!(args.len(), 1);
