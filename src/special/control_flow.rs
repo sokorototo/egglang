@@ -15,7 +15,7 @@ impl<'a> SpecialForm<'a> for Do {
         scope: &mut HashMap<String, Value>,
         special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
     ) -> expression::Value {
-        let mut result = expression::Value::Number(-1);
+        let mut result = expression::Value::Nil;
 
         for arg in args.iter() {
             result = evaluate(arg, scope, special_forms);
@@ -68,7 +68,7 @@ impl<'a> SpecialForm<'a> for While {
 
         // Loop
         let mut iterations = 0usize;
-        let mut loop_value = expression::Value::Number(-1);
+        let mut loop_value = expression::Value::Nil;
 
         loop {
             if iterations == usize::MAX {
@@ -108,7 +108,7 @@ impl<'a> SpecialForm<'a> for Repeat {
 
         // Loop
         let mut iterations = 0;
-        let mut loop_value = expression::Value::Number(-1);
+        let mut loop_value = expression::Value::Nil;
 
         let max_iter = match evaluate(&args[0], scope, special_forms) {
             Value::Number(num) => num,
@@ -182,6 +182,7 @@ impl<'a> SpecialForm<'a> for Panic {
                 panic!("Program has met an unexpected error: ErrorCode: {error_code}")
             }
             Value::String(message) => panic!("{message}"),
+            Value::Nil => panic!("Program has gracefully exited"),
         }
     }
 }

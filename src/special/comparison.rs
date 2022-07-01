@@ -86,3 +86,22 @@ impl<'a> super::SpecialForm<'a> for LessThan {
         }
     }
 }
+
+// Write a form that checks if a value is nil, returns a boolean if true
+pub struct IsNil;
+
+impl<'a> super::SpecialForm<'a> for IsNil {
+    fn evaluate(
+        &self,
+        args: &'a [Expression],
+        scope: &mut HashMap<String, Value>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+    ) -> Value {
+        assert_eq!(args.len(), 1);
+
+        match evaluate(&args[0], scope, special_forms) {
+            Value::Nil => true.into(),
+            _ => false.into(),
+        }
+    }
+}

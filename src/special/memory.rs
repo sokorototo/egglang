@@ -120,7 +120,7 @@ impl<'a> SpecialForm<'a> for Delete {
             }
         };
 
-        res.unwrap_or(expression::Value::Number(-1))
+        res.unwrap_or(expression::Value::Nil)
     }
 }
 
@@ -169,6 +169,7 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         match value {
             Value::Number(_) => Value::String("__number".into()),
             Value::String(_) => Value::String("__string".into()),
+            Value::Nil => Value::String("__nil".into()),
         }
     }
 }
