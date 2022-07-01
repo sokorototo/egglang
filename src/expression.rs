@@ -8,7 +8,7 @@ pub enum Expression {
     Word {
         name: Rc<str>,
     },
-    Apply {
+    Operation {
         operator: Box<Expression>,
         operands: Vec<Expression>,
     },

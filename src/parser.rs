@@ -1,4 +1,30 @@
 use crate::expression::{Expression, Value};
+use logos::Logos;
+
+#[derive(Logos, Debug, PartialEq)]
+enum Token {
+    #[regex("\"([^\"\n])*\"")]
+    String,
+    #[regex(r"\d+", priority = 2)]
+    Number,
+    #[regex(r#"[^\s\(\),#"]+"#)]
+    Word,
+
+    #[regex(r"\(")]
+    LeftBracket,
+    #[regex(r"\)")]
+    RightBracket,
+    #[regex(",")]
+    Comma,
+
+    #[regex(r"\s+", logos::skip)]
+    WhiteSpace,
+    #[regex(r"#.*(\s)*", logos::skip)]
+    Comment,
+
+    #[error]
+    UnknownToken,
+}
 
 // Parse a string into an expression
 pub fn parse<S: AsRef<str>>(source: S, regexi: &[regex::Regex; 4]) -> Expression {
@@ -17,9 +43,9 @@ fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Express
 
     // Trims comments
     let comment_regex = &regexi[3];
-    if let Some(captures) = comment_regex.captures(source) {
+    while let Some(captures) = comment_regex.captures(source) {
         source = &source[captures[0].len()..];
-    };
+    }
 
     let (expr, len) = if let Some(captures) = string_regex.captures(source) {
         let str = &captures[1];
@@ -48,11 +74,11 @@ fn parse_expression<'t>(source: &'t str, regexi: &[regex::Regex; 4]) -> (Express
         panic!("Syntax error! Unknown syntax {}", source)
     };
 
-    parse_apply(expr, &source[len..], regexi)
+    parse_operations(expr, &source[len..], regexi)
 }
 
-// Given a stream of characters, separates characters into valid chucks to be parsed into expressions
-fn parse_apply<'t>(
+// Given a stream of characters, separates characters into valid chunks to be parsed into expressions
+fn parse_operations<'t>(
     expr: Expression,
     source: &'t str,
     regexi: &[regex::Regex; 4],
@@ -72,6 +98,7 @@ fn parse_apply<'t>(
 
     while !source.starts_with(')') {
         let (expression, rest) = parse_expression(source, regexi);
+
         args.push(expression);
         source = rest.trim_start();
 
@@ -85,10 +112,10 @@ fn parse_apply<'t>(
     }
 
     // Build new application
-    let expr = Expression::Apply {
+    let expr = Expression::Operation {
         operator: Box::new(expr),
         operands: args,
     };
 
-    parse_apply(expr, &source[1..], regexi)
+    parse_operations(expr, &source[1..], regexi)
 }

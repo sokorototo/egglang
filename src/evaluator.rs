@@ -15,7 +15,7 @@ pub fn evaluate<'a>(
             .get(name.as_ref())
             .unwrap_or_else(|| panic!("Undefined binding: {name}"))
             .clone(),
-        Expression::Apply { operator, operands } => {
+        Expression::Operation { operator, operands } => {
             if let Expression::Word { name } = operator.as_ref() {
                 let application = special_forms
                     .get(name.as_ref())
