@@ -7,17 +7,6 @@ mod scope;
 mod special;
 
 fn main() {
-    let regexi = [
-        // String
-        regex::Regex::new("^\"([^\"]*)\"").unwrap(),
-        // Number
-        regex::Regex::new(r"^\d+\b").unwrap(),
-        // Word
-        regex::Regex::new(r#"^[^\s\(\),#"]+"#).unwrap(),
-        // Comment
-        regex::Regex::new(r"^#.*\n\s+").unwrap(),
-    ];
-
     // Read data
     let code = {
         let args = std::env::args().collect::<Vec<_>>();
@@ -30,11 +19,28 @@ fn main() {
     };
 
     // Parse the expression
-    let expr = parser::parse(code, &regexi);
+    let expr = parser::parse(
+        code,
+        &[
+            // String
+            regex::Regex::new("^\"([^\"]*)\"").unwrap(),
+            // Number
+            regex::Regex::new(r"^\d+\b").unwrap(),
+            // Word
+            regex::Regex::new(r#"^[^\s\(\),#"]+"#).unwrap(),
+            // Comment
+            regex::Regex::new(r"^#.*\n\s+").unwrap(),
+        ],
+    );
 
     // Define runtime variables
     let mut scope = scope::build_default_scope();
     let special_forms = special::build_special_forms();
 
-    evaluator::evaluate(&expr, &mut scope, &special_forms);
+    let start = std::time::Instant::now();
+    let result = evaluator::evaluate(&expr, &mut scope, &special_forms);
+    let finish = start.elapsed();
+
+    println!("{:?}", finish);
+    println!("\n ====== \nResult of evaluation{result:?} ");
 }

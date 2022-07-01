@@ -8,6 +8,7 @@ mod comparison;
 mod control_flow;
 mod memory;
 mod print;
+mod stringtools;
 
 pub trait SpecialForm<'a> {
     fn evaluate(
@@ -45,6 +46,7 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("not_equals", Box::new(comparison::NotEquals));
     map.insert("greater_than", Box::new(comparison::GreaterThan));
     map.insert("less_than", Box::new(comparison::LessThan));
+    map.insert("is_nil", Box::new(comparison::IsNil));
 
     // Arithmetic
     map.insert("add", Box::new(arithmetic::Add));
@@ -56,6 +58,13 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("and", Box::new(boolean::AND));
     map.insert("or", Box::new(boolean::OR));
     map.insert("not", Box::new(boolean::NOT));
+
+    // String tools
+    map.insert("string_length", Box::new(stringtools::Length));
+    map.insert("string_slice", Box::new(stringtools::Slice));
+    map.insert("string_concat", Box::new(stringtools::Concat));
+    map.insert("string_to_upper", Box::new(stringtools::ToUpper));
+    map.insert("string_to_lower", Box::new(stringtools::ToLower));
 
     map
 }
