@@ -1,30 +1,4 @@
 use crate::expression::{Expression, Value};
-use logos::Logos;
-
-#[derive(Logos, Debug, PartialEq)]
-enum Token {
-    #[regex("\"([^\"\n])*\"")]
-    String,
-    #[regex(r"\d+", priority = 2)]
-    Number,
-    #[regex(r#"[^\s\(\),#"]+"#)]
-    Word,
-
-    #[regex(r"\(")]
-    LeftBracket,
-    #[regex(r"\)")]
-    RightBracket,
-    #[regex(",")]
-    Comma,
-
-    #[regex(r"\s+", logos::skip)]
-    WhiteSpace,
-    #[regex(r"#.*(\s)*", logos::skip)]
-    Comment,
-
-    #[error]
-    UnknownToken,
-}
 
 // Parse a string into an expression
 pub fn parse<S: AsRef<str>>(source: S, regexi: &[regex::Regex; 4]) -> Expression {
