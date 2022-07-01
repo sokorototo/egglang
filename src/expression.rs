@@ -18,6 +18,7 @@ pub enum Expression {
 pub enum Value {
     Number(isize),
     String(Rc<str>),
+    Nil
 }
 
 impl From<bool> for Value {
