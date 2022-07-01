@@ -68,25 +68,25 @@ impl<'a> SpecialForm<'a> for While {
 
         // Loop
         let mut iterations = 0usize;
-        let mut loop_value = expression::Value::Nil;
+        let mut loop_result = expression::Value::Nil;
 
         loop {
             if iterations == usize::MAX {
                 panic!("Max loop iterations met");
             }
 
-            let res = evaluate(&args[0], scope, special_forms);
-            let value = match res {
-                expression::Value::Number(num) => num == 0,
+            let condition = evaluate(&args[0], scope, special_forms);
+            let continue_condition = match condition {
+                expression::Value::Number(num) => num != 0,
                 _ => panic!("while(--) expects a number as it's parameter"),
             };
 
-            if !value {
-                break loop_value;
+            if !continue_condition {
+                break loop_result;
             }
 
             // Evaluate expression
-            loop_value = evaluate(&args[1], scope, special_forms);
+            loop_result = evaluate(&args[1], scope, special_forms);
 
             iterations += 1;
         }

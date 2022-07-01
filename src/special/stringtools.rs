@@ -72,16 +72,22 @@ impl<'a> SpecialForm<'a> for Slice {
             _ => panic!("slice expects a string as it's parameter"),
         };
 
-        let start = match evaluate(&args[1], scope, special_forms) {
-            expression::Value::Number(num) => num as usize,
+        let mut start = match evaluate(&args[1], scope, special_forms) {
+            expression::Value::Number(num) => num,
             _ => panic!("slice expects a number as it's parameter"),
         };
+
+        // Negative indeces start from behind
+        if start < 0 {
+            start = (base.len() as isize) + start;
+        }
 
         let length = match evaluate(&args[2], scope, special_forms) {
             expression::Value::Number(num) => num as usize,
             _ => panic!("slice expects a number as it's parameter"),
         };
 
+        let start = start as usize;
         let result = &base[start..start + length];
         expression::Value::String(result.into())
     }
@@ -131,5 +137,26 @@ impl<'a> SpecialForm<'a> for ToLower {
         };
 
         expression::Value::String(value.into())
+    }
+}
+
+pub struct Trim;
+
+impl<'a> SpecialForm<'a> for Trim {
+    fn evaluate(
+        &self,
+        args: &'a [expression::Expression],
+        scope: &mut HashMap<String, Value>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+    ) -> expression::Value {
+        // Assert correct length of arguments
+        assert_eq!(args.len(), 1);
+
+        // Evaluate
+        let res = evaluate(&args[0], scope, special_forms);
+        match res {
+            expression::Value::String(string) => expression::Value::String(string.trim().into()),
+            _ => panic!("trim expects a string as it's parameter"),
+        }
     }
 }

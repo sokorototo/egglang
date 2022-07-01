@@ -19,7 +19,7 @@ pub fn evaluate<'a>(
             if let Expression::Word { name } = operator.as_ref() {
                 let application = special_forms
                     .get(name.as_ref())
-                    .expect("Undefined operator!");
+                    .expect(format!("Undefined special form: {}", name).as_ref());
 
                 application.evaluate(operands, scope, special_forms)
             } else {

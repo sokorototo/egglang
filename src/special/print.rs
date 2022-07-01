@@ -39,9 +39,9 @@ impl<'a> SpecialForm<'a> for Print {
     ) -> expression::Value {
         for arg in args {
             match evaluate(arg, scope, special_forms) {
-                expression::Value::Number(num) => print!("{num}"),
-                expression::Value::String(string) => print!("{string}"),
-                expression::Value::Nil => print!("nil"),
+                expression::Value::Number(num) => print!("{num} "),
+                expression::Value::String(string) => print!("{string} "),
+                expression::Value::Nil => print!("nil "),
             }
         }
 

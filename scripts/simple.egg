@@ -8,7 +8,7 @@ do (
 		equals(typeof(x), NUMBER),
 		if (
 			greater_than(x, 10),
-			print_line("x is a number \t and is greater than 10"),
+			print_line("x is a number and is greater than 10"),
 			print_line("x is a number, but is not greater than 10")
 		),
 		panic("x is not a number")

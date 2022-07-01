@@ -25,7 +25,7 @@ fn main() {
             // String
             regex::Regex::new("^\"([^\"]*)\"").unwrap(),
             // Number
-            regex::Regex::new(r"^\d+\b").unwrap(),
+            regex::Regex::new(r"^(\+|-)?\d+\b").unwrap(),
             // Word
             regex::Regex::new(r#"^[^\s\(\),#"]+"#).unwrap(),
             // Comment
@@ -41,6 +41,6 @@ fn main() {
     let result = evaluator::evaluate(&expr, &mut scope, &special_forms);
     let finish = start.elapsed();
 
-    println!("{:?}", finish);
-    println!("\n ====== \nResult of evaluation{result:?} ");
+    println!("\n\nExecution took: {:?}", finish);
+    println!("Result of evaluation: {result:?} ");
 }

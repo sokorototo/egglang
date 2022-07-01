@@ -6,6 +6,7 @@ mod arithmetic;
 mod boolean;
 mod comparison;
 mod control_flow;
+mod convert;
 mod memory;
 mod print;
 mod stringtools;
@@ -65,6 +66,10 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("string_concat", Box::new(stringtools::Concat));
     map.insert("string_to_upper", Box::new(stringtools::ToUpper));
     map.insert("string_to_lower", Box::new(stringtools::ToLower));
+    map.insert("string_trim", Box::new(stringtools::Trim));
 
+    // Conversion forms
+    map.insert("str", Box::new(convert::ToString));
+    map.insert("num", Box::new(convert::ToNumber));
     map
 }
