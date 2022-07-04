@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expression {
     Value {
         value: Value,

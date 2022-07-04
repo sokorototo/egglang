@@ -1,3 +1,4 @@
+pub mod logos_parser;
 use crate::expression::{Expression, Value};
 
 // Parse a string into an expression

@@ -167,9 +167,9 @@ impl<'a> super::SpecialForm<'a> for TypeOf {
         let value = evaluate(&args[0], scope, special_forms);
 
         match value {
-            Value::Number(_) => Value::String("__number".into()),
-            Value::String(_) => Value::String("__string".into()),
-            Value::Nil => Value::String("__nil".into()),
+            Value::Number(_) => Value::String("__NUMBER".into()),
+            Value::String(_) => Value::String("__STRING".into()),
+            Value::Nil => Value::String("__NIL".into()),
         }
     }
 }

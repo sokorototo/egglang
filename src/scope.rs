@@ -9,8 +9,8 @@ pub fn build_default_scope() -> HashMap<String, Value> {
     map.insert("false".into(), false.into());
 
     // Globals identifying type
-    map.insert("NUMBER".into(), Value::String("__number".into()));
-    map.insert("STRING".into(), Value::String("__string".into()));
+    map.insert("NUMBER".into(), Value::String("__NUMBER".into()));
+    map.insert("STRING".into(), Value::String("__STRING".into()));
 
     map
 }
