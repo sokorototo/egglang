@@ -5,7 +5,7 @@ use crate::{
 };
 use std::collections::HashMap;
 
-// Block evaluator
+// Evaluates all expressions defined within it's operands
 pub struct Do;
 
 impl<'a> SpecialForm<'a> for Do {

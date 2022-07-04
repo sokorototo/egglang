@@ -24,7 +24,11 @@ fn main() {
     let mut scope = scope::build_default_scope();
     let special_forms = special::build_special_forms();
 
-    let result = evaluator::evaluate(&exprs[0], &mut scope, &special_forms);
+    let result = exprs
+        .iter()
+        .map(|expr| evaluator::evaluate(expr, &mut scope, &special_forms))
+        .last()
+        .unwrap_or(expression::Value::Nil);
 
     println!("Result of evaluation: {result:?} ");
 }

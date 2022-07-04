@@ -20,6 +20,7 @@ pub trait SpecialForm<'a> {
     ) -> Value;
 }
 
+// My Egg implementation's standard library
 pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a>>> {
     let mut map: HashMap<&'static str, Box<dyn SpecialForm<'a>>> = HashMap::new();
 
@@ -74,3 +75,4 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("num", Box::new(convert::ToNumber));
     map
 }
+
