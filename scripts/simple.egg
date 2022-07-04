@@ -1,7 +1,15 @@
-do (
-	# Variable definitions
-	define("x", 11),
-	define(res, 20),
+do(
+	# Define some variables
+	define(x, 11)
+	define(res, "20")
+
+	# Variable inspection and manipulation
+	define(trash, "Belongs in the garbage")
+	delete(trash)
+	assert(exists(res), "How can 'res' not exist literally after being defined 2s")
+
+	# Variables cannot be redecalerd, only mutated
+	mutate(res, 0),
 
 	# Basic conditional
 	if (
@@ -14,22 +22,32 @@ do (
 		panic("x is not a number")
 	),
 
-	# Demonstration of repeat
-	mutate(res, 0),
+	# Expressions as values
+	print_line("")
+	mutate(res, if(equals(x, 10), "10", "20"))
+	print_line(string_concat("RES=", res))
 
-	# Print 0-10
+	# Print numbers from zero to ten
+	print_line("")
 	define(i, 0),
 	repeat(10, do(
 		print(i),
 		mutate(i, add(i, 1)),
 	)),
 
-	# Demonstration of println
-	print_line(typeof (x)),
-	print_line(res),
-	print("I have nil knowledge indeed"),
+	# Simple print statement
+	print_line("")
+	print_line("Hello, grab a cup of tea or a beer if that's more your thing")
 
-	# Memory manipulation
-	delete(res),
-	print_line(exists(res)),
+	# Demonstration of println
+	print_line("")
+	print_line(res)
+	print_line("I have nil knowledge indeed")
+
+	# Variable inspection and manipulation
+	delete(res)
+	assert(not(exists(res)), "'res' should not exist here")
+
+	# A value is always left as the script result
+	x
 )

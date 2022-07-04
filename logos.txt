@@ -1,0 +1,441 @@
+Operation {
+    operator: Word {
+        name: "do",
+    },
+    operands: [
+        Operation {
+            operator: Word {
+                name: "define",
+            },
+            operands: [
+                Word {
+                    name: "x",
+                },
+                Value {
+                    value: Number(
+                        11,
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "define",
+            },
+            operands: [
+                Word {
+                    name: "res",
+                },
+                Value {
+                    value: String(
+                        "20",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "define",
+            },
+            operands: [
+                Word {
+                    name: "trash",
+                },
+                Value {
+                    value: String(
+                        "Belongs in the garbage",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "delete",
+            },
+            operands: [
+                Word {
+                    name: "trash",
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "assert",
+            },
+            operands: [
+                Operation {
+                    operator: Word {
+                        name: "exists",
+                    },
+                    operands: [
+                        Word {
+                            name: "res",
+                        },
+                    ],
+                },
+                Value {
+                    value: String(
+                        "How can 'res' not exist literally after being defined 2s",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "mutate",
+            },
+            operands: [
+                Word {
+                    name: "res",
+                },
+                Value {
+                    value: Number(
+                        0,
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "if",
+            },
+            operands: [
+                Operation {
+                    operator: Word {
+                        name: "equals",
+                    },
+                    operands: [
+                        Operation {
+                            operator: Word {
+                                name: "typeof",
+                            },
+                            operands: [
+                                Word {
+                                    name: "x",
+                                },
+                            ],
+                        },
+                        Word {
+                            name: "NUMBER",
+                        },
+                    ],
+                },
+                Operation {
+                    operator: Word {
+                        name: "if",
+                    },
+                    operands: [
+                        Operation {
+                            operator: Word {
+                                name: "greater_than",
+                            },
+                            operands: [
+                                Word {
+                                    name: "x",
+                                },
+                                Value {
+                                    value: Number(
+                                        10,
+                                    ),
+                                },
+                            ],
+                        },
+                        Operation {
+                            operator: Word {
+                                name: "print_line",
+                            },
+                            operands: [
+                                Value {
+                                    value: String(
+                                        "x is a number and is greater than 10",
+                                    ),
+                                },
+                            ],
+                        },
+                        Operation {
+                            operator: Word {
+                                name: "print_line",
+                            },
+                            operands: [
+                                Value {
+                                    value: String(
+                                        "x is a number, but is not greater than 10",
+                                    ),
+                                },
+                            ],
+                        },
+                    ],
+                },
+                Operation {
+                    operator: Word {
+                        name: "panic",
+                    },
+                    operands: [
+                        Value {
+                            value: String(
+                                "x is not a number",
+                            ),
+                        },
+                    ],
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Value {
+                    value: String(
+                        "",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "mutate",
+            },
+            operands: [
+                Word {
+                    name: "res",
+                },
+                Operation {
+                    operator: Word {
+                        name: "if",
+                    },
+                    operands: [
+                        Operation {
+                            operator: Word {
+                                name: "equals",
+                            },
+                            operands: [
+                                Word {
+                                    name: "x",
+                                },
+                                Value {
+                                    value: Number(
+                                        10,
+                                    ),
+                                },
+                            ],
+                        },
+                        Value {
+                            value: String(
+                                "10",
+                            ),
+                        },
+                        Value {
+                            value: String(
+                                "20",
+                            ),
+                        },
+                    ],
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Operation {
+                    operator: Word {
+                        name: "string_concat",
+                    },
+                    operands: [
+                        Value {
+                            value: String(
+                                "RES=",
+                            ),
+                        },
+                        Word {
+                            name: "res",
+                        },
+                    ],
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Value {
+                    value: String(
+                        "",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "define",
+            },
+            operands: [
+                Word {
+                    name: "i",
+                },
+                Value {
+                    value: Number(
+                        0,
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "repeat",
+            },
+            operands: [
+                Value {
+                    value: Number(
+                        10,
+                    ),
+                },
+                Operation {
+                    operator: Word {
+                        name: "do",
+                    },
+                    operands: [
+                        Operation {
+                            operator: Word {
+                                name: "print",
+                            },
+                            operands: [
+                                Word {
+                                    name: "i",
+                                },
+                            ],
+                        },
+                        Operation {
+                            operator: Word {
+                                name: "mutate",
+                            },
+                            operands: [
+                                Word {
+                                    name: "i",
+                                },
+                                Operation {
+                                    operator: Word {
+                                        name: "add",
+                                    },
+                                    operands: [
+                                        Word {
+                                            name: "i",
+                                        },
+                                        Value {
+                                            value: Number(
+                                                1,
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Value {
+                    value: String(
+                        "",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Value {
+                    value: String(
+                        "Hello, grab a cup of tea or a beer if that's more your thing",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Value {
+                    value: String(
+                        "",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Word {
+                    name: "res",
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "print_line",
+            },
+            operands: [
+                Value {
+                    value: String(
+                        "I have nil knowledge indeed",
+                    ),
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "delete",
+            },
+            operands: [
+                Word {
+                    name: "res",
+                },
+            ],
+        },
+        Operation {
+            operator: Word {
+                name: "assert",
+            },
+            operands: [
+                Operation {
+                    operator: Word {
+                        name: "not",
+                    },
+                    operands: [
+                        Operation {
+                            operator: Word {
+                                name: "exists",
+                            },
+                            operands: [
+                                Word {
+                                    name: "res",
+                                },
+                            ],
+                        },
+                    ],
+                },
+                Value {
+                    value: String(
+                        "'res' should not exist here",
+                    ),
+                },
+            ],
+        },
+        Word {
+            name: "x",
+        },
+    ],
+}

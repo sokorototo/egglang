@@ -49,5 +49,5 @@ do(
 	print_line(string_concat("reversed nice variable is: ", reversed_nice)),
 
 	# Get the type of a strin
-	print_line(equals(STRING, typeof (nice))),
+	assert(equals(STRING, typeof (nice)), "Somehow 'nice' is not a string?"),
 )

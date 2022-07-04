@@ -41,6 +41,7 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("repeat", Box::new(control_flow::Repeat));
     map.insert("sleep", Box::new(control_flow::Sleep));
     map.insert("panic", Box::new(control_flow::Panic));
+    map.insert("assert", Box::new(control_flow::Assert));
 
     // Comparison
     map.insert("equals", Box::new(comparison::Equals));

@@ -65,7 +65,7 @@ impl<'a> super::SpecialForm<'a> for NOT {
         let value = evaluate(&args[0], scope, special_forms);
 
         match value {
-            Value::Number(a) => (a != 0).into(),
+            Value::Number(a) => (a == 0).into(),
             _ => panic!("please provide numbers as arguments for boolean operations"),
         }
     }

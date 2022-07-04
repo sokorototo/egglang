@@ -186,3 +186,36 @@ impl<'a> SpecialForm<'a> for Panic {
         }
     }
 }
+
+pub struct Assert;
+
+impl<'a> SpecialForm<'a> for Assert {
+    fn evaluate(
+        &self,
+        args: &'a [expression::Expression],
+        scope: &mut HashMap<String, Value>,
+        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+    ) -> Value {
+        // Assert correct length of arguments
+        assert_eq!(args.len(), 2);
+
+        // Loop
+        let assertion = evaluate(&args[0], scope, special_forms);
+        match assertion {
+            Value::Number(value) => {
+                if value == 0 {
+                    let error_messsage = evaluate(&args[1], scope, special_forms);
+
+                    match error_messsage {
+                        Value::Number(i) => panic!("Assertion failed: Error Code given = [{i}]"),
+                        Value::String(msg) => panic!("{msg}"),
+                        Value::Nil => panic!("Assertion Failed! No residual value provided"),
+                    }
+                }
+            }
+            _ => panic!("-assert- takes a boolean (basically an int that equals zero) as it's first argument"),
+        };
+
+        Value::Nil
+    }
+}
