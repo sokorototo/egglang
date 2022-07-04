@@ -1,6 +1,6 @@
 do (
 	# Variable definitions
-	define(x, 11),
+	define("x", 11),
 	define(res, 20),
 
 	# Basic conditional
