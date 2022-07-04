@@ -9,7 +9,7 @@ pub enum Expression {
         name: Rc<str>,
     },
     Operation {
-        operator: Box<Expression>,
+        name: Rc<str>,
         operands: Vec<Expression>,
     },
 }
@@ -18,7 +18,7 @@ pub enum Expression {
 pub enum Value {
     Number(isize),
     String(Rc<str>),
-    Nil
+    Nil,
 }
 
 impl From<bool> for Value {

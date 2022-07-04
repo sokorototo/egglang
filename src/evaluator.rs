@@ -15,16 +15,16 @@ pub fn evaluate<'a>(
             .get(name.as_ref())
             .unwrap_or_else(|| panic!("Undefined binding: {name}"))
             .clone(),
-        Expression::Operation { operator, operands } => {
-            if let Expression::Word { name } = operator.as_ref() {
-                let application = special_forms
-                    .get(name.as_ref())
-                    .expect(format!("Undefined special form: {}", name).as_ref());
+        Expression::Operation { name, operands } => {
+            // Get operation's name
+            let name = name.as_ref();
 
-                application.evaluate(operands, scope, special_forms)
-            } else {
-                panic!("Can only call operators based on operator")
-            }
+            // Fetch operation
+            let application = special_forms
+                .get(name)
+                .expect(format!("Undefined special form: {}", name).as_ref());
+
+            application.evaluate(operands, scope, special_forms)
         }
     }
 }

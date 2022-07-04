@@ -84,7 +84,10 @@ fn parse_tokens(tokens: &[(Token, String)]) -> Vec<Expression> {
             // Get name of operation
             let name = expressions.pop().expect("Unbalanced brackets");
             let operation = Expression::Operation {
-                operator: Box::new(name),
+                name: match name {
+                    Expression::Word { name } => name.clone(),
+                    _ => panic!("cannot invoke non-word types"),
+                },
                 operands: sub_expressions,
             };
 
