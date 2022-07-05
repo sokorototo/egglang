@@ -1,53 +1,50 @@
-do(
-	define(nice, "get rickrolled NOOB"),
-	print_line(string_concat("The nice variable is: ", nice)),
+define(nice, "get rickrolled NOOB")
+print_line(string_concat("The nice variable is: ", nice))
 
-	# Prints length of given variable
-	define(nice_length, string_length(nice)),
-	print_line(string_concat("nice variable has a length of: ", str(nice_length))),
+# Prints length of given variable
+define(nice_length, string_length(nice))
+print_line(string_concat("nice variable has a length of: ", str(nice_length)))
 
-	# Prints the first character of given variable
-	define(first_character, string_slice(nice, 0, 1)),
-	print_line(string_concat("first character of nice variable is: ", first_character)),
+# Prints the first character of given variable
+define(first_character, string_slice(nice, 0, 1))
+print_line(string_concat("first character of nice variable is: ", first_character))
 
-	# Prints the last character of given variable, negative indexing starts from the end of the string
-	define(last_character, string_slice(nice, -1, 1)),
-	print_line(string_concat("last character of nice variable is: ", last_character)),
+# Prints the last character of given variable, negative indexing starts from the end of the string
+define(last_character, string_slice(nice, -1, 1))
+print_line(string_concat("last character of nice variable is: ", last_character))
 
-	# Prints the first 3 characters of given variable
-	define(first_3_characters, string_slice(nice, 0, 3)),
-	print_line(string_concat("first 3 characters of nice variable is: ", first_3_characters)),
+# Prints the first 3 characters of given variable
+define(first_3_characters, string_slice(nice, 0, 3))
+print_line(string_concat("first 3 characters of nice variable is: ", first_3_characters))
 
-	# Prints the last 4 characters of given variable, negative indexing starts from the end of the string
-	define(last_4_characters, string_slice(nice, -4, 4)),
-	print_line(string_concat("last 4 characters of nice variable is: ", last_4_characters)),
+# Prints the last 4 characters of given variable, negative indexing starts from the end of the string
+define(last_4_characters, string_slice(nice, -4, 4))
+print_line(string_concat("last 4 characters of nice variable is: ", last_4_characters))
 
-	# Convert the given variable to uppercase
-	define(upper_case, string_to_upper(nice)),
-	print_line(string_concat("nice variable in upper case is: ", upper_case)),
+# Convert the given variable to uppercase
+define(upper_case, string_to_upper(nice))
+print_line(string_concat("nice variable in upper case is: ", upper_case))
 
-	# Convert the given variable to lowercase
-	define(lower_case, string_to_lower(nice)),
-	print_line(string_concat("nice variable in lower case is: ", lower_case)),
+# Convert the given variable to lowercase
+define(lower_case, string_to_lower(nice))
+print_line(string_concat("nice variable in lower case is: ", lower_case))
 
-	# Use a loop to reverse the string and concatenate separated using commas
-	define(reversed_nice, ""),
-	define(i, subtract(string_length(nice), 1)),
-
-	while(
-		or(greater_than(i, 0), equals(i, 0)),
-		do(
-			set(
-				reversed_nice,
-				string_concat( reversed_nice, string_slice(nice, i, 1) )
-			),
-			set(i, subtract(i, 1))
-		),
-	),
-
-	# Prints the reversed string
-	print_line(string_concat("reversed nice variable is: ", reversed_nice)),
-
-	# Get the type of a strin
-	assert(equals(STRING, typeof (nice)), "Somehow 'nice' is not a string?"),
+# Use a loop to reverse the string and concatenate separated using commas
+define(reversed_nice, "")
+define(i, subtract(string_length(nice), 1))
+while(
+	or(greater_than(i, 0), equals(i, 0))
+	do(
+		set(
+			reversed_nice
+			string_concat( reversed_nice, string_slice(nice, i, 1) )
+		)
+		set(i, subtract(i, 1))
+	)
 )
+
+# Prints the reversed string
+print_line(string_concat("reversed nice variable is: ", reversed_nice))
+
+# Get the type of a strin
+assert(equals(STRING, typeof (nice)), "Somehow 'nice' is not a string?")

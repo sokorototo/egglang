@@ -1,5 +1,3 @@
-use std::fs::read_to_string;
-
 mod evaluator;
 mod expression;
 mod operators;
@@ -9,10 +7,10 @@ mod scope;
 fn main() {
     // Read data
     let code = {
-        let args = std::env::args().collect::<Vec<_>>();
-        let path = args
-            .get(1)
-            .expect("Please provide a path to read code from");
+        use std::fs::read_to_string;
+
+        let args = std::env::args().into_iter().skip(1).next();
+        let path = args.expect("Please provide a path to read code from");
 
         read_to_string(path).unwrap()
     };
@@ -24,11 +22,7 @@ fn main() {
     let mut scope = scope::build_default_scope();
     let builtins = operators::builtins();
 
-    let result = exprs
-        .iter()
-        .map(|expr| evaluator::evaluate(expr, &mut scope, &builtins))
-        .last()
-        .unwrap_or(expression::Value::Nil);
-
-    println!("Result of evaluation: {result:?} ");
+    for expr in exprs {
+        evaluator::evaluate(&expr, &mut scope, &builtins);
+    }
 }
