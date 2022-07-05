@@ -5,7 +5,7 @@ do(
 
 	# You can't redefine a variable
 	# -- CAUSES ERROR -- define(toilet, "STINKS")
-	# You can only use 'mutate' to change a variable's value
-	mutate(toilet, "STINKS A LOT MORE"),
+	# You can only use 'set' to change a variable's value
+	set(toilet, "STINKS A LOT MORE"),
 	print(toilet),
 )

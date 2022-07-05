@@ -8,8 +8,8 @@ do(
 	delete(trash)
 	assert(exists(res), "How can 'res' not exist literally after being defined 2s")
 
-	# Variables cannot be redecalerd, only mutated
-	mutate(res, 0),
+	# Variables cannot be redecalerd, only mutates
+	set(res, 0),
 
 	# Basic conditional
 	if (
@@ -24,7 +24,7 @@ do(
 
 	# Expressions as values
 	print_line("")
-	mutate(res, if(equals(x, 10), "10", "20"))
+	set(res, if(equals(x, 10), "10", "20"))
 	print_line(string_concat("RES=", res))
 
 	# Print numbers from zero to ten
@@ -32,7 +32,7 @@ do(
 	define(i, 0),
 	repeat(10, do(
 		print(i),
-		mutate(i, add(i, 1)),
+		set(i, add(i, 1)),
 	)),
 
 	# Simple print statement

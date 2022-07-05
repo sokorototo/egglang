@@ -53,9 +53,9 @@ impl<'a> SpecialForm<'a> for Define {
 }
 
 /// Mutates an existing variable
-pub struct Mutate;
+pub struct Set;
 
-impl<'a> SpecialForm<'a> for Mutate {
+impl<'a> SpecialForm<'a> for Set {
     fn evaluate(
         &self,
         args: &'a [expression::Expression],

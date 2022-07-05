@@ -37,11 +37,11 @@ do(
 	while(
 		or(greater_than(i, 0), equals(i, 0)),
 		do(
-			mutate(
+			set(
 				reversed_nice,
 				string_concat( reversed_nice, string_slice(nice, i, 1) )
 			),
-			mutate(i, subtract(i, 1))
+			set(i, subtract(i, 1))
 		),
 	),
 
