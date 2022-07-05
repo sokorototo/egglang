@@ -11,18 +11,18 @@ mod memory;
 mod print;
 mod stringtools;
 
-pub trait SpecialForm<'a> {
+pub trait Operator {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value;
 }
 
 // My Egg implementation's standard library
-pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a>>> {
-    let mut map: HashMap<&'static str, Box<dyn SpecialForm<'a>>> = HashMap::new();
+pub fn builtins<'a>() -> HashMap<&'static str, Box<dyn Operator>> {
+    let mut map: HashMap<&'static str, Box<dyn Operator>> = HashMap::new();
 
     // Insert language statements
     map.insert("define", Box::new(memory::Define));
@@ -75,4 +75,3 @@ pub fn build_special_forms<'a>() -> HashMap<&'static str, Box<dyn SpecialForm<'a
     map.insert("num", Box::new(convert::ToNumber));
     map
 }
-

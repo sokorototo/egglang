@@ -1,7 +1,8 @@
 do(
 	# Define some variables
-	define(x, 11)
+	define(x, 0)
 	define(res, "20")
+	set(x, multiply(12 12 12))
 
 	# Variable inspection and manipulation
 	define(trash, "Belongs in the garbage")

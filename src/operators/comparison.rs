@@ -1,4 +1,4 @@
-use super::SpecialForm;
+use super::Operator;
 use crate::{
     evaluator::evaluate,
     expression::{Expression, Value},
@@ -8,17 +8,17 @@ use std::collections::HashMap;
 // Checks for equality
 pub struct Equals;
 
-impl<'a> super::SpecialForm<'a> for Equals {
+impl super::Operator for Equals {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
+        let val1 = evaluate(&args[0], scope, builtins);
+        let val2 = evaluate(&args[1], scope, builtins);
 
         (val1 == val2).into()
     }
@@ -27,17 +27,17 @@ impl<'a> super::SpecialForm<'a> for Equals {
 // Checks for inequality
 pub struct NotEquals;
 
-impl<'a> super::SpecialForm<'a> for NotEquals {
+impl super::Operator for NotEquals {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
+        let val1 = evaluate(&args[0], scope, builtins);
+        let val2 = evaluate(&args[1], scope, builtins);
 
         (val1 != val2).into()
     }
@@ -46,17 +46,17 @@ impl<'a> super::SpecialForm<'a> for NotEquals {
 // Greater than
 pub struct GreaterThan;
 
-impl<'a> super::SpecialForm<'a> for GreaterThan {
+impl super::Operator for GreaterThan {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
+        let val1 = evaluate(&args[0], scope, builtins);
+        let val2 = evaluate(&args[1], scope, builtins);
 
         match (val1, val2) {
             (Value::Number(a), Value::Number(b)) => (a > b).into(),
@@ -68,17 +68,17 @@ impl<'a> super::SpecialForm<'a> for GreaterThan {
 // Greater than
 pub struct LessThan;
 
-impl<'a> super::SpecialForm<'a> for LessThan {
+impl super::Operator for LessThan {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
+        let val1 = evaluate(&args[0], scope, builtins);
+        let val2 = evaluate(&args[1], scope, builtins);
 
         match (val1, val2) {
             (Value::Number(a), Value::Number(b)) => (a < b).into(),
@@ -90,16 +90,16 @@ impl<'a> super::SpecialForm<'a> for LessThan {
 // Write a form that checks if a value is nil, returns a boolean if true
 pub struct IsNil;
 
-impl<'a> super::SpecialForm<'a> for IsNil {
+impl super::Operator for IsNil {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         assert_eq!(args.len(), 1);
 
-        match evaluate(&args[0], scope, special_forms) {
+        match evaluate(&args[0], scope, builtins) {
             Value::Nil => true.into(),
             _ => false.into(),
         }

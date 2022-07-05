@@ -22,7 +22,7 @@
 			"args": [
 				"scripts/simple.egg"
 			],
-			"cwd": "${workspaceFolder}"
+			"cwd": "${workspaceFolder}",
 		},
 		{
 			"type": "lldb",

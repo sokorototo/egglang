@@ -1,13 +1,13 @@
 use crate::{
     expression::{Expression, Value},
-    special::SpecialForm,
+    operators::Operator,
 };
 use std::collections::HashMap;
 
-pub fn evaluate<'a>(
-    expr: &'a Expression,
+pub fn evaluate(
+    expr: &Expression,
     scope: &mut HashMap<String, Value>,
-    special_forms: &HashMap<&'a str, Box<dyn SpecialForm<'a> + 'a>>,
+    builtins: &HashMap<&str, Box<dyn Operator>>,
 ) -> Value {
     match expr {
         Expression::Value { value } => value.clone(),
@@ -20,11 +20,11 @@ pub fn evaluate<'a>(
             let name = name.as_ref();
 
             // Fetch operation
-            let application = special_forms
+            let operator = builtins
                 .get(name)
                 .expect(format!("Undefined special form: {}", name).as_ref());
 
-            application.evaluate(operands, scope, special_forms)
+            operator.evaluate(operands, scope, builtins)
         }
     }
 }

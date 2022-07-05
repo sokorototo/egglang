@@ -2,9 +2,9 @@ use std::fs::read_to_string;
 
 mod evaluator;
 mod expression;
+mod operators;
 mod parser;
 mod scope;
-mod special;
 
 fn main() {
     // Read data
@@ -22,11 +22,11 @@ fn main() {
 
     // Define runtime variables
     let mut scope = scope::build_default_scope();
-    let special_forms = special::build_special_forms();
+    let builtins = operators::builtins();
 
     let result = exprs
         .iter()
-        .map(|expr| evaluator::evaluate(expr, &mut scope, &special_forms))
+        .map(|expr| evaluator::evaluate(expr, &mut scope, &builtins))
         .last()
         .unwrap_or(expression::Value::Nil);
 

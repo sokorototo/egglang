@@ -1,4 +1,4 @@
-use super::SpecialForm;
+use super::Operator;
 use crate::{
     evaluator::evaluate,
     expression::{Expression, Value},
@@ -8,15 +8,15 @@ use std::collections::HashMap;
 // Basic add operation
 pub struct Add;
 
-impl<'a> super::SpecialForm<'a> for Add {
+impl Operator for Add {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         args.iter()
-            .map(|arg| evaluate(arg, scope, special_forms))
+            .map(|arg| evaluate(arg, scope, builtins))
             .reduce(|a, b| match (a, b) {
                 (Value::Number(a), Value::Number(b)) => Value::Number(a + b),
                 _ => panic!("please provide numbers as arguments for mathematical operations"),
@@ -28,15 +28,15 @@ impl<'a> super::SpecialForm<'a> for Add {
 // Basic multiply operation
 pub struct Multiply;
 
-impl<'a> super::SpecialForm<'a> for Multiply {
+impl Operator for Multiply {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         args.iter()
-            .map(|arg| evaluate(arg, scope, special_forms))
+            .map(|arg| evaluate(arg, scope, builtins))
             .reduce(|a, b| match (a, b) {
                 (Value::Number(a), Value::Number(b)) => Value::Number(a * b),
                 _ => panic!("please provide numbers as arguments for mathematical operations"),
@@ -48,17 +48,17 @@ impl<'a> super::SpecialForm<'a> for Multiply {
 // Basic minus operation
 pub struct Subtract;
 
-impl<'a> super::SpecialForm<'a> for Subtract {
+impl Operator for Subtract {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
+        let val1 = evaluate(&args[0], scope, builtins);
+        let val2 = evaluate(&args[1], scope, builtins);
 
         match (val1, val2) {
             (Value::Number(a), Value::Number(b)) => Value::Number(a - b),
@@ -70,17 +70,17 @@ impl<'a> super::SpecialForm<'a> for Subtract {
 // Basic divide operation
 pub struct Divide;
 
-impl<'a> super::SpecialForm<'a> for Divide {
+impl Operator for Divide {
     fn evaluate(
         &self,
-        args: &'a [Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
-        special_forms: &HashMap<&'a str, Box<(dyn SpecialForm<'a> + 'a)>>,
+        builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> Value {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, special_forms);
-        let val2 = evaluate(&args[1], scope, special_forms);
+        let val1 = evaluate(&args[0], scope, builtins);
+        let val2 = evaluate(&args[1], scope, builtins);
 
         match (val1, val2) {
             (Value::Number(a), Value::Number(b)) => Value::Number(a / b),
