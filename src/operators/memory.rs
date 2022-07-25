@@ -123,6 +123,8 @@ impl Operator for Set {
 
                     if let Some(val) = scope.get_mut(name.as_ref()) {
                         *val = value.clone()
+                    } else {
+                        panic!("Attempting to set a variable that does not exist: {name}")
                     };
 
                     old_value = value;

@@ -74,9 +74,10 @@ fn parse_tokens(tokens: &[(Token, String)]) -> Vec<Expression> {
             // Collect operation arguments
             let mut sub_expressions = Vec::with_capacity(count);
 
-            for i in start..end {
-                sub_expressions.push(expressions.get(i).expect("Unbalanced braces").clone());
-            }
+            (start..end).for_each(|i| {
+                let expression = expressions.get(i).expect("Unbalanced braces");
+                sub_expressions.push(expression.clone());
+            });
 
             // Truncate original expressions
             expressions.truncate(expressions.len() - count);
@@ -96,7 +97,7 @@ fn parse_tokens(tokens: &[(Token, String)]) -> Vec<Expression> {
         }
 
         Token::UnknownToken => panic!("Experienced unknown token in token stream: {data}"),
-        _ => unreachable!("Tokens are automatically filtered out by logos"),
+        _ => unreachable!("Other tokens are automatically filtered out by logos"),
     });
 
     expressions
