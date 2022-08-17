@@ -1,8 +1,8 @@
-mod evaluator;
-mod expression;
-mod operators;
-mod parser;
-mod scope;
+pub mod evaluator;
+pub mod expression;
+pub mod operators;
+pub mod parser;
+pub mod scope;
 
 fn time<T>(description: &str, f: impl FnOnce() -> T) -> T {
     let timer = std::time::Instant::now();
@@ -15,25 +15,26 @@ fn time<T>(description: &str, f: impl FnOnce() -> T) -> T {
 
 fn main() {
     // Read data
-    let code = {
+    let (code, path) = {
         use std::fs::read_to_string;
 
         let args = std::env::args().into_iter().skip(1).next();
         let path = args.expect("Please provide a path to read code from");
 
-        read_to_string(path).unwrap()
+        (read_to_string(&path).unwrap(), path)
     };
 
     // Parse the expression
-    // A -> 14153535ns
-    // B -> 14153535ns
-    let exprs = time("Call to parser::parse(---)", || parser::parse(code));
+    let exprs = parser::parse(code);
 
     // Define runtime variables
-    let mut scope = scope::build_default_scope();
+    let mut scope = scope::new();
     let builtins = operators::builtins();
 
-    for expr in exprs.as_slice() {
-        evaluator::evaluate(expr, &mut scope, &builtins);
-    }
+    time(format!("{path}").as_str(), || {
+        exprs
+            .iter()
+            .map(|expr| evaluator::evaluate(expr, &mut scope, &builtins))
+            .for_each(drop)
+    });
 }

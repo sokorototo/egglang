@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 use crate::expression::Value;
 
-pub fn build_default_scope() -> HashMap<String, Value> {
+/// Build a new scope containing values required by the runtime.
+/// Insert global variables to this scope.
+pub fn new() -> HashMap<String, Value> {
     let mut map = HashMap::new();
 
     map.insert("true".into(), true.into());

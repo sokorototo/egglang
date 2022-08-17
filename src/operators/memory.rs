@@ -8,48 +8,6 @@ use std::collections::HashMap;
 /// Defines a new variable
 pub struct Define;
 
-#[allow(unused)]
-fn revaluate<'a>(
-    args: &[expression::Expression],
-    scope: &mut HashMap<String, Value>,
-    builtins: &HashMap<&str, Box<dyn Operator>>,
-) -> expression::Value {
-    assert_eq!(args.len(), 2);
-    let name = &args[0];
-
-    match name {
-        expression::Expression::Word { name } => {
-            let value = evaluate(&args[1], scope, builtins);
-
-            if scope.contains_key(name.as_ref()) {
-                panic!("Attempting to re-declare a variable: {name}")
-            } else {
-                // THIS IS BASICALLY A CLONE
-                scope.insert(name.to_string(), value.clone());
-            }
-
-            value
-        }
-        expression::Expression::Value { value } => match value {
-            expression::Value::String(name) => {
-                let value = evaluate(&args[1], scope, builtins);
-
-                if scope.contains_key(name.as_ref()) {
-                    panic!("Attempting to re-declare a variable: {name}")
-                } else {
-                    scope.insert(name.to_string(), value.clone());
-                }
-
-                value
-            }
-            _ => panic!("Numbers cannot be used as variable names as the would conflict with normal numbers")
-        },
-        _ => {
-            panic!("Applications cannot be used as variable names");
-        }
-    }
-}
-
 impl Operator for Define {
     fn evaluate(
         &self,

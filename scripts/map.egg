@@ -1,0 +1,37 @@
+# Define a new map, this returns a map tag
+# The map tag is used to identify the map when we want to perfom actions on it
+# Here the tag is just String("map")
+define(class_mates, new_map("class_mates"))
+
+# Check if a map exists
+assert(exists_map(class_mates), "Map should exist here")
+
+# Insertion values into the map
+map_insert(class_mates, "Steve", "Goofy Ahh Block Puncher")
+map_insert(class_mates, "Alex", "Who even?")
+map_insert(class_mates, "Newton Toto", "Me, :P")
+
+# Get values from the map
+define(steve, map_get(class_mates, "Steve"))
+assert(equals(steve, "Goofy Ahh Block Puncher"), "Steve should be Goofy Ahh Block Puncher")
+print_line(string_concat("Steve: ", steve))
+
+# Check if a map has a value
+assert(map_has(class_mates, "Steve"), "Map should have Steve")
+
+# Check the size of the map
+assert(equals(map_size(class_mates), 3), "Map size should be 3")
+
+# Remove a value from the map
+map_remove(class_mates, "Steve")
+assert(equals(map_size(class_mates), 2), "Map size should be 2, one less than before")
+
+# Use numbers as keys
+map_insert(class_mates, 1, "Look at me, I'm just a statistic")
+
+# Log a Map to the console
+print_map(class_mates)
+
+# You can delete a map using delete_map
+delete_map(class_mates)
+assert(not(exists_map(class_mates)), "Map should not exist here")

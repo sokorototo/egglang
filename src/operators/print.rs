@@ -41,7 +41,7 @@ impl Operator for Print {
             match evaluate(arg, scope, builtins) {
                 expression::Value::Number(num) => print!("{num} "),
                 expression::Value::String(string) => print!("{string} "),
-                expression::Value::Nil => print!("nil "),
+                expression::Value::Nil => print!("nil"),
             }
         }
 

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub enum Expression {
     Value {
         value: Value,
@@ -14,11 +14,21 @@ pub enum Expression {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Value {
+    Nil,
     Number(isize),
     String(Rc<str>),
-    Nil,
+}
+
+impl std::fmt::Debug for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Nil => write!(f, "nil"),
+            Self::Number(n) => write!(f, "{n}"),
+            Self::String(s) => write!(f, "\"{s}\""),
+        }
+    }
 }
 
 impl From<bool> for Value {

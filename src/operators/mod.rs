@@ -7,6 +7,7 @@ mod boolean;
 mod comparison;
 mod control_flow;
 mod convert;
+mod map;
 mod memory;
 mod print;
 mod stringtools;
@@ -21,7 +22,7 @@ pub trait Operator {
 }
 
 // My Egg implementation's standard library
-pub fn builtins<'a>() -> HashMap<&'static str, Box<dyn Operator>> {
+pub fn builtins() -> HashMap<&'static str, Box<dyn Operator>> {
     let mut map: HashMap<&'static str, Box<dyn Operator>> = HashMap::new();
 
     // Insert language statements
@@ -70,8 +71,21 @@ pub fn builtins<'a>() -> HashMap<&'static str, Box<dyn Operator>> {
     map.insert("string_to_lower", Box::new(stringtools::ToLower));
     map.insert("string_trim", Box::new(stringtools::Trim));
 
-    // Conversion forms
+    // Type conversion functions
     map.insert("str", Box::new(convert::ToString));
     map.insert("num", Box::new(convert::ToNumber));
+
+    // Map (ie dictionary) functions
+    map.insert("new_map", Box::new(map::NewMap));
+    map.insert("exists_map", Box::new(map::ExistsMap));
+    map.insert("delete_map", Box::new(map::DeleteMap));
+    map.insert("print_map", Box::new(map::PrintMap));
+
+    map.insert("map_get", Box::new(map::Get));
+    map.insert("map_insert", Box::new(map::Insert));
+    map.insert("map_has", Box::new(map::Has));
+    map.insert("map_remove", Box::new(map::Remove));
+    map.insert("map_size", Box::new(map::Size));
+
     map
 }
