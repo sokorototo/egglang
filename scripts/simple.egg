@@ -9,7 +9,7 @@ delete(trash)
 assert(exists(res), "How can 'res' not exist literally after being defined 2s")
 
 # Variables cannot be redecalerd, only mutates
-set(res, 0),
+set(res, 0)
 
 # Basic conditional
 if (
@@ -27,9 +27,10 @@ print_line("")
 set(res, if(equals(x, 10), "10", "20"))
 print_line(string_concat("RES=", res))
 
-# Print numbers from zero to ten
 print_line("")
-define(i, 0),
+
+# Print numbers from zero to ten
+define(i, 0)
 repeat(10, do(
 	print(i),
 	set(i, add(i, 1)),
