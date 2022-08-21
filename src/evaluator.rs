@@ -4,11 +4,15 @@ use crate::{
 };
 use std::collections::HashMap;
 
+pub static mut EVALUATIONS: u64 = 0;
+
 pub fn evaluate(
     expr: &Expression,
     scope: &mut HashMap<String, Value>,
     builtins: &HashMap<&str, Box<dyn Operator>>,
 ) -> Value {
+    unsafe { EVALUATIONS += 1 };
+
     match expr {
         Expression::Value { value } => value.clone(),
         Expression::Word { name } => scope

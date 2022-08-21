@@ -29,6 +29,11 @@ fn main() {
             evaluator::evaluate(&expr, &mut scope, &builtins);
         }
 
-        println!("{} took {}us", path, timer.elapsed().as_micros());
+        println!(
+            "{} took {}us; Evaluations: {}",
+            path,
+            timer.elapsed().as_micros(),
+            unsafe { evaluator::EVALUATIONS }
+        );
     };
 }
