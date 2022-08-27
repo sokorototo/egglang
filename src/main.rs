@@ -24,10 +24,7 @@ fn main() {
 
     {
         let timer = std::time::Instant::now();
-
-        for expr in exprs.as_slice() {
-            evaluator::evaluate(&expr, &mut scope, &builtins);
-        }
+        exprs.iter().for_each(|expr| { evaluator::evaluate(expr, &mut scope, &builtins); });
 
         println!(
             "{} took {}us; Evaluations: {}",

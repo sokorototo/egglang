@@ -22,7 +22,8 @@ impl Operator for ToString {
         let res = evaluate(&args[0], scope, builtins);
         let value = match res {
             expression::Value::Number(number) => number.to_string(),
-            _ => panic!("to_string expects a number as it's parameter"),
+            x if matches!(x, expression::Value::String(..)) => return x,
+            _ => panic!("Cannot convert Nil to a String"),
         };
 
         expression::Value::String(value.into())
@@ -46,7 +47,8 @@ impl Operator for ToNumber {
         let res = evaluate(&args[0], scope, builtins);
         let value = match res {
             expression::Value::String(string) => string.parse::<isize>().unwrap(),
-            _ => panic!("to_number expects a string as it's parameter"),
+            x if matches!(x, expression::Value::Number(..)) => return x,
+            _ => panic!("Cannot convert Nil to a number"),
         };
 
         expression::Value::Number(value)
