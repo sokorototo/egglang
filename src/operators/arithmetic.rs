@@ -21,8 +21,7 @@ impl Operator for Add {
             .map(|d| match d {
                 Ok(Value::Number(num)) => Ok(num),
                 Ok(v) => Err(EggError::OperatorComplaint(format!(
-                    "Invalid argument: {:?}, please provide a number",
-                    v
+                    "Invalid argument: {v}, please provide a number"
                 ))),
                 Err(e) => Err(e),
             })
@@ -46,8 +45,7 @@ impl Operator for Multiply {
             .map(|d| match d {
                 Ok(Value::Number(num)) => Ok(num),
                 Ok(v) => Err(EggError::OperatorComplaint(format!(
-                    "Invalid argument: {:?}, please provide a number",
-                    v
+                    "Invalid argument: {v}, please provide a number"
                 ))),
                 Err(e) => Err(e),
             })
@@ -73,9 +71,8 @@ impl Operator for Subtract {
 
         match (val1, val2) {
             (Value::Number(a), Value::Number(b)) => Ok(Value::Number(a - b)),
-            v => Err(EggError::OperatorComplaint(format!(
-                "Invalid argument: {:?}, please provide a numbers",
-                v
+            (a, b) => Err(EggError::OperatorComplaint(format!(
+                "Invalid arguments: {a}, {b} please provide a numbers"
             ))),
         }
     }
@@ -98,9 +95,8 @@ impl Operator for Divide {
 
         match (val1, val2) {
             (Value::Number(a), Value::Number(b)) => Ok(Value::Number(a / b)),
-            v => Err(EggError::OperatorComplaint(format!(
-                "Invalid argument: {:?}, please provide a numbers",
-                v
+            (a, b) => Err(EggError::OperatorComplaint(format!(
+                "Invalid argument: {a}, {b} please provide a numbers"
             ))),
         }
     }

@@ -109,7 +109,7 @@ impl Operator for Delete {
             expression::Expression::Value { value } => match value {
                 Value::String(name) => scope.remove(name.as_ref()),
                 #[rustfmt::skip]
-                val => return Err(EggError::OperatorComplaint(format!("Cannot delete {val:?}"))),
+                val => return Err(EggError::OperatorComplaint(format!("Cannot delete {val}"))),
             },
             v => return Err(EggError::OperatorComplaint(format!("Cannot delete {v:?}"))),
         };
@@ -136,7 +136,7 @@ impl Operator for Exists {
             expression::Expression::Value { value } => match value {
                 Value::String(name) => scope.contains_key(name.as_ref()),
                 #[rustfmt::skip]
-                val => return Err(EggError::OperatorComplaint(format!( "Cannot check if {:?} exists", val ))),
+                val => return Err(EggError::OperatorComplaint(format!( "Cannot check if {val} exists" ))),
             },
             _ => {
                 return Err(EggError::OperatorComplaint(
