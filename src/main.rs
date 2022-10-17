@@ -10,7 +10,7 @@ fn main() -> errors::EggResult {
     let (code, path) = {
         use std::fs::read_to_string;
 
-        let args = std::env::args().into_iter().skip(1).next();
+        let args = std::env::args().into_iter().nth(1);
         let path = args.expect("Please provide a path to read code from");
 
         (read_to_string(&path).unwrap(), path)

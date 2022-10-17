@@ -82,11 +82,7 @@ impl Operator for Slice {
             _ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
         };
 
-        // Negative indeces start from behind
-        if start < 0 {
-            start = (base.len() as isize) + start;
-        }
-
+        (start < 0).then(|| start += base.len() as isize);
         let length = match evaluate(&args[2], scope, builtins)? {
             Value::Number(num) => num as usize,
             #[rustfmt::skip]

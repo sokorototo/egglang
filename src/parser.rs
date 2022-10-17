@@ -38,7 +38,7 @@ pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
     expressions
 }
 
-fn tokenize<'code>(code: &'code str) -> Vec<(Token, &'code str)> {
+fn tokenize(code: &str) -> Vec<(Token, &str)> {
     let mut lex = Token::lexer(code);
     let mut tokens = Vec::new();
 
@@ -70,7 +70,7 @@ fn parse_tokens(tokens: &[(Token, &str)]) -> EggResult<Vec<Expression>> {
             Token::RightBracket => {
                 let start = stack
                     .pop()
-                    .ok_or_else(|| EggError::UnbalancedBrackets(stack.len()))?;
+                    .ok_or(EggError::UnbalancedBrackets(stack.len()))?;
                 let end = exprs.len();
 
                 // Collect operation arguments
@@ -79,7 +79,7 @@ fn parse_tokens(tokens: &[(Token, &str)]) -> EggResult<Vec<Expression>> {
                 // Get name of operation
                 let name = exprs
                     .pop()
-                    .ok_or_else(|| EggError::UnbalancedBrackets(stack.len()))?;
+                    .ok_or(EggError::UnbalancedBrackets(stack.len()))?;
                 let operation = Expression::Operation {
                     name: match name {
                         Expression::Word { name } => name.clone(),

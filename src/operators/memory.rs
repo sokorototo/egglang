@@ -33,23 +33,20 @@ impl Operator for Define {
 
                 Ok(value)
             }
-            expression::Expression::Value { value } => match value {
-                Value::String(name) => {
-                    let value = evaluate(&args[1], scope, builtins)?;
+            expression::Expression::Value {
+                value: Value::String(name),
+            } => {
+                let value = evaluate(&args[1], scope, builtins)?;
 
-                    if scope.contains_key(name.as_ref()) {
-                        #[rustfmt::skip]
-                        return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
-                    } else {
-                        scope.insert(name.to_string(), value.clone());
-                    }
-
-                    Ok(value)
+                if scope.contains_key(name.as_ref()) {
+                    #[rustfmt::skip]
+                    return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
+                } else {
+                    scope.insert(name.to_string(), value.clone());
                 }
-                _ => Err(EggError::OperatorComplaint(
-                    "Numbers and Nil cannot be used as variable names".to_string(),
-                )),
-            },
+
+                Ok(value)
+            }
             _ => Err(EggError::OperatorComplaint(
                 "Numbers and Nil cannot be used as variable names".to_string(),
             )),
