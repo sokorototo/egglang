@@ -1,5 +1,6 @@
 use super::Operator;
 use crate::{
+    errors::{EggError, EggResult},
     evaluator::evaluate,
     expression::{self, Value},
 };
@@ -14,40 +15,44 @@ impl Operator for Define {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
         let name = &args[0];
 
         match name {
             expression::Expression::Word { name } => {
-                let value = evaluate(&args[1], scope, builtins);
+                let value = evaluate(&args[1], scope, builtins)?;
 
                 if scope.contains_key(name.as_ref()) {
-                    panic!("Attempting to re-declare a variable: {name}")
+                    #[rustfmt::skip]
+                    return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
                 } else {
                     // THIS IS BASICALLY A CLONE
                     scope.insert(name.to_string(), value.clone());
                 }
 
-                value
+                Ok(value)
             }
             expression::Expression::Value { value } => match value {
-                expression::Value::String(name) => {
-                    let value = evaluate(&args[1], scope, builtins);
+                Value::String(name) => {
+                    let value = evaluate(&args[1], scope, builtins)?;
 
                     if scope.contains_key(name.as_ref()) {
-                        panic!("Attempting to re-declare a variable: {name}")
+                        #[rustfmt::skip]
+                        return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
                     } else {
                         scope.insert(name.to_string(), value.clone());
                     }
 
-                    value
+                    Ok(value)
                 }
-                _ => panic!("Numbers cannot be used as variable names as the would conflict with normal numbers")
+                _ => Err(EggError::OperatorComplaint(
+                    "Numbers and Nil cannot be used as variable names".to_string(),
+                )),
             },
-            _ => {
-                panic!("Applications cannot be used as variable names");
-            }
+            _ => Err(EggError::OperatorComplaint(
+                "Numbers and Nil cannot be used as variable names".to_string(),
+            )),
         }
     }
 }
@@ -61,36 +66,24 @@ impl Operator for Set {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
         let variable_name = &args[0];
         let old_value;
 
         match variable_name {
-            expression::Expression::Word { name: word } => {
-                let value = evaluate(&args[1], scope, builtins);
+            expression::Expression::Word { name } => {
+                let new_value = evaluate(&args[1], scope, builtins)?;
                 old_value = evaluate(variable_name, scope, builtins);
 
-                if let Some(val) = scope.get_mut(word.as_ref()) {
-                    *val = value;
+                if let Some(val) = scope.get_mut(name.as_ref()) {
+                    *val = new_value;
                 };
             }
-            expression::Expression::Value { value: string } => match string {
-                expression::Value::String(name) => {
-                    let value = evaluate(&args[1], scope, builtins);
-
-                    if let Some(val) = scope.get_mut(name.as_ref()) {
-                        *val = value.clone()
-                    } else {
-                        panic!("Attempting to set a variable that does not exist: {name}")
-                    };
-
-                    old_value = value;
-                }
-                _ => panic!("Please provide a word or a string as a variable name"),
-            },
             _ => {
-                panic!("Applications cannot be used as variable names for obvious reasons");
+                return Err(EggError::OperatorComplaint(
+                    "Numbers and Nil cannot be used as variable names".to_string(),
+                ));
             }
         }
 
@@ -107,22 +100,21 @@ impl Operator for Delete {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         _: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 1);
         let name = &args[0];
 
         let res = match name {
             expression::Expression::Word { name } => scope.remove(name.as_ref()),
             expression::Expression::Value { value } => match value {
-                expression::Value::String(name) => scope.remove(name.as_ref()),
-                val => panic!("Invalid value given to delete: {val:?}"),
+                Value::String(name) => scope.remove(name.as_ref()),
+                #[rustfmt::skip]
+                val => return Err(EggError::OperatorComplaint(format!("Cannot delete {val:?}"))),
             },
-            _ => {
-                panic!("Applications cannot be used as variable names for obvious reasons");
-            }
+            v => return Err(EggError::OperatorComplaint(format!("Cannot delete {v:?}"))),
         };
 
-        res.unwrap_or(expression::Value::Nil)
+        Ok(res.unwrap_or(Value::Nil))
     }
 }
 
@@ -135,22 +127,25 @@ impl Operator for Exists {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         _: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 1);
         let name = &args[0];
 
         let res = match name {
             expression::Expression::Word { name } => scope.contains_key(name.as_ref()),
             expression::Expression::Value { value } => match value {
-                expression::Value::String(name) => scope.contains_key(name.as_ref()),
-                val => panic!("Invalid value passed to exists(--): {val:?}"),
+                Value::String(name) => scope.contains_key(name.as_ref()),
+                #[rustfmt::skip]
+                val => return Err(EggError::OperatorComplaint(format!( "Cannot check if {:?} exists", val ))),
             },
             _ => {
-                panic!("Applications cannot be used as variable names for obvious reasons");
+                return Err(EggError::OperatorComplaint(
+                    "Operations cannot be used as variable names".to_string(),
+                ));
             }
         };
 
-        res.into()
+        Ok(res.into())
     }
 }
 
@@ -163,15 +158,15 @@ impl super::Operator for TypeOf {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 1);
 
-        let value = evaluate(&args[0], scope, builtins);
+        let value = evaluate(&args[0], scope, builtins)?;
 
-        match value {
+        Ok(match value {
             Value::Number(_) => Value::String("__NUMBER".into()),
             Value::String(_) => Value::String("__STRING".into()),
             Value::Nil => Value::String("__NIL".into()),
-        }
+        })
     }
 }

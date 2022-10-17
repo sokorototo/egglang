@@ -1,4 +1,7 @@
-use crate::expression::{Expression, Value};
+use crate::{
+    errors::EggResult,
+    expression::{Expression, Value},
+};
 use std::collections::HashMap;
 
 // Various special, forms
@@ -12,13 +15,14 @@ mod memory;
 mod print;
 mod stringtools;
 
+/// An operator, to show failure short-circuit with [Value::Nil]
 pub trait Operator {
     fn evaluate(
         &self,
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value;
+    ) -> EggResult<Value>;
 }
 
 // My Egg implementation's standard library

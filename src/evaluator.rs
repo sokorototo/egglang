@@ -1,4 +1,5 @@
 use crate::{
+    errors::{EggError, EggResult},
     expression::{Expression, Value},
     operators::Operator,
 };
@@ -10,15 +11,15 @@ pub fn evaluate(
     expr: &Expression,
     scope: &mut HashMap<String, Value>,
     builtins: &HashMap<&str, Box<dyn Operator>>,
-) -> Value {
+) -> EggResult<Value> {
     unsafe { EVALUATIONS += 1 };
 
     match expr {
-        Expression::Value { value } => value.clone(),
+        Expression::Value { value } => Ok(value.clone()),
         Expression::Word { name } => scope
             .get(name.as_ref())
-            .unwrap_or_else(|| panic!("Undefined binding: {name}"))
-            .clone(),
+            .ok_or_else(|| EggError::UndefinedBinding(name.to_string()))
+            .map(|d| d.clone()),
         Expression::Operation { name, operands } => {
             // Get operation's name
             let name = name.as_ref();
@@ -26,7 +27,7 @@ pub fn evaluate(
             // Fetch operation
             let operator = builtins
                 .get(name)
-                .expect(format!("Undefined special form: {}", name).as_ref());
+                .ok_or_else(|| EggError::SpecialFormNotFound(name.to_string()))?;
 
             operator.evaluate(operands, scope, builtins)
         }

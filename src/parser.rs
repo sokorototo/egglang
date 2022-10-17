@@ -1,6 +1,9 @@
 use logos::Logos;
 
-use crate::expression::{Expression, Value};
+use crate::{
+    errors::{EggError, EggResult},
+    expression::{Expression, Value},
+};
 
 #[derive(logos::Logos, Debug, PartialEq)]
 enum Token {
@@ -27,7 +30,7 @@ enum Token {
     UnknownToken,
 }
 
-pub fn parse<S: AsRef<str>>(script: S) -> Vec<Expression> {
+pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
     let source = script.as_ref();
     let tokens = tokenize(source);
     let expressions = parse_tokens(tokens.as_slice());
@@ -35,70 +38,72 @@ pub fn parse<S: AsRef<str>>(script: S) -> Vec<Expression> {
     expressions
 }
 
-fn tokenize(code: &str) -> Vec<(Token, String)> {
+fn tokenize<'code>(code: &'code str) -> Vec<(Token, &'code str)> {
     let mut lex = Token::lexer(code);
     let mut tokens = Vec::new();
 
     while let Some(token) = lex.next() {
-        tokens.push((token, lex.slice().to_string()))
+        tokens.push((token, lex.slice()))
     }
 
     tokens
 }
 
-fn parse_tokens(tokens: &[(Token, String)]) -> Vec<Expression> {
-    let mut expressions = Vec::new();
+fn parse_tokens(tokens: &[(Token, &str)]) -> EggResult<Vec<Expression>> {
+    let mut exprs = vec![];
     let mut stack = vec![];
 
     // Iterate over tokens
-    tokens.iter().for_each(|(token, data)| match token {
-        Token::String => {
-            let str = data.as_str();
-            expressions.push(Expression::Value {
-                value: Value::String(str[1..str.len() - 1].into()),
-            })
+    for (token, data) in tokens.iter() {
+        match token {
+            Token::String => exprs.push(Expression::Value {
+                value: Value::String(data[1..data.len() - 1].into()),
+            }),
+            Token::Number => exprs.push(Expression::Value {
+                value: Value::Number(data.parse().unwrap()),
+            }),
+            Token::Word => exprs.push(Expression::Word {
+                name: (*data).into(),
+            }),
+
+            Token::LeftBracket => stack.push(exprs.len()),
+            Token::RightBracket => {
+                let start = stack
+                    .pop()
+                    .ok_or_else(|| EggError::UnbalancedBrackets(stack.len()))?;
+                let end = exprs.len();
+
+                // Collect operation arguments
+                let sub_expressions = exprs.drain(start..end).collect();
+
+                // Get name of operation
+                let name = exprs
+                    .pop()
+                    .ok_or_else(|| EggError::UnbalancedBrackets(stack.len()))?;
+                let operation = Expression::Operation {
+                    name: match name {
+                        Expression::Word { name } => name.clone(),
+                        _ => {
+                            return Err(EggError::ParserError(
+                                "Cannot use non-word as operation name".into(),
+                            ))
+                        }
+                    },
+                    operands: sub_expressions,
+                };
+
+                // Push operation to stack
+                exprs.push(operation);
+            }
+
+            Token::UnknownToken => {
+                return Err(EggError::ParserError(format!(
+                    "Experienced unknown token in token stream: {data}"
+                )))
+            }
+            _ => unreachable!("Other tokens are automatically filtered out by logos"),
         }
-        Token::Number => expressions.push(Expression::Value {
-            value: Value::Number(data.parse().expect("Unable to parse string as number")),
-        }),
-        Token::Word => expressions.push(Expression::Word {
-            name: data.as_str().into(),
-        }),
+    }
 
-        Token::LeftBracket => stack.push(expressions.len()),
-        Token::RightBracket => {
-            let start = stack.pop().expect("Unbalanced brackets");
-            let end = expressions.len();
-            let count = end - start;
-
-            // Collect operation arguments
-            let mut sub_expressions = Vec::with_capacity(count);
-
-            (start..end).for_each(|i| {
-                let expression = expressions.get(i).expect("Unbalanced braces");
-                sub_expressions.push(expression.clone());
-            });
-
-            // Truncate original expressions
-            expressions.truncate(expressions.len() - count);
-
-            // Get name of operation
-            let name = expressions.pop().expect("Unbalanced brackets");
-            let operation = Expression::Operation {
-                name: match name {
-                    Expression::Word { name } => name.clone(),
-                    _ => panic!("cannot invoke non-word types"),
-                },
-                operands: sub_expressions,
-            };
-
-            // Push operation to stack
-            expressions.push(operation);
-        }
-
-        Token::UnknownToken => panic!("Experienced unknown token in token stream: {data}"),
-        _ => unreachable!("Other tokens are automatically filtered out by logos"),
-    });
-
-    expressions
+    Ok(exprs)
 }

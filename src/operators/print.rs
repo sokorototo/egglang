@@ -2,8 +2,9 @@ use std::collections::HashMap;
 
 use super::Operator;
 use crate::{
+    errors::EggResult,
     evaluator::evaluate,
-    expression::{self, Value},
+    expression::{Expression, Value},
 };
 // Prints it's data and a newline
 pub struct PrintLine;
@@ -11,19 +12,19 @@ pub struct PrintLine;
 impl Operator for PrintLine {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         for arg in args {
-            match evaluate(arg, scope, builtins) {
-                expression::Value::Number(num) => println!("{num}"),
-                expression::Value::String(string) => println!("{string}"),
-                expression::Value::Nil => println!("nil"),
+            match evaluate(arg, scope, builtins)? {
+                Value::Number(num) => println!("{num}"),
+                Value::String(string) => println!("{string}"),
+                Value::Nil => println!("nil"),
             }
         }
 
-        expression::Value::Number(args.len() as isize)
+        Ok(Value::Nil)
     }
 }
 
@@ -33,18 +34,18 @@ pub struct Print;
 impl Operator for Print {
     fn evaluate(
         &self,
-        args: &[expression::Expression],
+        args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         for arg in args {
-            match evaluate(arg, scope, builtins) {
-                expression::Value::Number(num) => print!("{num} "),
-                expression::Value::String(string) => print!("{string} "),
-                expression::Value::Nil => print!("nil"),
+            match evaluate(arg, scope, builtins)? {
+                Value::Number(num) => print!("{num} "),
+                Value::String(string) => print!("{string} "),
+                Value::Nil => print!("nil"),
             }
         }
 
-        expression::Value::Number(args.len() as isize)
+        Ok(Value::Nil)
     }
 }

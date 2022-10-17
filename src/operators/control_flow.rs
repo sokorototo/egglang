@@ -1,5 +1,6 @@
 use super::Operator;
 use crate::{
+    errors::{EggError, EggResult},
     evaluator::evaluate,
     expression::{self, Value},
 };
@@ -14,14 +15,9 @@ impl Operator for Do {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
-        let mut result = expression::Value::Nil;
-
-        for arg in args.iter() {
-            result = evaluate(arg, scope, builtins);
-        }
-
-        result
+    ) -> EggResult<Value> {
+        args.iter()
+            .try_fold(Value::Nil, |_, nxt| evaluate(nxt, scope, builtins))
     }
 }
 
@@ -34,15 +30,16 @@ impl Operator for If {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 3);
 
         // Evaluate
-        let res = evaluate(&args[0], scope, builtins);
-        let value = match res {
+        let condition = evaluate(&args[0], scope, builtins)?;
+        let value = match condition {
             expression::Value::Number(num) => num != 0,
-            _ => panic!("if(--) expects a number as it's parameter"),
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("if(--) expects a boolean (a number that if zero equals false) as it's parameter".to_string())),
         };
 
         if value {
@@ -62,7 +59,7 @@ impl Operator for While {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 2);
 
@@ -72,21 +69,24 @@ impl Operator for While {
 
         loop {
             if iterations == usize::MAX {
-                panic!("Max loop iterations met");
+                #[rustfmt::skip]
+                return Err(EggError::OperatorComplaint("Max loop iterations met".to_string()));
             }
 
-            let condition = evaluate(&args[0], scope, builtins);
+            let condition = evaluate(&args[0], scope, builtins)?;
+
             let continue_condition = match condition {
                 expression::Value::Number(num) => num != 0,
-                _ => panic!("while(--) expects a number as it's parameter"),
+                #[rustfmt::skip]
+                _ => return Err(EggError::OperatorComplaint("while(--) expects a number as it's parameter".to_string())),
             };
 
             if !continue_condition {
-                break loop_result;
+                break Ok(loop_result);
             }
 
             // Evaluate expression
-            loop_result = evaluate(&args[1], scope, builtins);
+            loop_result = evaluate(&args[1], scope, builtins)?;
 
             iterations += 1;
         }
@@ -102,7 +102,7 @@ impl Operator for Repeat {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 2);
 
@@ -110,19 +110,20 @@ impl Operator for Repeat {
         let mut iterations = 0;
         let mut loop_value = expression::Value::Nil;
 
-        let max_iter = match evaluate(&args[0], scope, builtins) {
+        let max_iter = match evaluate(&args[0], scope, builtins)? {
             Value::Number(num) => num,
-            _ => panic!("repeat(--) expects a number as it's argument"),
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("repeat(--, ...) expects a number as it's first parameter".to_string())),
         };
 
         loop {
             // Repeat X times
             if iterations >= max_iter || iterations == isize::MAX {
-                break loop_value;
+                break Ok(loop_value);
             }
 
             // Evaluate expression
-            loop_value = evaluate(&args[1], scope, builtins);
+            loop_value = evaluate(&args[1], scope, builtins)?;
 
             iterations += 1;
         }
@@ -138,30 +139,27 @@ impl Operator for Sleep {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         use std::{thread::sleep, time::Duration};
 
         // Assert correct length of arguments
         assert_eq!(args.len(), 1);
 
         // Loop
-        let sleep_time = evaluate(&args[0], scope, builtins);
+        let sleep_time = evaluate(&args[0], scope, builtins)?;
         if let Value::Number(value) = sleep_time {
-            if value < 0 {
-                panic!("Cannot call sleep(--) with a negative time");
-            } else {
-                let duration = Duration::from_millis(value as u64);
-                sleep(duration)
-            }
+            let duration = Duration::from_millis(value as u64);
+            sleep(duration)
         } else {
-            panic!("Please provide a number as the parameter to sleep(--)")
+            #[rustfmt::skip]
+            return Err(EggError::OperatorComplaint("sleep(--) expects a number as it's parameter".to_string()));
         }
 
-        sleep_time
+        Ok(sleep_time)
     }
 }
 
-// Sleep for x milliseconds
+// Sleep for ∞ milliseconds
 pub struct Panic;
 
 impl Operator for Panic {
@@ -170,12 +168,12 @@ impl Operator for Panic {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 1);
 
         // Loop
-        let error_message = evaluate(&args[0], scope, builtins);
+        let error_message = evaluate(&args[0], scope, builtins)?;
 
         match error_message {
             Value::Number(error_code) => {
@@ -195,27 +193,27 @@ impl Operator for Assert {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 2);
 
         // Loop
-        let assertion = evaluate(&args[0], scope, builtins);
-        match assertion {
+        let assertion = evaluate(&args[0], scope, builtins)?;
+        match &assertion {
             Value::Number(value) => {
-                if value == 0 {
-                    let error_messsage = evaluate(&args[1], scope, builtins);
+                if *value == 0 {
+                    let error_message = evaluate(&args[1], scope, builtins)?;
 
-                    match error_messsage {
+                    match error_message {
                         Value::Number(i) => panic!("Assertion failed: Error Code given = [{i}]"),
                         Value::String(msg) => panic!("{msg}"),
-                        Value::Nil => panic!("Assertion Failed! No residual value provided"),
+                        Value::Nil => panic!("Assertion Failed!"),
                     }
                 }
             }
             _ => panic!("-assert- takes a boolean (basically an int that equals zero) as it's first argument"),
         };
 
-        Value::Nil
+        Ok(assertion)
     }
 }

@@ -2,14 +2,14 @@
 
 use super::Operator;
 use crate::{
+    errors::{EggError, EggResult},
     evaluator::evaluate,
     expression::{Expression, Value},
 };
 use std::collections::HashMap;
 
-static mut RESOLVER: Option<HashMap<Value, HashMap<Value, Value>>> = None;
-
 fn get_resolver() -> &'static mut HashMap<Value, HashMap<Value, Value>> {
+    static mut RESOLVER: Option<HashMap<Value, HashMap<Value, Value>>> = None;
     unsafe { RESOLVER.get_or_insert(Default::default()) }
 }
 
@@ -22,16 +22,11 @@ impl Operator for NewMap {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
-        // map_ref
+    ) -> EggResult<Value> {
         assert!(args.len() == 1);
-
-        let map_ref = evaluate(&args[0], scope, builtins);
-
-        // Get reference to global map resolver
+        let map_ref = evaluate(&args[0], scope, builtins)?;
         get_resolver().insert(map_ref.clone(), HashMap::new());
-
-        map_ref
+        Ok(map_ref)
     }
 }
 
@@ -44,14 +39,10 @@ impl Operator for ExistsMap {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
-        // map_ref
+    ) -> EggResult<Value> {
         assert!(args.len() == 1);
-
-        let map_ref = evaluate(&args[0], scope, builtins);
-
-        // Check if map exists
-        get_resolver().contains_key(&map_ref).into()
+        let map_ref = evaluate(&args[0], scope, builtins)?;
+        Ok(get_resolver().contains_key(&map_ref).into())
     }
 }
 
@@ -65,14 +56,10 @@ impl Operator for DeleteMap {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
-        // map_ref
+    ) -> EggResult<Value> {
         assert!(args.len() == 1);
-
-        let map_ref = evaluate(&args[0], scope, builtins);
-
-        // Get reference to global map resolver
-        get_resolver().remove(&map_ref).is_some().into()
+        let map_ref = evaluate(&args[0], scope, builtins)?;
+        Ok(get_resolver().remove(&map_ref).is_some().into())
     }
 }
 
@@ -86,20 +73,20 @@ impl Operator for Insert {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // map_ref, key, value
         assert!(args.len() == 3);
 
-        let map_ref = evaluate(&args[0], scope, builtins);
-        let key = evaluate(&args[1], scope, builtins);
-        let value = evaluate(&args[2], scope, builtins);
+        let map_ref = evaluate(&args[0], scope, builtins)?;
+        let key = evaluate(&args[1], scope, builtins)?;
+        let value = evaluate(&args[2], scope, builtins)?;
 
         let res = match get_resolver().get_mut(&map_ref) {
-            Some(map) => map.insert(key, value),
-            None => panic!("No map found with the identifier: {map_ref:?}"),
+            Some(map) => map.insert(key, value).unwrap_or(Value::Nil),
+            None => return Err(EggError::MapNotFound(map_ref)),
         };
 
-        res.unwrap_or(Value::Nil)
+        Ok(res)
     }
 }
 
@@ -113,18 +100,18 @@ impl Operator for PrintMap {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // map_ref
         assert!(args.len() == 1);
 
-        let map_ref = evaluate(&args[0], scope, builtins);
+        let map_ref = evaluate(&args[0], scope, builtins)?;
 
         match get_resolver().get(&map_ref) {
             Some(map) => println!("{:#?}", map),
-            None => panic!("No map found with the identifier: {map_ref:?}"),
+            None => return Err(EggError::MapNotFound(map_ref)),
         };
 
-        map_ref
+        Ok(map_ref)
     }
 }
 
@@ -138,19 +125,19 @@ impl Operator for Get {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // map_ref, key
         assert!(args.len() == 2);
 
-        let map_ref = evaluate(&args[0], scope, builtins);
-        let key = evaluate(&args[1], scope, builtins);
+        let map_ref = evaluate(&args[0], scope, builtins)?;
+        let key = evaluate(&args[1], scope, builtins)?;
 
         let res = match get_resolver().get(&map_ref) {
             Some(map) => map.get(&key),
-            None => panic!("No map found with the identifier: {map_ref:?}"),
+            None => return Err(EggError::MapNotFound(map_ref)),
         };
 
-        res.unwrap_or(&Value::Nil).clone()
+        Ok(res.unwrap_or(&Value::Nil).clone())
     }
 }
 
@@ -164,19 +151,19 @@ impl Operator for Has {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // map_ref, key
         assert!(args.len() == 2);
 
-        let map_ref = evaluate(&args[0], scope, builtins);
-        let key = evaluate(&args[1], scope, builtins);
+        let map_ref = evaluate(&args[0], scope, builtins)?;
+        let key = evaluate(&args[1], scope, builtins)?;
 
         let res = match get_resolver().get(&map_ref) {
             Some(map) => map.contains_key(&key),
-            None => panic!("No map found with the identifier: {map_ref:?}"),
+            None => return Err(EggError::MapNotFound(map_ref)),
         };
 
-        res.into()
+        Ok(res.into())
     }
 }
 
@@ -190,19 +177,19 @@ impl Operator for Remove {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // map_ref, key
         assert!(args.len() == 2);
 
-        let map_ref = evaluate(&args[0], scope, builtins);
-        let key = evaluate(&args[1], scope, builtins);
+        let map_ref = evaluate(&args[0], scope, builtins)?;
+        let key = evaluate(&args[1], scope, builtins)?;
 
         let res = match get_resolver().get_mut(&map_ref) {
             Some(map) => map.remove(&key),
-            None => panic!("No map found with the identifier: {map_ref:?}"),
+            None => return Err(EggError::MapNotFound(map_ref)),
         };
 
-        res.unwrap_or(Value::Nil)
+        Ok(res.unwrap_or(Value::Nil))
     }
 }
 
@@ -216,17 +203,17 @@ impl Operator for Size {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         // map_ref, key
         assert!(args.len() == 1);
 
-        let map_ref = evaluate(&args[0], scope, builtins);
+        let map_ref = evaluate(&args[0], scope, builtins)?;
 
         let res = match get_resolver().get(&map_ref) {
             Some(map) => map.len(),
-            None => panic!("No map found with the identifier: {map_ref:?}"),
+            None => return Err(EggError::MapNotFound(map_ref)),
         };
 
-        Value::Number(res.try_into().unwrap())
+        Ok(Value::Number(res as isize))
     }
 }

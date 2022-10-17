@@ -2,6 +2,7 @@
 
 use super::Operator;
 use crate::{
+    errors::{EggError, EggResult},
     evaluator::evaluate,
     expression::{Expression, Value},
 };
@@ -16,15 +17,17 @@ impl Operator for AND {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
         match (val1, val2) {
-            (Value::Number(a), Value::Number(b)) => (a != 0 && b != 0).into(),
-            _ => panic!("please provide numbers as arguments for boolean operations"),
+            (Value::Number(a), Value::Number(b)) => Ok((a != 0 && b != 0).into()),
+            _ => Err(EggError::OperatorComplaint(
+                "please provide numbers as arguments for boolean operations".to_string(),
+            )),
         }
     }
 }
@@ -38,15 +41,17 @@ impl Operator for OR {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
         match (val1, val2) {
-            (Value::Number(a), Value::Number(b)) => (a != 0 || b != 0).into(),
-            _ => panic!("please provide numbers as arguments for boolean operations"),
+            (Value::Number(a), Value::Number(b)) => Ok((a != 0 || b != 0).into()),
+            _ => Err(EggError::OperatorComplaint(
+                "please provide numbers as arguments for boolean operations".to_string(),
+            )),
         }
     }
 }
@@ -60,13 +65,16 @@ impl Operator for NOT {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 1);
-        let value = evaluate(&args[0], scope, builtins);
 
-        match value {
-            Value::Number(a) => (a == 0).into(),
-            _ => panic!("please provide numbers as arguments for boolean operations"),
+        let val = evaluate(&args[0], scope, builtins)?;
+
+        match val {
+            Value::Number(a) => Ok((a == 0).into()),
+            _ => Err(EggError::OperatorComplaint(
+                "please provide numbers as arguments for boolean operations".to_string(),
+            )),
         }
     }
 }

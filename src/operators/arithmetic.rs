@@ -1,5 +1,6 @@
 use super::Operator;
 use crate::{
+    errors::{EggError, EggResult},
     evaluator::evaluate,
     expression::{Expression, Value},
 };
@@ -14,14 +15,19 @@ impl Operator for Add {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         args.iter()
             .map(|arg| evaluate(arg, scope, builtins))
-            .reduce(|a, b| match (a, b) {
-                (Value::Number(a), Value::Number(b)) => Value::Number(a + b),
-                _ => panic!("please provide numbers as arguments for mathematical operations"),
+            .map(|d| match d {
+                Ok(Value::Number(num)) => Ok(num),
+                Ok(v) => Err(EggError::OperatorComplaint(format!(
+                    "Invalid argument: {:?}, please provide a number",
+                    v
+                ))),
+                Err(e) => Err(e),
             })
-            .unwrap_or(Value::Number(0))
+            .try_fold(0, |acc, d| d.map(|d| acc + d))
+            .map(Value::Number)
     }
 }
 
@@ -34,14 +40,19 @@ impl Operator for Multiply {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         args.iter()
             .map(|arg| evaluate(arg, scope, builtins))
-            .reduce(|a, b| match (a, b) {
-                (Value::Number(a), Value::Number(b)) => Value::Number(a * b),
-                _ => panic!("please provide numbers as arguments for mathematical operations"),
+            .map(|d| match d {
+                Ok(Value::Number(num)) => Ok(num),
+                Ok(v) => Err(EggError::OperatorComplaint(format!(
+                    "Invalid argument: {:?}, please provide a number",
+                    v
+                ))),
+                Err(e) => Err(e),
             })
-            .unwrap_or(Value::Number(1))
+            .try_fold(0, |acc, d| d.map(|d| acc * d))
+            .map(Value::Number)
     }
 }
 
@@ -54,15 +65,18 @@ impl Operator for Subtract {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
         match (val1, val2) {
-            (Value::Number(a), Value::Number(b)) => Value::Number(a - b),
-            _ => panic!("please provide numbers as arguments for mathematical operations"),
+            (Value::Number(a), Value::Number(b)) => Ok(Value::Number(a - b)),
+            v => Err(EggError::OperatorComplaint(format!(
+                "Invalid argument: {:?}, please provide a numbers",
+                v
+            ))),
         }
     }
 }
@@ -76,15 +90,18 @@ impl Operator for Divide {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
         match (val1, val2) {
-            (Value::Number(a), Value::Number(b)) => Value::Number(a / b),
-            _ => panic!("please provide numbers as arguments for mathematical operations"),
+            (Value::Number(a), Value::Number(b)) => Ok(Value::Number(a / b)),
+            v => Err(EggError::OperatorComplaint(format!(
+                "Invalid argument: {:?}, please provide a numbers",
+                v
+            ))),
         }
     }
 }

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use super::Operator;
 use crate::{
+    errors::{EggError, EggResult},
     evaluator::evaluate,
     expression::{self, Value},
 };
@@ -14,17 +15,18 @@ impl Operator for Concat {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         let mut result = String::with_capacity(args.len() * 64);
 
         for arg in args {
-            match evaluate(arg, scope, builtins) {
-                expression::Value::String(string) => result.push_str(&string),
-                _ => panic!("concat expects strings as it's parameters"),
+            match evaluate(arg, scope, builtins)? {
+                Value::String(string) => result.push_str(&string),
+                #[rustfmt::skip]
+                _ => return Err(EggError::OperatorComplaint("Cannot concatenate non-string".to_string())),
             }
         }
 
-        expression::Value::String(result.into())
+        Ok(Value::String(result.into()))
     }
 }
 
@@ -36,18 +38,19 @@ impl Operator for Length {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 1);
 
         // Evaluate
-        let res = evaluate(&args[0], scope, builtins);
+        let res = evaluate(&args[0], scope, builtins)?;
         let value = match res {
-            expression::Value::String(string) => string.len(),
-            _ => panic!("length expects a string as it's parameter"),
+            Value::String(string) => string.len(),
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("Cannot get length of non-string".to_string())),
         };
 
-        expression::Value::Number(value as isize)
+        Ok(Value::Number(value as isize))
     }
 }
 
@@ -60,21 +63,23 @@ impl Operator for Slice {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 3);
 
         // Evaluate
-        let res = evaluate(&args[0], scope, builtins);
+        let res = evaluate(&args[0], scope, builtins)?;
 
         let base = match res {
-            expression::Value::String(string) => string,
-            _ => panic!("slice expects a string as it's parameter"),
+            Value::String(string) => string,
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("Cannot slice non-string".to_string())),
         };
 
-        let mut start = match evaluate(&args[1], scope, builtins) {
-            expression::Value::Number(num) => num,
-            _ => panic!("slice expects a number as it's parameter"),
+        let mut start = match evaluate(&args[1], scope, builtins)? {
+            Value::Number(num) => num,
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
         };
 
         // Negative indeces start from behind
@@ -82,14 +87,16 @@ impl Operator for Slice {
             start = (base.len() as isize) + start;
         }
 
-        let length = match evaluate(&args[2], scope, builtins) {
-            expression::Value::Number(num) => num as usize,
-            _ => panic!("slice expects a number as it's parameter"),
+        let length = match evaluate(&args[2], scope, builtins)? {
+            Value::Number(num) => num as usize,
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
         };
 
         let start = start as usize;
         let result = &base[start..start + length];
-        expression::Value::String(result.into())
+
+        Ok(Value::String(result.into()))
     }
 }
 
@@ -102,18 +109,19 @@ impl Operator for ToUpper {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 1);
 
         // Evaluate
-        let res = evaluate(&args[0], scope, builtins);
+        let res = evaluate(&args[0], scope, builtins)?;
         let value = match res {
-            expression::Value::String(string) => string.to_uppercase(),
-            _ => panic!("to_upper expects a string as it's parameter"),
+            Value::String(string) => string.to_uppercase(),
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("Cannot convert non-string to uppercase".to_string())),
         };
 
-        expression::Value::String(value.into())
+        Ok(Value::String(value.into()))
     }
 }
 
@@ -125,18 +133,19 @@ impl Operator for ToLower {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 1);
 
         // Evaluate
-        let res = evaluate(&args[0], scope, builtins);
+        let res = evaluate(&args[0], scope, builtins)?;
         let value = match res {
-            expression::Value::String(string) => string.to_lowercase(),
-            _ => panic!("to_lower expects a string as it's parameter"),
+            Value::String(string) => string.to_lowercase(),
+            #[rustfmt::skip]
+            _ => return Err(EggError::OperatorComplaint("Cannot convert non-string to lowercase".to_string())),
         };
 
-        expression::Value::String(value.into())
+        Ok(Value::String(value.into()))
     }
 }
 
@@ -148,15 +157,16 @@ impl Operator for Trim {
         args: &[expression::Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> expression::Value {
+    ) -> EggResult<Value> {
         // Assert correct length of arguments
         assert_eq!(args.len(), 1);
 
         // Evaluate
-        let res = evaluate(&args[0], scope, builtins);
+        let res = evaluate(&args[0], scope, builtins)?;
         match res {
-            expression::Value::String(string) => expression::Value::String(string.trim().into()),
-            _ => panic!("trim expects a string as it's parameter"),
+            Value::String(string) => Ok(Value::String(string.trim().into())),
+            #[rustfmt::skip]
+            _ => Err(EggError::OperatorComplaint("Cannot trim non-string".to_string())),
         }
     }
 }

@@ -1,5 +1,6 @@
 use super::Operator;
 use crate::{
+    errors::{EggError, EggResult},
     evaluator::evaluate,
     expression::{Expression, Value},
 };
@@ -14,13 +15,13 @@ impl super::Operator for Equals {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
-        (val1 == val2).into()
+        Ok((val1 == val2).into())
     }
 }
 
@@ -33,13 +34,13 @@ impl super::Operator for NotEquals {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
-        (val1 != val2).into()
+        Ok((val1 != val2).into())
     }
 }
 
@@ -52,15 +53,17 @@ impl super::Operator for GreaterThan {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
         match (val1, val2) {
-            (Value::Number(a), Value::Number(b)) => (a > b).into(),
-            _ => panic!("please provide numbers as arguments for mathematical operations"),
+            (Value::Number(a), Value::Number(b)) => Ok((a > b).into()),
+            _ => Err(EggError::OperatorComplaint(
+                "please provide numbers as arguments for mathematical operations".to_string(),
+            )),
         }
     }
 }
@@ -74,15 +77,17 @@ impl super::Operator for LessThan {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 2);
 
-        let val1 = evaluate(&args[0], scope, builtins);
-        let val2 = evaluate(&args[1], scope, builtins);
+        let val1 = evaluate(&args[0], scope, builtins)?;
+        let val2 = evaluate(&args[1], scope, builtins)?;
 
         match (val1, val2) {
-            (Value::Number(a), Value::Number(b)) => (a < b).into(),
-            _ => panic!("please provide numbers as arguments for mathematical operations"),
+            (Value::Number(a), Value::Number(b)) => Ok((a < b).into()),
+            _ => Err(EggError::OperatorComplaint(
+                "please provide numbers as arguments for mathematical operations".to_string(),
+            )),
         }
     }
 }
@@ -96,12 +101,9 @@ impl super::Operator for IsNil {
         args: &[Expression],
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> Value {
+    ) -> EggResult<Value> {
         assert_eq!(args.len(), 1);
 
-        match evaluate(&args[0], scope, builtins) {
-            Value::Nil => true.into(),
-            _ => false.into(),
-        }
+        Ok(matches!(evaluate(&args[0], scope, builtins)?, Value::Nil).into())
     }
 }

@@ -1,10 +1,11 @@
+pub mod errors;
 pub mod evaluator;
 pub mod expression;
 pub mod operators;
 pub mod parser;
 pub mod scope;
 
-fn main() {
+fn main() -> errors::EggResult {
     // Read data
     let (code, path) = {
         use std::fs::read_to_string;
@@ -16,7 +17,7 @@ fn main() {
     };
 
     // Parse the expression
-    let exprs = parser::parse(code);
+    let exprs = parser::parse(code).unwrap();
 
     // Define runtime variables
     let mut scope = scope::new();
@@ -25,7 +26,7 @@ fn main() {
     {
         let timer = std::time::Instant::now();
         exprs.iter().for_each(|expr| {
-            evaluator::evaluate(expr, &mut scope, &builtins);
+            evaluator::evaluate(expr, &mut scope, &builtins).unwrap();
         });
 
         println!(
@@ -35,4 +36,6 @@ fn main() {
             unsafe { evaluator::EVALUATIONS }
         );
     };
+
+    Ok(())
 }
