@@ -38,7 +38,7 @@ fn _parse(code: &str) -> EggResult<Vec<Expression>> {
     let mut lex = Token::lexer(code);
 
     let mut exprs = vec![];
-    let mut stack = vec![];
+    let mut stack = Vec::with_capacity(32);
 
     while let Some(token) = lex.next() {
         let data = lex.slice();
