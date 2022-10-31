@@ -77,7 +77,7 @@ fn _parse(code: &str) -> EggResult<Vec<Expression>> {
                             ))
                         }
                     },
-                    operands: sub_expressions,
+                    parameters: sub_expressions,
                 };
 
                 // Push operation to stack

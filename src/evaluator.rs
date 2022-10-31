@@ -20,7 +20,7 @@ pub fn evaluate(
             .get(name.as_ref())
             .ok_or_else(|| EggError::UndefinedBinding(name.to_string()))
             .map(|d| d.clone()),
-        Expression::Operation { name, operands } => {
+        Expression::Operation { name, parameters } => {
             // Get operation's name
             let name = name.as_ref();
 
@@ -29,7 +29,7 @@ pub fn evaluate(
                 .get(name)
                 .ok_or_else(|| EggError::SpecialFormNotFound(name.to_string()))?;
 
-            operator.evaluate(operands, scope, builtins)
+            operator.evaluate(parameters, scope, builtins)
         }
     }
 }

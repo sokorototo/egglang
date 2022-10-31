@@ -10,7 +10,7 @@ pub enum Expression {
     },
     Operation {
         name: Rc<str>,
-        operands: Vec<Expression>,
+        parameters: Vec<Expression>,
     },
 }
 
