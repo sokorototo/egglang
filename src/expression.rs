@@ -14,11 +14,21 @@ pub enum Expression {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Value {
     Nil,
     Number(isize),
     String(Rc<str>),
+}
+
+impl std::fmt::Debug for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Nil => write!(f, "Nil"),
+            Self::Number(arg0) => arg0.fmt(f),
+            Self::String(arg0) => arg0.fmt(f),
+        }
+    }
 }
 
 impl std::fmt::Display for Value {

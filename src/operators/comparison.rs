@@ -16,7 +16,7 @@ impl super::Operator for Equals {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         let val1 = evaluate(&args[0], scope, builtins)?;
         let val2 = evaluate(&args[1], scope, builtins)?;
@@ -35,7 +35,7 @@ impl super::Operator for NotEquals {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         let val1 = evaluate(&args[0], scope, builtins)?;
         let val2 = evaluate(&args[1], scope, builtins)?;
@@ -54,7 +54,7 @@ impl super::Operator for GreaterThan {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         let val1 = evaluate(&args[0], scope, builtins)?;
         let val2 = evaluate(&args[1], scope, builtins)?;
@@ -78,7 +78,7 @@ impl super::Operator for LessThan {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         let val1 = evaluate(&args[0], scope, builtins)?;
         let val2 = evaluate(&args[1], scope, builtins)?;
@@ -102,7 +102,7 @@ impl super::Operator for IsNil {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         Ok(matches!(evaluate(&args[0], scope, builtins)?, Value::Nil).into())
     }

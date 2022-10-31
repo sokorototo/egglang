@@ -32,7 +32,7 @@ impl Operator for If {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 3);
+        debug_assert_eq!(args.len(), 3);
 
         // Evaluate
         let condition = evaluate(&args[0], scope, builtins)?;
@@ -61,7 +61,7 @@ impl Operator for While {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         // Loop
         let mut iterations = 0usize;
@@ -104,7 +104,7 @@ impl Operator for Repeat {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         // Loop
         let mut iterations = 0;
@@ -143,7 +143,7 @@ impl Operator for Sleep {
         use std::{thread::sleep, time::Duration};
 
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Loop
         let sleep_time = evaluate(&args[0], scope, builtins)?;
@@ -170,7 +170,7 @@ impl Operator for Panic {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Loop
         let error_message = evaluate(&args[0], scope, builtins)?;
@@ -195,7 +195,7 @@ impl Operator for Assert {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         // Loop
         let assertion = evaluate(&args[0], scope, builtins)?;

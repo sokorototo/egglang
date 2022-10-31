@@ -17,7 +17,7 @@ impl Operator for ToString {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Evaluate
         let res = evaluate(&args[0], scope, builtins)?;
@@ -42,7 +42,7 @@ impl Operator for ToNumber {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Evaluate
         let res = evaluate(&args[0], scope, builtins)?;

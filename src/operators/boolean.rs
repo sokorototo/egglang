@@ -18,7 +18,7 @@ impl Operator for AND {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         let val1 = evaluate(&args[0], scope, builtins)?;
         let val2 = evaluate(&args[1], scope, builtins)?;
@@ -42,7 +42,7 @@ impl Operator for OR {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
 
         let val1 = evaluate(&args[0], scope, builtins)?;
         let val2 = evaluate(&args[1], scope, builtins)?;
@@ -66,7 +66,7 @@ impl Operator for NOT {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         let val = evaluate(&args[0], scope, builtins)?;
 

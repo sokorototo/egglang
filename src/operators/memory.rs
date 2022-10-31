@@ -16,7 +16,7 @@ impl Operator for Define {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
         let name = &args[0];
 
         match name {
@@ -64,7 +64,7 @@ impl Operator for Set {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 2);
+        debug_assert_eq!(args.len(), 2);
         let variable_name = &args[0];
         let old_value;
 
@@ -98,7 +98,7 @@ impl Operator for Delete {
         scope: &mut HashMap<String, Value>,
         _: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
         let name = &args[0];
 
         let res = match name {
@@ -125,7 +125,7 @@ impl Operator for Exists {
         scope: &mut HashMap<String, Value>,
         _: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
         let name = &args[0];
 
         let res = match name {
@@ -156,7 +156,7 @@ impl super::Operator for TypeOf {
         scope: &mut HashMap<String, Value>,
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         let value = evaluate(&args[0], scope, builtins)?;
 

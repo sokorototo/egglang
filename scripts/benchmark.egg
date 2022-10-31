@@ -1,0 +1,4 @@
+define(x, 0)
+repeat(10000000, do(
+	set(x, add(x, 1))
+))

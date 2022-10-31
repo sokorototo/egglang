@@ -40,7 +40,7 @@ impl Operator for Length {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Evaluate
         let res = evaluate(&args[0], scope, builtins)?;
@@ -65,7 +65,7 @@ impl Operator for Slice {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 3);
+        debug_assert_eq!(args.len(), 3);
 
         // Evaluate
         let res = evaluate(&args[0], scope, builtins)?;
@@ -107,7 +107,7 @@ impl Operator for ToUpper {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Evaluate
         let res = evaluate(&args[0], scope, builtins)?;
@@ -131,7 +131,7 @@ impl Operator for ToLower {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Evaluate
         let res = evaluate(&args[0], scope, builtins)?;
@@ -155,7 +155,7 @@ impl Operator for Trim {
         builtins: &HashMap<&str, Box<dyn Operator>>,
     ) -> EggResult<Value> {
         // Assert correct length of arguments
-        assert_eq!(args.len(), 1);
+        debug_assert_eq!(args.len(), 1);
 
         // Evaluate
         let res = evaluate(&args[0], scope, builtins)?;
