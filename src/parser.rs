@@ -31,30 +31,18 @@ enum Token {
 }
 
 pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
-    let source = script.as_ref();
-    let tokens = tokenize(source);
-    let expressions = parse_tokens(tokens.as_slice());
-
-    expressions
+    _parse(script.as_ref())
 }
 
-fn tokenize(code: &str) -> Vec<(Token, &str)> {
+fn _parse(code: &str) -> EggResult<Vec<Expression>> {
     let mut lex = Token::lexer(code);
-    let mut tokens = Vec::new();
 
-    while let Some(token) = lex.next() {
-        tokens.push((token, lex.slice()))
-    }
-
-    tokens
-}
-
-fn parse_tokens(tokens: &[(Token, &str)]) -> EggResult<Vec<Expression>> {
     let mut exprs = vec![];
     let mut stack = vec![];
 
-    // Iterate over tokens
-    for (token, data) in tokens.iter() {
+    while let Some(token) = lex.next() {
+        let data = lex.slice();
+
         match token {
             Token::String => exprs.push(Expression::Value {
                 value: Value::String(data[1..data.len() - 1].into()),
