@@ -23,20 +23,7 @@ fn main() -> errors::EggResult {
     let mut scope = scope::new();
     let builtins = operators::builtins();
 
-    {
-        let timer = std::time::Instant::now();
-        exprs.iter().for_each(|expr| {
-            evaluator::evaluate(expr, &mut scope, &builtins).unwrap();
-        });
-
-        println!(
-            "{} took {}us; Evaluations: {}",
-            path,
-            timer.elapsed().as_micros(),
-            unsafe { evaluator::EVALUATIONS }
-        );
-    };
-
-    Ok(())
+    exprs.iter().try_for_each(|expr| {
+        evaluator::evaluate(expr, &mut scope, &builtins)
+    }).map(drop)
 }
-    

@@ -7,3 +7,4 @@ print_line(toilet)
 # You can only use 'set' to change a variable's value
 set(toilet, "STINKS A LOT MORE")
 print_line(toilet)
+
