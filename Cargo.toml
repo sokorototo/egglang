@@ -1,6 +1,6 @@
 [package]
 name = "egglang"
-version = "0.1.0"
+version = "0.1.5"
 edition = "2021"
 description = "The Egg Programming Language From Eloquent JavaScript, but in Rust"
 license = "MIT"
@@ -11,7 +11,7 @@ readme = "README.md"
 include = ["Cargo.toml", "Cargo.lock", "src/*"]
 
 keywords = ["egg", "interpreter", "parser", "language", "scripting"]
-categories = ["development-tools::interpreters", "development-tools::compilers"]
+categories = ["compilers", "parser-implementations"]
 
 [dependencies]
 logos = "0.12.1"
