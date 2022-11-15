@@ -2,6 +2,16 @@
 name = "egglang"
 version = "0.1.0"
 edition = "2021"
+description = "The Egg Programming Language From Eloquent JavaScript, but in Rust"
+license = "MIT"
+repository = "https://github.com/sokorototo/egglang"
+authors = ["Newton Toto nyachiengatoto@gmail.com"]
+documentation = "https://docs.rs/egglang"
+readme = "README.md"
+include = ["Cargo.toml", "Cargo.lock", "src/*"]
+
+keywords = ["egg", "interpreter", "parser", "language", "scripting"]
+categories = ["development-tools::interpreters", "development-tools::compilers"]
 
 [dependencies]
 logos = "0.12.1"
