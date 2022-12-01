@@ -20,4 +20,6 @@ pub enum EggError {
     MapNotFound(Value),
     #[error("{0}")]
     ParserError(String),
+    #[error("More than one thread has access to the map resolver")]
+    MapResolverAlreadyBorrowed,
 }

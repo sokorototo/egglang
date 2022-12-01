@@ -73,9 +73,7 @@ impl Operator for Set {
                 let new_value = evaluate(&args[1], scope, builtins)?;
                 old_value = evaluate(variable_name, scope, builtins);
 
-                if let Some(val) = scope.get_mut(name.as_ref()) {
-                    *val = new_value;
-                };
+                scope.get_mut(name.as_ref()).map(|val| *val = new_value);
             }
             _ => {
                 return Err(EggError::OperatorComplaint(

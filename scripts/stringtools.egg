@@ -31,15 +31,15 @@ print_line(string_concat("nice variable in lower case is: ", lower_case))
 
 # Use a loop to reverse the string and concatenate separated using commas
 define(reversed_nice, "")
-define(i, subtract(string_length(nice), 1))
+define(j, subtract(string_length(nice), 1))
 while(
-	or(greater_than(i, 0), equals(i, 0))
+	or(greater_than(j, 0), equals(j, 0))
 	do(
 		set(
 			reversed_nice
-			string_concat( reversed_nice, string_slice(nice, i, 1) )
+			string_concat( reversed_nice, string_slice(nice, j, 1) )
 		)
-		set(i, subtract(i, 1))
+		set(j, subtract(j, 1))
 	)
 )
 
