@@ -1,7 +1,0 @@
-# Infinite Loop
-
-while(1,
-	do(
-		print_line("Penis")
-	)
-)

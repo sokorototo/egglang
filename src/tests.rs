@@ -5,7 +5,6 @@ fn test() {
     use std::fs::{read_dir, read_to_string};
 
     // Define runtime variables
-    let mut scope = scope::new();
     let builtins = operators::builtins();
 
     // Read data
@@ -15,17 +14,17 @@ fn test() {
             .unwrap()
             .filter_map(|entry| entry.ok())
             .filter(|entry| entry.file_type().ok().map(|t| t.is_file()).unwrap_or(false))
-            .filter_map(|entry| read_to_string(entry.path()).ok())
+            .filter_map(|entry| read_to_string(entry.path()).ok().map(|s| (entry.path(), s)))
     };
 
-    scripts.for_each(|script| {
+    scripts.for_each(|(path, script)| {
+        let mut scope = scope::new();
+
+        println!("Running script: {}", path.display());
         let ast = parser::parse(script).unwrap();
 
         ast.iter().for_each(|expr| {
             evaluator::evaluate(expr, &mut scope, &builtins).unwrap();
         });
     });
-
-    // Let's inspect the scope
-    dbg!(&scope);
 }
