@@ -7,6 +7,7 @@ use std::collections::HashMap;
 
 pub static mut EVALUATIONS: u64 = 0;
 
+/// Given an expression, evaluate it and return the result
 pub fn evaluate(
     expr: &Expression,
     scope: &mut HashMap<String, Value>,

@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+/// An expression is the smallest unit of code in egg.
 #[derive(Debug, Clone)]
 pub enum Expression {
     Value {
@@ -14,6 +15,7 @@ pub enum Expression {
     },
 }
 
+/// A value is the smallest unit of data in egg.
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Value {
     Nil,

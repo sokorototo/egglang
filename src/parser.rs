@@ -30,6 +30,7 @@ enum Token {
     UnknownToken,
 }
 
+/// Parse a string into a list of expression, then calls `discover` with each expression
 pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
     let mut lex = Token::lexer(script.as_ref());
 

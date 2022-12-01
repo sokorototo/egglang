@@ -4,7 +4,7 @@ use crate::{
 };
 use std::collections::HashMap;
 
-// Various special, forms
+// egg-std definitions
 mod arithmetic;
 mod boolean;
 mod comparison;
@@ -15,7 +15,7 @@ mod memory;
 mod print;
 mod stringtools;
 
-/// An operator, to show failure short-circuit with [Value::Nil]
+/// Any function callable in Egg
 pub trait Operator {
     fn evaluate(
         &self,
