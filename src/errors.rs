@@ -22,4 +22,6 @@ pub enum EggError {
     ParserError(String),
     #[error("More than one thread has access to the map resolver")]
     MapResolverAlreadyBorrowed,
+    #[error("Unknown Token found in TokenStream")]
+    UnknownToken,
 }

@@ -5,7 +5,7 @@ fn test() {
     use std::fs::{read_dir, read_to_string};
 
     // Define runtime variables
-    let builtins = operators::builtins();
+    let builtins = operators::std();
 
     // Read data
     let scripts = {
@@ -18,7 +18,7 @@ fn test() {
     };
 
     scripts.for_each(|(path, script)| {
-        let mut scope = scope::new();
+        let mut scope = scope::default();
 
         println!("Running script: {}", path.display());
         let ast = parser::parse(script).unwrap();

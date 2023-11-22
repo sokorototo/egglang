@@ -26,7 +26,7 @@ pub trait Operator {
 }
 
 // My Egg implementation's standard library
-pub fn builtins() -> HashMap<&'static str, Box<dyn Operator>> {
+pub fn std() -> HashMap<&'static str, Box<dyn Operator>> {
     let mut map: HashMap<&'static str, Box<dyn Operator>> = HashMap::new();
 
     // Insert language statements

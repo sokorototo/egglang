@@ -25,9 +25,6 @@ enum Token {
     WhiteSpace,
     #[regex(r"#.*(\s)*", logos::skip)]
     Comment,
-
-    #[error]
-    UnknownToken,
 }
 
 /// Parse a string into a list of expression, then calls `discover` with each expression
@@ -38,6 +35,7 @@ pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
     let mut stack = Vec::with_capacity(16);
 
     while let Some(token) = lex.next() {
+        let token = token.map_err(|_| EggError::UnknownToken)?;
         parse_token(&token, lex.slice(), &mut exprs, &mut stack)?;
     }
 
@@ -91,11 +89,6 @@ fn parse_token(
             exprs.push(operation);
         }
 
-        Token::UnknownToken => {
-            return Err(EggError::ParserError(format!(
-                "Experienced unknown token in token stream: {data}"
-            )))
-        }
         _ => unreachable!("Other tokens are automatically filtered out by logos"),
     };
 
