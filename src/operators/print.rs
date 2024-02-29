@@ -15,7 +15,7 @@ impl Operator for PrintLine {
 			match evaluate(arg, scope, builtins)? {
 				Value::Number(num) => println!("{num}"),
 				Value::String(string) => println!("{string}"),
-				Value::Nil => println!("nil"),
+				Value::Nil => println!("Nil"),
 			}
 		}
 
@@ -32,7 +32,7 @@ impl Operator for Print {
 			match evaluate(arg, scope, builtins)? {
 				Value::Number(num) => print!("{num} "),
 				Value::String(string) => print!("{string} "),
-				Value::Nil => print!("nil"),
+				Value::Nil => print!("Nil"),
 			}
 		}
 
