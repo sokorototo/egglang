@@ -65,7 +65,6 @@ impl Operator for DeleteMap {
 }
 
 /// Insert a new value into the specified map
-/// API maps to Rust's [`HashMap`]
 pub struct Insert;
 
 impl Operator for Insert {
@@ -88,7 +87,6 @@ impl Operator for Insert {
 }
 
 /// Print a Map's value to the console
-/// API maps to Rust's [`HashMap`]
 pub struct PrintMap;
 
 impl Operator for PrintMap {
@@ -109,7 +107,6 @@ impl Operator for PrintMap {
 }
 
 /// Fetch a [Value] the specified map
-/// API maps to Rust's [`HashMap`]
 pub struct Get;
 
 impl Operator for Get {
@@ -131,7 +128,6 @@ impl Operator for Get {
 }
 
 /// Check if the specified map contains the value
-/// API maps to Rust's [`HashMap`]
 pub struct Has;
 
 impl Operator for Has {
@@ -153,7 +149,6 @@ impl Operator for Has {
 }
 
 /// Delete the given key at the given map
-/// API maps to Rust's [`HashMap`]
 pub struct Remove;
 
 impl Operator for Remove {
@@ -175,7 +170,6 @@ impl Operator for Remove {
 }
 
 /// How many entries does this map have?
-/// API maps to Rust's [`HashMap`]
 pub struct Size;
 
 impl Operator for Size {
