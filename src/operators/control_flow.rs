@@ -26,7 +26,8 @@ impl Operator for If {
 		// Evaluate
 		let condition = evaluate(&args[0], scope, builtins)?;
 		let value = match condition {
-			expression::Value::Number(num) => num != 0,
+			Value::Number(num) => num != 0,
+			Value::Boolean(b) => b,
 			#[rustfmt::skip]
             _ => return Err(EggError::OperatorComplaint("if(--) expects a boolean (a number that if zero equals false) as it's parameter".to_string())),
 		};
@@ -49,7 +50,7 @@ impl Operator for While {
 
 		// Loop
 		let mut iterations = 0usize;
-		let mut loop_result = expression::Value::Nil;
+		let mut loop_result = Value::Nil;
 
 		loop {
 			if iterations == usize::MAX {
@@ -60,7 +61,8 @@ impl Operator for While {
 			let condition = evaluate(&args[0], scope, builtins)?;
 
 			let continue_condition = match condition {
-				expression::Value::Number(num) => num != 0,
+				Value::Number(num) => num != 0,
+				Value::Boolean(b) => b,
 				#[rustfmt::skip]
                 _ => return Err(EggError::OperatorComplaint("while(--) expects a number as it's parameter".to_string())),
 			};
@@ -87,7 +89,7 @@ impl Operator for Repeat {
 
 		// Loop
 		let mut iterations = 0;
-		let mut loop_value = expression::Value::Nil;
+		let mut loop_value = Value::Nil;
 
 		let max_iter = match evaluate(&args[0], scope, builtins)? {
 			Value::Number(num) => num,
@@ -142,14 +144,12 @@ impl Operator for Panic {
 		debug_assert_eq!(args.len(), 1);
 
 		// Loop
-		let error_message = evaluate(&args[0], scope, builtins)?;
-
-		match error_message {
+		match evaluate(&args[0], scope, builtins)? {
 			Value::Number(error_code) => {
 				panic!("Program has met an unexpected error: ErrorCode: {error_code}")
 			}
 			Value::String(message) => panic!("{message}"),
-			Value::Nil => panic!("Program has gracefully exited"),
+			_ => panic!("Program has terminated prematurely due to an unexpected error"),
 		}
 	}
 }
@@ -161,23 +161,16 @@ impl Operator for Assert {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 2);
 
-		// Loop
-		let assertion = evaluate(&args[0], scope, builtins)?;
-		match &assertion {
-			Value::Number(value) => {
-				if *value == 0 {
-					let error_message = evaluate(&args[1], scope, builtins)?;
-
-					match error_message {
-						Value::Number(i) => panic!("Assertion failed: Error Code given = [{i}]"),
-						Value::String(msg) => panic!("{msg}"),
-						Value::Nil => panic!("Assertion Failed!"),
-					}
-				}
-			}
-			_ => panic!("-assert- takes a boolean (basically an int that equals zero) as it's first argument"),
+		let message = match &evaluate(&args[0], scope, builtins)? {
+			Value::Number(value) if *value == 0 => Some(evaluate(&args[1], scope, builtins)?),
+			Value::Boolean(b) if !b => Some(evaluate(&args[1], scope, builtins)?),
+			_ => None,
 		};
 
-		Ok(assertion)
+		if let Some(message) = message {
+			return Err(EggError::AssertionFailed(message));
+		}
+
+		Ok(Value::Nil)
 	}
 }

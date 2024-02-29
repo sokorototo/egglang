@@ -129,6 +129,7 @@ impl super::Operator for TypeOf {
 			Value::Number(_) => Value::String("__NUMBER".into()),
 			Value::String(_) => Value::String("__STRING".into()),
 			Value::Nil => Value::String("__NIL".into()),
+			Value::Boolean(_) => Value::String("__BOOLEAN".into()),
 		})
 	}
 }

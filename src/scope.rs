@@ -12,6 +12,8 @@ pub fn default() -> HashMap<String, Value> {
 	// Globals identifying type
 	map.insert("NUMBER".into(), Value::String("__NUMBER".into()));
 	map.insert("STRING".into(), Value::String("__STRING".into()));
+	map.insert("NIL".into(), Value::String("__NIL".into()));
+	map.insert("BOOLEAN".into(), Value::String("__BOOLEAN".into()));
 
 	map
 }

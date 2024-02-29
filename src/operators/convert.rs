@@ -17,13 +17,7 @@ impl Operator for ToString {
 
 		// Evaluate
 		let res = evaluate(&args[0], scope, builtins)?;
-		let value = match res {
-			Value::Number(number) => number.to_string().into(),
-			Value::String(s) => s,
-			Value::Nil => "Nil".to_string().into(),
-		};
-
-		Ok(Value::String(value))
+		Ok(Value::String(res.to_string().into()))
 	}
 }
 
@@ -42,6 +36,7 @@ impl Operator for ToNumber {
 			Value::String(string) => string.parse::<isize>().map(Value::Number).map_err(EggError::UnableToParseNumber),
 			Value::Number(n) => Ok(Value::Number(n)),
 			Value::Nil => Err(EggError::OperatorComplaint("Can't convert Nil to a number".to_string())),
+			Value::Boolean(b) => Ok(Value::Number(b as isize)),
 		}
 	}
 }

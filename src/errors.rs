@@ -21,6 +21,8 @@ pub enum EggError {
 	MapNotFound(Rc<str>),
 	#[error("The provided map tag: {0}, is invalid. Reason {1}")]
 	InvalidMapTag(Value, String),
+	#[error("Assertion failed: {0}")]
+	AssertionFailed(Value),
 	#[error("Generic parsing error at: {0:?}. Reason: {1}")]
 	ParserError(Range<usize>, String),
 	#[error("Unknown Token found in TokenStream")]

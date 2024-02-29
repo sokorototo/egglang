@@ -13,6 +13,7 @@ pub enum Expression {
 pub enum Value {
 	Nil,
 	Number(isize),
+	Boolean(bool),
 	String(Rc<str>),
 }
 
@@ -22,6 +23,7 @@ impl std::fmt::Debug for Value {
 			Self::Nil => write!(f, "Nil"),
 			Self::Number(arg0) => arg0.fmt(f),
 			Self::String(arg0) => arg0.fmt(f),
+			Self::Boolean(arg0) => arg0.fmt(f),
 		}
 	}
 }
@@ -32,17 +34,16 @@ impl std::fmt::Display for Value {
 			Self::Nil => write!(f, "Nil"),
 			Self::Number(n) => write!(f, "{n}"),
 			Self::String(s) => write!(f, "\"{s}\""),
+			Self::Boolean(b) => {
+				write!(f, "{}", if *b { "True" } else { "False" })
+			}
 		}
 	}
 }
 
 impl From<bool> for Value {
 	fn from(val: bool) -> Self {
-		if val {
-			Value::Number(1)
-		} else {
-			Value::Number(0)
-		}
+		Value::Boolean(val)
 	}
 }
 

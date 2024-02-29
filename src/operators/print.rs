@@ -16,6 +16,7 @@ impl Operator for PrintLine {
 				Value::Number(num) => println!("{num}"),
 				Value::String(string) => println!("{string}"),
 				Value::Nil => println!("Nil"),
+				Value::Boolean(b) => println!("{}", if b { "True" } else { "False" }),
 			}
 		}
 
@@ -33,6 +34,7 @@ impl Operator for Print {
 				Value::Number(num) => print!("{num} "),
 				Value::String(string) => print!("{string} "),
 				Value::Nil => print!("Nil"),
+				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
 			}
 		}
 

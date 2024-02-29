@@ -15,6 +15,8 @@ enum Token {
 	Number,
 	#[regex(r#"[^\s\(\),#"]+"#, priority = 1)]
 	Word,
+	#[regex("True|False")]
+	Boolean,
 
 	#[regex(r"\(")]
 	LeftBracket,
@@ -50,6 +52,9 @@ fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<
 	let data = &source[span.clone()];
 
 	match token {
+		Token::Boolean => exprs.push(Expression::Value {
+			value: Value::Boolean(data == "True"),
+		}),
 		Token::String => exprs.push(Expression::Value {
 			value: Value::String(data[1..data.len() - 1].into()),
 		}),

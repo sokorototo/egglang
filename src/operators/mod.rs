@@ -11,7 +11,7 @@ mod comparison;
 mod control_flow;
 mod convert;
 mod map;
-mod memory;
+mod variables;
 mod print;
 mod stringtools;
 
@@ -25,11 +25,11 @@ pub fn std() -> HashMap<&'static str, Box<dyn Operator>> {
 	let mut map: HashMap<&'static str, Box<dyn Operator>> = HashMap::new();
 
 	// Insert language statements
-	map.insert("define", Box::new(memory::Define));
-	map.insert("set", Box::new(memory::Set));
-	map.insert("delete", Box::new(memory::Delete));
-	map.insert("exists", Box::new(memory::Exists));
-	map.insert("typeof", Box::new(memory::TypeOf));
+	map.insert("define", Box::new(variables::Define));
+	map.insert("set", Box::new(variables::Set));
+	map.insert("delete", Box::new(variables::Delete));
+	map.insert("exists", Box::new(variables::Exists));
+	map.insert("typeof", Box::new(variables::TypeOf));
 
 	// Printing
 	map.insert("print_line", Box::new(print::PrintLine));
@@ -71,12 +71,12 @@ pub fn std() -> HashMap<&'static str, Box<dyn Operator>> {
 	map.insert("not", Box::new(boolean::NOT));
 
 	// String tools
-	map.insert("string_length", Box::new(stringtools::Length));
-	map.insert("string_slice", Box::new(stringtools::Slice));
-	map.insert("string_concat", Box::new(stringtools::Concat));
-	map.insert("string_to_upper", Box::new(stringtools::ToUpper));
-	map.insert("string_to_lower", Box::new(stringtools::ToLower));
-	map.insert("string_trim", Box::new(stringtools::Trim));
+	map.insert("string.length", Box::new(stringtools::Length));
+	map.insert("string.slice", Box::new(stringtools::Slice));
+	map.insert("string.concat", Box::new(stringtools::Concat));
+	map.insert("string.to_upper", Box::new(stringtools::ToUpper));
+	map.insert("string.to_lower", Box::new(stringtools::ToLower));
+	map.insert("string.trim", Box::new(stringtools::Trim));
 
 	// Type conversion functions
 	map.insert("str", Box::new(convert::ToString));
