@@ -12,7 +12,7 @@ pub enum Expression {
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub enum Value {
 	Nil,
-	Number(isize), // replace with f64
+	Number(isize),
 	String(Rc<str>),
 }
 

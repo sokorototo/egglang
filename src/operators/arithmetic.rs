@@ -7,9 +7,9 @@ use crate::{
 use std::collections::HashMap;
 
 // Basic add operation
-pub struct Add;
+pub struct Sum;
 
-impl Operator for Add {
+impl Operator for Sum {
 	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		args.iter()
 			.map(|arg| evaluate(arg, scope, builtins))
@@ -52,7 +52,7 @@ impl Operator for Subtract {
 
 		match (val1, val2) {
 			(Value::Number(a), Value::Number(b)) => Ok(Value::Number(a - b)),
-			(a, b) => Err(EggError::OperatorComplaint(format!("Invalid arguments: {a}, {b} please provide a numbers"))),
+			(a, b) => Err(EggError::OperatorComplaint(format!("Arguments: {a}, {b} must both be numbers"))),
 		}
 	}
 }
@@ -69,7 +69,24 @@ impl Operator for Divide {
 
 		match (val1, val2) {
 			(Value::Number(a), Value::Number(b)) => Ok(Value::Number(a / b)),
-			(a, b) => Err(EggError::OperatorComplaint(format!("Invalid argument: {a}, {b} please provide a numbers"))),
+			(a, b) => Err(EggError::OperatorComplaint(format!("Arguments: {a}, {b} must both be numbers"))),
+		}
+	}
+}
+
+// Basic modulus operation
+pub struct Modulus;
+
+impl Operator for Modulus {
+	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+		debug_assert_eq!(args.len(), 2);
+
+		let val1 = evaluate(&args[0], scope, builtins)?;
+		let val2 = evaluate(&args[1], scope, builtins)?;
+
+		match (val1, val2) {
+			(Value::Number(a), Value::Number(b)) => Ok(Value::Number(a % b)),
+			(a, b) => Err(EggError::OperatorComplaint(format!("Arguments: {a}, {b} must both be numbers"))),
 		}
 	}
 }
