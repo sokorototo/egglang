@@ -1,5 +1,5 @@
 use crate::expression::Value;
-use std::{ops::Range, rc::Rc};
+use std::{ops::Range, sync::Arc};
 
 /// Result type used in this crate.
 pub type EggResult<T = ()> = Result<T, EggError>;
@@ -18,7 +18,7 @@ pub enum EggError {
 	#[error("Operator Complaint: {0}")]
 	OperatorComplaint(String),
 	#[error("No map found with the identifier: {0:?}")]
-	MapNotFound(Rc<str>),
+	MapNotFound(Arc<str>),
 	#[error("The provided map tag: {0}, is invalid. Reason {1}")]
 	InvalidMapTag(Value, String),
 	#[error("Assertion failed: {0}")]

@@ -6,14 +6,14 @@ use crate::{
 	evaluator::evaluate,
 	expression::{Expression, Value},
 };
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::HashMap, sync::Arc};
 
-fn get_resolver() -> &'static mut HashMap<Rc<str>, HashMap<Value, Value>> {
-	static mut RESOLVER: Option<HashMap<Rc<str>, HashMap<Value, Value>>> = None;
+fn get_resolver() -> &'static mut HashMap<Arc<str>, HashMap<Value, Value>> {
+	static mut RESOLVER: Option<HashMap<Arc<str>, HashMap<Value, Value>>> = None;
 	unsafe { RESOLVER.get_or_insert(Default::default()) }
 }
 
-fn value_into_map_tag(value: Value) -> Result<Rc<str>, EggError> {
+fn value_into_map_tag(value: Value) -> Result<Arc<str>, EggError> {
 	match value {
 		Value::String(s) => Ok(s),
 		invalid_map_tag => Err(EggError::InvalidMapTag(invalid_map_tag, "Map tag must be a string".into())),

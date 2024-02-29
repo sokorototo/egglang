@@ -1,11 +1,11 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 /// An expression is the smallest unit of code in egg.
 #[derive(Debug, Clone)]
 pub enum Expression {
 	Value { value: Value },
-	Word { name: Rc<str> },
-	Operation { name: Rc<str>, parameters: Vec<Expression> },
+	Word { name: Arc<str> },
+	Operation { name: Arc<str>, parameters: Vec<Expression> },
 }
 
 /// A value is the smallest unit of data in egg.
@@ -14,7 +14,7 @@ pub enum Value {
 	Nil,
 	Number(isize),
 	Boolean(bool),
-	String(Rc<str>),
+	String(Arc<str>),
 }
 
 impl std::fmt::Debug for Value {
@@ -65,8 +65,8 @@ impl From<isize> for Value {
 	}
 }
 
-impl From<Rc<str>> for Value {
-	fn from(val: Rc<str>) -> Self {
+impl From<Arc<str>> for Value {
+	fn from(val: Arc<str>) -> Self {
 		Value::String(val)
 	}
 }
