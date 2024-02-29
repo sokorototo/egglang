@@ -14,5 +14,5 @@ keywords = ["egg", "interpreter", "parser", "language", "scripting"]
 categories = ["compilers", "parser-implementations"]
 
 [dependencies]
-logos = "0.13.0"
-thiserror = "1.0.50"
+logos = "0.14.0"
+thiserror = "1.0.57"

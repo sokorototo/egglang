@@ -2,50 +2,40 @@ use std::collections::HashMap;
 
 use super::Operator;
 use crate::{
-    errors::EggResult,
-    evaluator::evaluate,
-    expression::{Expression, Value},
+	errors::EggResult,
+	evaluator::evaluate,
+	expression::{Expression, Value},
 };
 // Prints it's data and a newline
 pub struct PrintLine;
 
 impl Operator for PrintLine {
-    fn evaluate(
-        &self,
-        args: &[Expression],
-        scope: &mut HashMap<String, Value>,
-        builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> EggResult<Value> {
-        for arg in args {
-            match evaluate(arg, scope, builtins)? {
-                Value::Number(num) => println!("{num}"),
-                Value::String(string) => println!("{string}"),
-                Value::Nil => println!("nil"),
-            }
-        }
+	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+		for arg in args {
+			match evaluate(arg, scope, builtins)? {
+				Value::Number(num) => println!("{num}"),
+				Value::String(string) => println!("{string}"),
+				Value::Nil => println!("nil"),
+			}
+		}
 
-        Ok(Value::Nil)
-    }
+		Ok(Value::Nil)
+	}
 }
 
 // Prints it's arguments without a newline
 pub struct Print;
 
 impl Operator for Print {
-    fn evaluate(
-        &self,
-        args: &[Expression],
-        scope: &mut HashMap<String, Value>,
-        builtins: &HashMap<&str, Box<dyn Operator>>,
-    ) -> EggResult<Value> {
-        for arg in args {
-            match evaluate(arg, scope, builtins)? {
-                Value::Number(num) => print!("{num} "),
-                Value::String(string) => print!("{string} "),
-                Value::Nil => print!("nil"),
-            }
-        }
+	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+		for arg in args {
+			match evaluate(arg, scope, builtins)? {
+				Value::Number(num) => print!("{num} "),
+				Value::String(string) => print!("{string} "),
+				Value::Nil => print!("nil"),
+			}
+		}
 
-        Ok(Value::Nil)
-    }
+		Ok(Value::Nil)
+	}
 }
