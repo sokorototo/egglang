@@ -5,7 +5,8 @@ fn test() {
 	use std::fs::{read_dir, read_to_string};
 
 	// Define runtime variables
-	let builtins = operators::std();
+	let mut builtins = operators::empty();
+	operators::full(&mut builtins);
 
 	// Read data
 	let scripts = {
