@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use logos::Logos;
 
 use crate::{
@@ -29,20 +31,24 @@ enum Token {
 
 /// Parse a string into a list of expression, then calls `discover` with each expression
 pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
-	let mut lex = Token::lexer(script.as_ref());
+	let script = script.as_ref();
+	let lex = Token::lexer(script);
 
 	let mut exprs = Vec::with_capacity(64);
 	let mut stack = Vec::with_capacity(16);
 
-	while let Some(token) = lex.next() {
+	for (token, span) in lex.spanned() {
 		let token = token.map_err(|_| EggError::UnknownToken)?;
-		parse_token(&token, lex.slice(), &mut exprs, &mut stack)?;
+		parse_token(&token, script, span, &mut exprs, &mut stack)?;
 	}
 
+	exprs.shrink_to_fit();
 	Ok(exprs)
 }
 
-fn parse_token(token: &Token, data: &str, exprs: &mut Vec<Expression>, stack: &mut Vec<usize>) -> EggResult<()> {
+fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<Expression>, stack: &mut Vec<usize>) -> EggResult<()> {
+	let data = &source[span.clone()];
+
 	match token {
 		Token::String => exprs.push(Expression::Value {
 			value: Value::String(data[1..data.len() - 1].into()),
@@ -50,18 +56,18 @@ fn parse_token(token: &Token, data: &str, exprs: &mut Vec<Expression>, stack: &m
 		Token::Number => exprs.push(Expression::Value {
 			value: Value::Number(data.parse().unwrap()),
 		}),
-		Token::Word => exprs.push(Expression::Word { name: (*data).into() }),
+		Token::Word => exprs.push(Expression::Word { name: data.into() }),
 
 		Token::LeftBracket => stack.push(exprs.len()),
 		Token::RightBracket => {
-			let start = stack.pop().ok_or(EggError::UnbalancedBrackets(stack.len()))?;
+			let start = stack.pop().ok_or(EggError::UnbalancedBrackets(span.start))?;
 			let end = exprs.len();
 
 			// Collect operation arguments
 			let parameters = exprs.drain(start..end).collect();
 
 			// Get name of operation
-			let name = exprs.pop().ok_or(EggError::UnbalancedBrackets(stack.len()))?;
+			let name = exprs.pop().ok_or(EggError::UnbalancedBrackets(span.start))?;
 			let operation = Expression::Operation {
 				name: match name {
 					Expression::Word { name } => name.clone(),

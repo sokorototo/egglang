@@ -52,10 +52,18 @@ pub fn std() -> HashMap<&'static str, Box<dyn Operator>> {
 	map.insert("is_nil", Box::new(comparison::IsNil));
 
 	// Arithmetic
-	map.insert("add", Box::new(arithmetic::Add));
+	map.insert("sum", Box::new(arithmetic::Sum));
 	map.insert("subtract", Box::new(arithmetic::Subtract));
 	map.insert("divide", Box::new(arithmetic::Divide));
 	map.insert("multiply", Box::new(arithmetic::Multiply));
+	map.insert("modulus", Box::new(arithmetic::Modulus));
+
+	// Arithmetic symbols
+	map.insert("+", Box::new(arithmetic::Sum));
+	map.insert("-", Box::new(arithmetic::Subtract));
+	map.insert("/", Box::new(arithmetic::Divide));
+	map.insert("*", Box::new(arithmetic::Multiply));
+	map.insert("%", Box::new(arithmetic::Modulus));
 
 	// Boolean
 	map.insert("and", Box::new(boolean::AND));

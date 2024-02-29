@@ -191,6 +191,6 @@ impl Operator for Size {
 			None => return Err(EggError::MapNotFound(tag)),
 		};
 
-		Ok(Value::Number(res as isize))
+		Ok(Value::Number(res as _))
 	}
 }

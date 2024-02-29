@@ -33,7 +33,7 @@ print_line("")
 define(i, 0)
 repeat(10, do(
 	print(i),
-	set(i, add(i, 1)),
+	set(i, sum(i 1)),
 )),
 
 # Simple print statement
