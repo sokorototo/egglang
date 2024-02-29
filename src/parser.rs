@@ -71,7 +71,7 @@ fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<
 			let operation = Expression::Operation {
 				name: match name {
 					Expression::Word { name } => name.clone(),
-					_ => return Err(EggError::ParserError("Cannot use non-word as operation name".into())),
+					_ => return Err(EggError::ParserError(span, "Cannot use non-word as operation name".into())),
 				},
 				parameters,
 			};

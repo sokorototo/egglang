@@ -7,6 +7,7 @@ use crate::{
 	expression::{self, Value},
 };
 
+// Operation that converts numbers to strings
 pub struct ToString;
 
 impl Operator for ToString {
@@ -19,14 +20,14 @@ impl Operator for ToString {
 		let value = match res {
 			Value::Number(number) => number.to_string().into(),
 			Value::String(s) => s,
-			Value::Nil => "nil".to_string().into(),
+			Value::Nil => "Nil".to_string().into(),
 		};
 
 		Ok(Value::String(value))
 	}
 }
 
-// Define a special form that converts strings to numbers
+// Operation that converts strings to numbers
 pub struct ToNumber;
 
 impl Operator for ToNumber {
