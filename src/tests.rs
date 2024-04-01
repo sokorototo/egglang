@@ -1,9 +1,8 @@
 use crate::{evaluator, operators, parser, scope};
+use std::fs::{read_dir, read_to_string};
 
 #[test]
 fn test() {
-	use std::fs::{read_dir, read_to_string};
-
 	// Define runtime variables
 	let mut builtins = operators::empty();
 	operators::full(&mut builtins);
