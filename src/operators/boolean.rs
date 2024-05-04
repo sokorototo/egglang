@@ -6,7 +6,11 @@ use crate::{
 	evaluator::evaluate,
 	expression::{Expression, Value},
 };
-use std::collections::HashMap;
+use alloc::{
+	boxed::Box,
+	collections::BTreeMap,
+	string::{String, ToString},
+};
 
 static NOT_NUMBER_OR_BOOLEAN: &str = "please provide numbers or booleans as arguments for boolean operations";
 
@@ -14,7 +18,7 @@ static NOT_NUMBER_OR_BOOLEAN: &str = "please provide numbers or booleans as argu
 pub struct AND;
 
 impl Operator for AND {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, builtins)?;
@@ -32,7 +36,7 @@ impl Operator for AND {
 pub struct OR;
 
 impl Operator for OR {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, builtins)?;
@@ -50,7 +54,7 @@ impl Operator for OR {
 pub struct NOT;
 
 impl Operator for NOT {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		match evaluate(&args[0], scope, builtins)? {
 			Value::Number(a) => Ok((!a).into()),

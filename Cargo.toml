@@ -11,8 +11,12 @@ readme = "README.md"
 include = ["Cargo.toml", "Cargo.lock", "src/*"]
 
 keywords = ["egg", "interpreter", "parser", "language", "scripting"]
-categories = ["compilers", "parser-implementations"]
+categories = ["compilers", "parser-implementations", "no-std"]
 
 [dependencies]
+arcstr = "1.1.5"
 logos = "0.14.0"
-thiserror = "1.0.57"
+thiserror-no-std = "2.0.2"
+
+[features]
+std = []

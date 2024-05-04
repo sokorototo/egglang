@@ -4,13 +4,17 @@ use crate::{
 	evaluator::evaluate,
 	expression::{self, Value},
 };
-use std::collections::HashMap;
+use alloc::{
+	boxed::Box,
+	collections::BTreeMap,
+	string::{String, ToString},
+};
 
 // Evaluates all expressions defined within it's operands
 pub struct Do;
 
 impl Operator for Do {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		args.iter().try_fold(Value::Nil, |_, nxt| evaluate(nxt, scope, builtins))
 	}
 }
@@ -19,7 +23,7 @@ impl Operator for Do {
 pub struct If;
 
 impl Operator for If {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 3);
 
@@ -44,7 +48,7 @@ impl Operator for If {
 pub struct While;
 
 impl Operator for While {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 2);
 
@@ -83,7 +87,7 @@ impl Operator for While {
 pub struct Repeat;
 
 impl Operator for Repeat {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 2);
 
@@ -112,10 +116,12 @@ impl Operator for Repeat {
 }
 
 // Sleep for x milliseconds
+#[cfg(feature = "std")]
 pub struct Sleep;
 
+#[cfg(feature = "std")]
 impl Operator for Sleep {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		use std::{thread::sleep, time::Duration};
 
 		// Assert correct length of arguments
@@ -139,7 +145,7 @@ impl Operator for Sleep {
 pub struct Panic;
 
 impl Operator for Panic {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
@@ -157,7 +163,7 @@ impl Operator for Panic {
 pub struct Assert;
 
 impl Operator for Assert {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 2);
 

@@ -1,10 +1,9 @@
-use std::collections::HashMap;
-
 use crate::expression::Value;
+use alloc::{collections::BTreeMap, string::String};
 
 /// Build a new scope containing values required by the runtime.
-pub fn default() -> HashMap<String, Value> {
-	let mut map = HashMap::new();
+pub fn default() -> BTreeMap<String, Value> {
+	let mut map = BTreeMap::new();
 
 	map.insert("true".into(), true.into());
 	map.insert("false".into(), false.into());
@@ -19,6 +18,6 @@ pub fn default() -> HashMap<String, Value> {
 }
 
 // Create an empty scope
-pub fn empty() -> HashMap<String, Value> {
-	HashMap::new()
+pub fn empty() -> BTreeMap<String, Value> {
+	BTreeMap::new()
 }

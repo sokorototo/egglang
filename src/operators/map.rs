@@ -6,14 +6,15 @@ use crate::{
 	evaluator::evaluate,
 	expression::{Expression, Value},
 };
-use std::{collections::HashMap, sync::Arc};
+use alloc::{boxed::Box, collections::BTreeMap, string::String};
+use arcstr::ArcStr;
 
-fn get_resolver() -> &'static mut HashMap<Arc<str>, HashMap<Value, Value>> {
-	static mut RESOLVER: Option<HashMap<Arc<str>, HashMap<Value, Value>>> = None;
+fn get_resolver() -> &'static mut BTreeMap<ArcStr, BTreeMap<Value, Value>> {
+	static mut RESOLVER: Option<BTreeMap<ArcStr, BTreeMap<Value, Value>>> = None;
 	unsafe { RESOLVER.get_or_insert(Default::default()) }
 }
 
-fn value_into_map_tag(value: Value) -> Result<Arc<str>, EggError> {
+fn value_into_map_tag(value: Value) -> Result<ArcStr, EggError> {
 	match value {
 		Value::String(s) => Ok(s),
 		invalid_map_tag => Err(EggError::InvalidMapTag(invalid_map_tag, "Map tag must be a string".into())),
@@ -24,7 +25,7 @@ fn value_into_map_tag(value: Value) -> Result<Arc<str>, EggError> {
 pub struct NewMap;
 
 impl Operator for NewMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 
 		let map_ref = evaluate(&args[0], scope, builtins)?;
@@ -34,7 +35,7 @@ impl Operator for NewMap {
 			return Err(EggError::InvalidMapTag(Value::String(tag), "Map tag already exists".into()));
 		}
 
-		get_resolver().insert(tag.clone(), HashMap::new());
+		get_resolver().insert(tag.clone(), BTreeMap::new());
 		Ok(tag.into())
 	}
 }
@@ -43,7 +44,7 @@ impl Operator for NewMap {
 pub struct ExistsMap;
 
 impl Operator for ExistsMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 		let tag = evaluate(&args[0], scope, builtins)?;
 		let tag = value_into_map_tag(tag)?;
@@ -56,7 +57,7 @@ impl Operator for ExistsMap {
 pub struct DeleteMap;
 
 impl Operator for DeleteMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 		let tag = evaluate(&args[0], scope, builtins)?;
 		let tag = value_into_map_tag(tag)?;
@@ -68,7 +69,7 @@ impl Operator for DeleteMap {
 pub struct Insert;
 
 impl Operator for Insert {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key, value
 		assert!(args.len() == 3);
 
@@ -87,10 +88,12 @@ impl Operator for Insert {
 }
 
 /// Print a Map's value to the console
+#[cfg(feature = "std")]
 pub struct PrintMap;
 
+#[cfg(feature = "std")]
 impl Operator for PrintMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref
 		assert!(args.len() == 1);
 
@@ -110,7 +113,7 @@ impl Operator for PrintMap {
 pub struct Get;
 
 impl Operator for Get {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
@@ -131,7 +134,7 @@ impl Operator for Get {
 pub struct Has;
 
 impl Operator for Has {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
@@ -152,7 +155,7 @@ impl Operator for Has {
 pub struct Remove;
 
 impl Operator for Remove {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
@@ -173,7 +176,7 @@ impl Operator for Remove {
 pub struct Size;
 
 impl Operator for Size {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 1);
 

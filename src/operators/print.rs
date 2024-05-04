@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use alloc::{boxed::Box, collections::BTreeMap, string::String};
 
 use super::Operator;
 use crate::{
@@ -10,7 +10,7 @@ use crate::{
 pub struct PrintLine;
 
 impl Operator for PrintLine {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		for arg in args {
 			match evaluate(arg, scope, builtins)? {
 				Value::Number(num) => println!("{num}"),
@@ -28,7 +28,7 @@ impl Operator for PrintLine {
 pub struct Print;
 
 impl Operator for Print {
-	fn evaluate(&self, args: &[Expression], scope: &mut HashMap<String, Value>, builtins: &HashMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		for arg in args {
 			match evaluate(arg, scope, builtins)? {
 				Value::Number(num) => print!("{num} "),

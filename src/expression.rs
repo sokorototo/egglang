@@ -1,24 +1,25 @@
-use std::sync::Arc;
+use alloc::{string::String, vec::Vec};
+use arcstr::ArcStr;
 
 /// An expression is the smallest unit of code in egg.
 #[derive(Debug, Clone)]
 pub enum Expression {
 	Value { value: Value },
-	Word { name: Arc<str> },
-	Operation { name: Arc<str>, parameters: Vec<Expression> },
+	Word { name: ArcStr },
+	Operation { name: ArcStr, parameters: Vec<Expression> },
 }
 
 /// A value is the smallest unit of data in egg.
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
 	Nil,
 	Number(isize),
 	Boolean(bool),
-	String(Arc<str>),
+	String(ArcStr),
 }
 
-impl std::fmt::Debug for Value {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl alloc::fmt::Debug for Value {
+	fn fmt(&self, f: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
 		match self {
 			Self::Nil => write!(f, "Nil"),
 			Self::Number(arg0) => arg0.fmt(f),
@@ -28,8 +29,8 @@ impl std::fmt::Debug for Value {
 	}
 }
 
-impl std::fmt::Display for Value {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl alloc::fmt::Display for Value {
+	fn fmt(&self, f: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
 		match self {
 			Self::Nil => write!(f, "Nil"),
 			Self::Number(n) => write!(f, "{n}"),
@@ -65,8 +66,8 @@ impl From<isize> for Value {
 	}
 }
 
-impl From<Arc<str>> for Value {
-	fn from(val: Arc<str>) -> Self {
+impl From<ArcStr> for Value {
+	fn from(val: ArcStr) -> Self {
 		Value::String(val)
 	}
 }
