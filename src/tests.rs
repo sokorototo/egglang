@@ -9,8 +9,7 @@ fn test() {
 
 	// Read data
 	let scripts = {
-		let script_folder = "scripts";
-		read_dir(script_folder)
+		read_dir("scripts")
 			.unwrap()
 			.filter_map(|entry| entry.ok())
 			.filter(|entry| entry.file_type().ok().map(|t| t.is_file()).unwrap_or(false))

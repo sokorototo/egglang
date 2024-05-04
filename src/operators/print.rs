@@ -32,8 +32,8 @@ impl Operator for Print {
 	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		for arg in args {
 			match evaluate(arg, scope, builtins)? {
-				Value::Number(num) => print!("{num} "),
-				Value::String(string) => print!("{string} "),
+				Value::Number(num) => print!("{num}"),
+				Value::String(string) => print!("{string}"),
 				Value::Nil => print!("Nil"),
 				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
 			}
