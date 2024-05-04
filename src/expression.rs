@@ -23,7 +23,7 @@ impl alloc::fmt::Debug for Value {
 	fn fmt(&self, f: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
 		match self {
 			Self::Nil => write!(f, "Nil"),
-			Self::Number(arg0) => arg0.fmt(f),
+			Self::Number(arg0) => arg0.0.fmt(f),
 			Self::String(arg0) => arg0.fmt(f),
 			Self::Boolean(arg0) => arg0.fmt(f),
 		}

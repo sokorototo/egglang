@@ -32,8 +32,8 @@ println("")
 # Print numbers from zero to ten
 define(i, 0)
 repeat(10, do(
-	print(i),
-	set(i, sum(i -1.5E3)),
+	print(i, " "),
+	set(i, sum(i -1.5E-3)),
 )),
 
 # Simple print statement

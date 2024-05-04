@@ -4,4 +4,4 @@ define(res, "20")
 set(x, multiply(-10 x 200))
 
 # Print Result
-assert(equals(x, -1010), print("Float Arithmetic Test Failed:", x))
+assert(equals(x, -1000), print("Float Arithmetic Test Failed: ", x))
