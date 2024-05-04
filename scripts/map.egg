@@ -15,7 +15,7 @@ map.insert(class_mates, "Newton Toto", "Me, :P")
 # Get values from the map
 define(steve, map.get(class_mates, "Steve"))
 assert(equals(steve, "Goofy Ahh Block Puncher"), "Steve should be Goofy Ahh Block Puncher")
-println(string.concat("Steve: ", steve))
+println("Steve: ", steve)
 
 # Check if a map has a value
 assert(map.has(class_mates, "Steve"), "Map should have Steve")

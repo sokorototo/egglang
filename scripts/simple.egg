@@ -23,25 +23,21 @@ if (
 )
 
 # Expressions as values
-println("")
 set(res, if(equals(x, 10), "10", "20"))
-println(string.concat("RES=", res))
+println("RES=", res)
 
-println("")
 
 # Print numbers from zero to ten
 define(i, 0)
 repeat(10, do(
-	print(i, " "),
+	println(i),
 	set(i, sum(i -1.5E-3)),
 )),
 
 # Simple print statement
-println("")
 println("Hello, grab a cup of tea or a beer if that's more your thing")
 
 # Demonstration of println
-println("")
 println(res)
 println("I have nil knowledge indeed")
 

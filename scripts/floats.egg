@@ -5,3 +5,7 @@ set(x, multiply(-10 x 200))
 
 # Print Result
 assert(equals(x, -1000), print("Float Arithmetic Test Failed: ", x))
+
+# Simple Tests for float parsing and handling
+repeat(20, set(x, sum(3.5 1E-3 5 -2.0 314159E-5 x)))
+println("The value of x is: ", x)

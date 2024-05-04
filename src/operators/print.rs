@@ -1,4 +1,4 @@
-use alloc::{boxed::Box, collections::BTreeMap, string::String};
+use std::{collections::BTreeMap, io::Write};
 
 use super::Operator;
 use crate::{
@@ -12,15 +12,24 @@ pub struct PrintLine;
 
 impl Operator for PrintLine {
 	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		for arg in args {
+		let len = args.len();
+		let mut lock = std::io::stdout().lock();
+
+		for (idx, arg) in args.iter().enumerate() {
 			match evaluate(arg, scope, builtins)? {
-				Value::Number(num) => println!("{num}"),
-				Value::String(string) => println!("{string}"),
-				Value::Nil => println!("Nil"),
-				Value::Boolean(b) => println!("{}", if b { "True" } else { "False" }),
+				Value::Number(num) => lock.write_all(format!("{num}").as_bytes()).unwrap(),
+				Value::String(string) => lock.write_all(string.as_bytes()).unwrap(),
+				Value::Nil => lock.write_all(b"Nil").unwrap(),
+				Value::Boolean(b) => lock.write_all(if b { b"True" } else { b"False" }).unwrap(),
+			};
+
+			if len > 1 && idx != len - 1 {
+				lock.write_all(b" ").unwrap();
 			}
 		}
 
+		lock.write_all(b"\n").unwrap();
+		lock.flush().unwrap();
 		Ok(Value::Nil)
 	}
 }
@@ -30,15 +39,23 @@ pub struct Print;
 
 impl Operator for Print {
 	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		for arg in args {
+		let len = args.len();
+		let mut lock = std::io::stdout().lock();
+
+		for (idx, arg) in args.iter().enumerate() {
 			match evaluate(arg, scope, builtins)? {
-				Value::Number(num) => print!("{num}"),
-				Value::String(string) => print!("{string}"),
-				Value::Nil => print!("Nil"),
-				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
+				Value::Number(num) => lock.write_all(format!("{num}").as_bytes()).unwrap(),
+				Value::String(string) => lock.write_all(string.as_bytes()).unwrap(),
+				Value::Nil => lock.write_all(b"Nil").unwrap(),
+				Value::Boolean(b) => lock.write_all(if b { b"True" } else { b"False" }).unwrap(),
+			};
+
+			if len > 1 && idx != len - 1 {
+				lock.write_all(b" ").unwrap();
 			}
 		}
 
+		lock.flush().unwrap();
 		Ok(Value::Nil)
 	}
 }

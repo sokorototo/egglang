@@ -1,4 +1,4 @@
-use alloc::{string::String, vec::Vec};
+use alloc::vec::Vec;
 use arcstr::ArcStr;
 use ordered_float::OrderedFloat;
 
@@ -46,12 +46,6 @@ impl alloc::fmt::Display for Value {
 impl From<bool> for Value {
 	fn from(val: bool) -> Self {
 		Value::Boolean(val)
-	}
-}
-
-impl From<String> for Value {
-	fn from(val: String) -> Self {
-		Value::String(val.into())
 	}
 }
 
