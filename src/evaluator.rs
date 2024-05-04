@@ -2,13 +2,14 @@ use crate::{
 	errors::{EggError, EggResult},
 	expression::{Expression, Value},
 	operators::Operator,
+	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap, string::String};
+use alloc::{boxed::Box, collections::BTreeMap};
 
 pub static mut EVALUATIONS: u64 = 0;
 
 /// Given an expression, evaluate it and return the result
-pub fn evaluate(expr: &Expression, scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+pub fn evaluate(expr: &Expression, scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 	unsafe { EVALUATIONS += 1 };
 
 	match expr {

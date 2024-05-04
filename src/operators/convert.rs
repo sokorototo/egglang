@@ -3,18 +3,15 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{self, Value},
+	scope::Scope,
 };
-use alloc::{
-	boxed::Box,
-	collections::BTreeMap,
-	string::{String, ToString as _},
-};
+use alloc::{boxed::Box, collections::BTreeMap, string::ToString as _};
 
 // Operation that converts numbers to strings
 pub struct ToString;
 
 impl Operator for ToString {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
@@ -28,7 +25,7 @@ impl Operator for ToString {
 pub struct ToNumber;
 
 impl Operator for ToNumber {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 

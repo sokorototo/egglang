@@ -3,18 +3,15 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
+	scope::Scope,
 };
-use alloc::{
-	boxed::Box,
-	collections::BTreeMap,
-	string::{String, ToString},
-};
+use alloc::{boxed::Box, collections::BTreeMap, string::ToString};
 
 // Checks for equality
 pub struct Equals;
 
 impl super::Operator for Equals {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -28,7 +25,7 @@ impl super::Operator for Equals {
 pub struct NotEquals;
 
 impl super::Operator for NotEquals {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -42,7 +39,7 @@ impl super::Operator for NotEquals {
 pub struct GreaterThan;
 
 impl super::Operator for GreaterThan {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -59,7 +56,7 @@ impl super::Operator for GreaterThan {
 pub struct LessThan;
 
 impl super::Operator for LessThan {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -76,7 +73,7 @@ impl super::Operator for LessThan {
 pub struct IsNil;
 
 impl super::Operator for IsNil {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 
 		Ok(matches!(evaluate(&args[0], scope, operators)?, Value::Nil).into())

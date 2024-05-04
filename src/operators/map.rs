@@ -5,8 +5,9 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
+	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap, string::String};
+use alloc::{boxed::Box, collections::BTreeMap};
 use arcstr::ArcStr;
 
 fn get_resolver() -> &'static mut BTreeMap<ArcStr, BTreeMap<Value, Value>> {
@@ -25,7 +26,7 @@ fn value_into_map_tag(value: Value) -> Result<ArcStr, EggError> {
 pub struct NewMap;
 
 impl Operator for NewMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 
 		let map_ref = evaluate(&args[0], scope, operators)?;
@@ -44,7 +45,7 @@ impl Operator for NewMap {
 pub struct ExistsMap;
 
 impl Operator for ExistsMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
@@ -57,7 +58,7 @@ impl Operator for ExistsMap {
 pub struct DeleteMap;
 
 impl Operator for DeleteMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
@@ -69,7 +70,7 @@ impl Operator for DeleteMap {
 pub struct Insert;
 
 impl Operator for Insert {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key, value
 		assert!(args.len() == 3);
 
@@ -93,7 +94,7 @@ pub struct PrintMap;
 
 #[cfg(feature = "std")]
 impl Operator for PrintMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref
 		assert!(args.len() == 1);
 
@@ -113,7 +114,7 @@ impl Operator for PrintMap {
 pub struct Get;
 
 impl Operator for Get {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
@@ -134,7 +135,7 @@ impl Operator for Get {
 pub struct Has;
 
 impl Operator for Has {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
@@ -155,7 +156,7 @@ impl Operator for Has {
 pub struct Remove;
 
 impl Operator for Remove {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
@@ -176,7 +177,7 @@ impl Operator for Remove {
 pub struct Size;
 
 impl Operator for Size {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 1);
 

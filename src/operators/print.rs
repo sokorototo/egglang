@@ -11,7 +11,7 @@ use crate::{
 pub struct PrintLine;
 
 impl Operator for PrintLine {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		let len = args.len();
 		for (idx, arg) in args.iter().enumerate() {
 			match evaluate(arg, scope, operators)? {
@@ -35,7 +35,7 @@ impl Operator for PrintLine {
 pub struct Print;
 
 impl Operator for Print {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		let len = args.len();
 		for (idx, arg) in args.iter().enumerate() {
 			match evaluate(arg, scope, operators)? {

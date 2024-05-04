@@ -3,19 +3,15 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{self, Value},
+	scope::Scope,
 };
-use alloc::{
-	boxed::Box,
-	collections::BTreeMap,
-	format,
-	string::{String, ToString},
-};
+use alloc::{boxed::Box, collections::BTreeMap, format, string::ToString};
 
 /// Defines a new variable
 pub struct Define;
 
 impl Operator for Define {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 		let name = &args[0];
 
@@ -23,7 +19,7 @@ impl Operator for Define {
 			expression::Expression::Word { name } => {
 				let value = evaluate(&args[1], scope, operators)?;
 
-				if scope.contains_key(name.as_str()) {
+				if scope.exists(name.as_str()) {
 					#[rustfmt::skip]
                     return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
 				} else {
@@ -36,7 +32,7 @@ impl Operator for Define {
 			expression::Expression::Value { value: Value::String(name) } => {
 				let value = evaluate(&args[1], scope, operators)?;
 
-				if scope.contains_key(name.as_str()) {
+				if scope.exists(name.as_str()) {
 					#[rustfmt::skip]
                     return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
 				} else {
@@ -54,7 +50,7 @@ impl Operator for Define {
 pub struct Set;
 
 impl Operator for Set {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 		let variable_name = &args[0];
 		let old_value;
@@ -79,7 +75,7 @@ impl Operator for Set {
 pub struct Delete;
 
 impl Operator for Delete {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		let name = &args[0];
 
@@ -101,14 +97,14 @@ impl Operator for Delete {
 pub struct Exists;
 
 impl Operator for Exists {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		let name = &args[0];
 
 		let res = match name {
-			expression::Expression::Word { name } => scope.contains_key(name.as_str()),
+			expression::Expression::Word { name } => scope.exists(name.as_str()),
 			expression::Expression::Value { value } => match value {
-				Value::String(name) => scope.contains_key(name.as_str()),
+				Value::String(name) => scope.exists(name.as_str()),
 				#[rustfmt::skip]
                 val => return Err(EggError::OperatorComplaint(format!( "Cannot check if {val} exists" ))),
 			},
@@ -125,7 +121,7 @@ impl Operator for Exists {
 pub struct TypeOf;
 
 impl super::Operator for TypeOf {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 
 		let value = evaluate(&args[0], scope, operators)?;

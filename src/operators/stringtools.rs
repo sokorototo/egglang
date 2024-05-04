@@ -3,6 +3,7 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{self, Value},
+	scope::Scope,
 };
 use alloc::{
 	boxed::Box,
@@ -13,7 +14,7 @@ use alloc::{
 pub struct Concat;
 
 impl Operator for Concat {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		let mut result = String::with_capacity(args.len() * 64);
 
 		for arg in args {
@@ -31,7 +32,7 @@ impl Operator for Concat {
 pub struct Length;
 
 impl Operator for Length {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
@@ -51,7 +52,7 @@ impl Operator for Length {
 pub struct Slice;
 
 impl Operator for Slice {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 3);
 
@@ -88,7 +89,7 @@ impl Operator for Slice {
 pub struct ToUpper;
 
 impl Operator for ToUpper {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
@@ -107,7 +108,7 @@ impl Operator for ToUpper {
 pub struct ToLower;
 
 impl Operator for ToLower {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
@@ -126,7 +127,7 @@ impl Operator for ToLower {
 pub struct Trim;
 
 impl Operator for Trim {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 

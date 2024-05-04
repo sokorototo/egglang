@@ -3,14 +3,15 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
+	scope::Scope
 };
-use alloc::{boxed::Box, collections::BTreeMap, format, string::String};
+use alloc::{boxed::Box, collections::BTreeMap, format};
 
 // Basic add operation
 pub struct Sum;
 
 impl Operator for Sum {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		args.iter()
 			.map(|arg| evaluate(arg, scope, operators))
 			.map(|d| match d {
@@ -27,7 +28,7 @@ impl Operator for Sum {
 pub struct Multiply;
 
 impl Operator for Multiply {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		args.iter()
 			.map(|arg| evaluate(arg, scope, operators))
 			.map(|d| match d {
@@ -44,7 +45,7 @@ impl Operator for Multiply {
 pub struct Subtract;
 
 impl Operator for Subtract {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -61,7 +62,7 @@ impl Operator for Subtract {
 pub struct Divide;
 
 impl Operator for Divide {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -78,7 +79,7 @@ impl Operator for Divide {
 pub struct Modulus;
 
 impl Operator for Modulus {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;

@@ -1,8 +1,9 @@
 use crate::{
 	errors::EggResult,
 	expression::{Expression, Value},
+	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap, string::String};
+use alloc::{boxed::Box, collections::BTreeMap};
 
 // egg-std definitions
 mod arithmetic;
@@ -20,7 +21,7 @@ mod variables;
 
 /// Any function callable in Egg
 pub trait Operator {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value>;
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value>;
 }
 
 /// Create an empty map of operations

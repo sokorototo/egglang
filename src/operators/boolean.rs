@@ -5,12 +5,9 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
+	scope::Scope,
 };
-use alloc::{
-	boxed::Box,
-	collections::BTreeMap,
-	string::{String, ToString},
-};
+use alloc::{boxed::Box, collections::BTreeMap, string::ToString};
 
 static NOT_BOOLEAN: &str = "Please provide booleans as arguments for boolean operations";
 
@@ -18,7 +15,7 @@ static NOT_BOOLEAN: &str = "Please provide booleans as arguments for boolean ope
 pub struct AND;
 
 impl Operator for AND {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -35,7 +32,7 @@ impl Operator for AND {
 pub struct OR;
 
 impl Operator for OR {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
 		let val1 = evaluate(&args[0], scope, operators)?;
@@ -52,7 +49,7 @@ impl Operator for OR {
 pub struct NOT;
 
 impl Operator for NOT {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		match evaluate(&args[0], scope, operators)? {
 			Value::Boolean(a) => Ok((!a).into()),
