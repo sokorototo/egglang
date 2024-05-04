@@ -4,8 +4,8 @@ use std::fs::{read_dir, read_to_string};
 #[test]
 fn test() {
 	// Define runtime variables
-	let mut builtins = operators::empty();
-	operators::full(&mut builtins);
+	let mut operators = operators::empty();
+	operators::full(&mut operators);
 
 	// Read data
 	let scripts = {
@@ -23,7 +23,7 @@ fn test() {
 		let ast = parser::parse(script).unwrap();
 
 		ast.iter().for_each(|expr| {
-			evaluator::evaluate(expr, &mut scope, &builtins).unwrap();
+			evaluator::evaluate(expr, &mut scope, &operators).unwrap();
 		});
 	});
 }

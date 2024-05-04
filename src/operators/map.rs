@@ -25,10 +25,10 @@ fn value_into_map_tag(value: Value) -> Result<ArcStr, EggError> {
 pub struct NewMap;
 
 impl Operator for NewMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 
-		let map_ref = evaluate(&args[0], scope, builtins)?;
+		let map_ref = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(map_ref)?;
 
 		if get_resolver().contains_key(&tag) {
@@ -44,9 +44,9 @@ impl Operator for NewMap {
 pub struct ExistsMap;
 
 impl Operator for ExistsMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
-		let tag = evaluate(&args[0], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
 		Ok(get_resolver().contains_key(&tag).into())
 	}
@@ -57,9 +57,9 @@ impl Operator for ExistsMap {
 pub struct DeleteMap;
 
 impl Operator for DeleteMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
-		let tag = evaluate(&args[0], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
 		Ok(get_resolver().remove(&tag).is_some().into())
 	}
@@ -69,13 +69,13 @@ impl Operator for DeleteMap {
 pub struct Insert;
 
 impl Operator for Insert {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key, value
 		assert!(args.len() == 3);
 
-		let tag = evaluate(&args[0], scope, builtins)?;
-		let key = evaluate(&args[1], scope, builtins)?;
-		let value = evaluate(&args[2], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
+		let key = evaluate(&args[1], scope, operators)?;
+		let value = evaluate(&args[2], scope, operators)?;
 
 		let tag = value_into_map_tag(tag)?;
 		let res = match get_resolver().get_mut(&tag) {
@@ -93,11 +93,11 @@ pub struct PrintMap;
 
 #[cfg(feature = "std")]
 impl Operator for PrintMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref
 		assert!(args.len() == 1);
 
-		let tag = evaluate(&args[0], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
 
 		match get_resolver().get(&tag) {
@@ -113,13 +113,13 @@ impl Operator for PrintMap {
 pub struct Get;
 
 impl Operator for Get {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
-		let tag = evaluate(&args[0], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
-		let key = evaluate(&args[1], scope, builtins)?;
+		let key = evaluate(&args[1], scope, operators)?;
 
 		let res = match get_resolver().get(&tag) {
 			Some(map) => map.get(&key),
@@ -134,13 +134,13 @@ impl Operator for Get {
 pub struct Has;
 
 impl Operator for Has {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
-		let tag = evaluate(&args[0], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
-		let key = evaluate(&args[1], scope, builtins)?;
+		let key = evaluate(&args[1], scope, operators)?;
 
 		let res = match get_resolver().get(&tag) {
 			Some(map) => map.contains_key(&key),
@@ -155,13 +155,13 @@ impl Operator for Has {
 pub struct Remove;
 
 impl Operator for Remove {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 2);
 
-		let tag = evaluate(&args[0], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
-		let key = evaluate(&args[1], scope, builtins)?;
+		let key = evaluate(&args[1], scope, operators)?;
 
 		let res = match get_resolver().get_mut(&tag) {
 			Some(map) => map.remove(&key),
@@ -176,11 +176,11 @@ impl Operator for Remove {
 pub struct Size;
 
 impl Operator for Size {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// map_ref, key
 		assert!(args.len() == 1);
 
-		let tag = evaluate(&args[0], scope, builtins)?;
+		let tag = evaluate(&args[0], scope, operators)?;
 		let tag = value_into_map_tag(tag)?;
 
 		let res = match get_resolver().get(&tag) {

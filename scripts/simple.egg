@@ -30,9 +30,9 @@ println("RES=", res)
 # Print numbers from zero to ten
 define(i, 0)
 repeat(10, do(
-	println(i),
+	print(i),
 	set(i, sum(i -1.5E-3)),
-)),
+))
 
 # Simple print statement
 println("Hello, grab a cup of tea or a beer if that's more your thing")

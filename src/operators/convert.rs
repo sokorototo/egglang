@@ -14,12 +14,12 @@ use alloc::{
 pub struct ToString;
 
 impl Operator for ToString {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
 		// Evaluate
-		let res = evaluate(&args[0], scope, builtins)?;
+		let res = evaluate(&args[0], scope, operators)?;
 		Ok(Value::String(res.to_string().into()))
 	}
 }
@@ -28,12 +28,12 @@ impl Operator for ToString {
 pub struct ToNumber;
 
 impl Operator for ToNumber {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
 		// Evaluate
-		let res = evaluate(&args[0], scope, builtins)?;
+		let res = evaluate(&args[0], scope, operators)?;
 
 		match res {
 			Value::String(string) => string.parse::<f32>().map(|f| f.into()).map_err(EggError::UnableToParseNumber),

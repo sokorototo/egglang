@@ -15,13 +15,13 @@ use alloc::{
 pub struct Define;
 
 impl Operator for Define {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 		let name = &args[0];
 
 		match name {
 			expression::Expression::Word { name } => {
-				let value = evaluate(&args[1], scope, builtins)?;
+				let value = evaluate(&args[1], scope, operators)?;
 
 				if scope.contains_key(name.as_str()) {
 					#[rustfmt::skip]
@@ -34,7 +34,7 @@ impl Operator for Define {
 				Ok(value)
 			}
 			expression::Expression::Value { value: Value::String(name) } => {
-				let value = evaluate(&args[1], scope, builtins)?;
+				let value = evaluate(&args[1], scope, operators)?;
 
 				if scope.contains_key(name.as_str()) {
 					#[rustfmt::skip]
@@ -54,15 +54,15 @@ impl Operator for Define {
 pub struct Set;
 
 impl Operator for Set {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 		let variable_name = &args[0];
 		let old_value;
 
 		match variable_name {
 			expression::Expression::Word { name } => {
-				let new_value = evaluate(&args[1], scope, builtins)?;
-				old_value = evaluate(variable_name, scope, builtins);
+				let new_value = evaluate(&args[1], scope, operators)?;
+				old_value = evaluate(variable_name, scope, operators);
 
 				scope.get_mut(name.as_str()).map(|val| *val = new_value);
 			}
@@ -125,10 +125,10 @@ impl Operator for Exists {
 pub struct TypeOf;
 
 impl super::Operator for TypeOf {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 
-		let value = evaluate(&args[0], scope, builtins)?;
+		let value = evaluate(&args[0], scope, operators)?;
 
 		Ok(match value {
 			Value::Number(_) => Value::String("__NUMBER".into()),

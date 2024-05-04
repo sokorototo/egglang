@@ -20,7 +20,7 @@ mod variables;
 
 /// Any function callable in Egg
 pub trait Operator {
-	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value>;
+	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value>;
 }
 
 /// Create an empty map of operations

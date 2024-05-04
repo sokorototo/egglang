@@ -8,7 +8,7 @@ use alloc::{boxed::Box, collections::BTreeMap, string::String};
 pub static mut EVALUATIONS: u64 = 0;
 
 /// Given an expression, evaluate it and return the result
-pub fn evaluate(expr: &Expression, scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+pub fn evaluate(expr: &Expression, scope: &mut BTreeMap<String, Value>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 	unsafe { EVALUATIONS += 1 };
 
 	match expr {
@@ -16,8 +16,8 @@ pub fn evaluate(expr: &Expression, scope: &mut BTreeMap<String, Value>, builtins
 		Expression::Word { name } => scope.get(name.as_str()).ok_or_else(|| EggError::UndefinedBinding(name.to_string())).map(|d| d.clone()),
 		Expression::Operation { name, parameters } => {
 			// Fetch operation
-			let operator = builtins.get(name.as_str()).ok_or_else(|| EggError::SpecialFormNotFound(name.clone()))?;
-			operator.evaluate(parameters, scope, builtins)
+			let operator = operators.get(name.as_str()).ok_or_else(|| EggError::SpecialFormNotFound(name.clone()))?;
+			operator.evaluate(parameters, scope, operators)
 		}
 	}
 }
