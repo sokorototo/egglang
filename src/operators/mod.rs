@@ -11,6 +11,7 @@ mod boolean;
 mod comparison;
 mod control_flow;
 mod convert;
+mod functions;
 mod map;
 
 #[cfg(feature = "std")]
@@ -87,6 +88,7 @@ pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a m
 	map.insert("map.has", Box::new(map::Has));
 	map.insert("map.remove", Box::new(map::Remove));
 	map.insert("map.size", Box::new(map::Size));
+	map.insert("map.clear", Box::new(map::Clear));
 
 	// String tools
 	map.insert("string.length", Box::new(stringtools::Length));

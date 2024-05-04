@@ -2,25 +2,12 @@
 
 use super::Operator;
 use crate::{
-	errors::{EggError, EggResult},
+	errors::EggResult,
 	evaluator::evaluate,
 	expression::{Expression, Value},
 	scope::Scope,
 };
 use alloc::{boxed::Box, collections::BTreeMap};
-use arcstr::ArcStr;
-
-fn get_resolver() -> &'static mut BTreeMap<ArcStr, BTreeMap<Value, Value>> {
-	static mut RESOLVER: Option<BTreeMap<ArcStr, BTreeMap<Value, Value>>> = None;
-	unsafe { RESOLVER.get_or_insert(Default::default()) }
-}
-
-fn value_into_map_tag(value: Value) -> Result<ArcStr, EggError> {
-	match value {
-		Value::String(s) => Ok(s),
-		invalid_map_tag => Err(EggError::InvalidMapTag(invalid_map_tag, "Map tag must be a string".into())),
-	}
-}
 
 /// Creates a new Map and binds it to the specified Value.
 pub struct NewMap;
@@ -30,14 +17,7 @@ impl Operator for NewMap {
 		assert!(args.len() == 1);
 
 		let map_ref = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(map_ref)?;
-
-		if get_resolver().contains_key(&tag) {
-			return Err(EggError::InvalidMapTag(Value::String(tag), "Map tag already exists".into()));
-		}
-
-		get_resolver().insert(tag.clone(), BTreeMap::new());
-		Ok(tag.into())
+		scope.extras_mut().new_map(map_ref).map(|v| v.into())
 	}
 }
 
@@ -48,8 +28,7 @@ impl Operator for ExistsMap {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(tag)?;
-		Ok(get_resolver().contains_key(&tag).into())
+		scope.extras_mut().contains_map(tag).map(|v| v.into())
 	}
 }
 
@@ -61,8 +40,7 @@ impl Operator for DeleteMap {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
 		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(tag)?;
-		Ok(get_resolver().remove(&tag).is_some().into())
+		scope.extras_mut().delete_map(tag).map(|v| v.into())
 	}
 }
 
@@ -71,20 +49,13 @@ pub struct Insert;
 
 impl Operator for Insert {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		// map_ref, key, value
 		assert!(args.len() == 3);
 
 		let tag = evaluate(&args[0], scope, operators)?;
 		let key = evaluate(&args[1], scope, operators)?;
 		let value = evaluate(&args[2], scope, operators)?;
 
-		let tag = value_into_map_tag(tag)?;
-		let res = match get_resolver().get_mut(&tag) {
-			Some(map) => map.insert(key, value).unwrap_or(Value::Nil),
-			None => return Err(EggError::MapNotFound(tag)),
-		};
-
-		Ok(res)
+		scope.extras_mut().insert(tag, key, value).map(|v| v.unwrap_or(Value::Nil))
 	}
 }
 
@@ -95,16 +66,10 @@ pub struct PrintMap;
 #[cfg(feature = "std")]
 impl Operator for PrintMap {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		// map_ref
 		assert!(args.len() == 1);
 
 		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(tag)?;
-
-		match get_resolver().get(&tag) {
-			Some(map) => println!("{:#?}", map),
-			None => return Err(EggError::MapNotFound(tag)),
-		};
+		scope.extras().print_map(tag)?;
 
 		Ok(().into())
 	}
@@ -115,40 +80,26 @@ pub struct Get;
 
 impl Operator for Get {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		// map_ref, key
 		assert!(args.len() == 2);
 
 		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(tag)?;
 		let key = evaluate(&args[1], scope, operators)?;
 
-		let res = match get_resolver().get(&tag) {
-			Some(map) => map.get(&key),
-			None => return Err(EggError::MapNotFound(tag)),
-		};
-
-		Ok(res.unwrap_or(&Value::Nil).clone())
+		scope.extras().get(tag, key)
 	}
 }
 
-/// Check if the specified map contains the value
+/// Check if the specified map contains the key
 pub struct Has;
 
 impl Operator for Has {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		// map_ref, key
 		assert!(args.len() == 2);
 
 		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(tag)?;
 		let key = evaluate(&args[1], scope, operators)?;
 
-		let res = match get_resolver().get(&tag) {
-			Some(map) => map.contains_key(&key),
-			None => return Err(EggError::MapNotFound(tag)),
-		};
-
-		Ok(res.into())
+		scope.extras().has(tag, key).map(|v| v.into())
 	}
 }
 
@@ -157,19 +108,12 @@ pub struct Remove;
 
 impl Operator for Remove {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		// map_ref, key
 		assert!(args.len() == 2);
 
 		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(tag)?;
 		let key = evaluate(&args[1], scope, operators)?;
 
-		let res = match get_resolver().get_mut(&tag) {
-			Some(map) => map.remove(&key),
-			None => return Err(EggError::MapNotFound(tag)),
-		};
-
-		Ok(res.unwrap_or(Value::Nil))
+		scope.extras_mut().remove(tag, key).map(|v| v.unwrap_or(Value::Nil))
 	}
 }
 
@@ -178,17 +122,23 @@ pub struct Size;
 
 impl Operator for Size {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		// map_ref, key
 		assert!(args.len() == 1);
 
 		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = value_into_map_tag(tag)?;
+		scope.extras().size(tag).map(|v| (v as f32).into())
+	}
+}
 
-		let res = match get_resolver().get(&tag) {
-			Some(map) => map.len(),
-			None => return Err(EggError::MapNotFound(tag)),
-		};
+/// Clear the specified map
+pub struct Clear;
 
-		Ok(Value::Number((res as f32).into()))
+impl Operator for Clear {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+		assert!(args.len() == 1);
+
+		let tag = evaluate(&args[0], scope, operators)?;
+		scope.extras_mut().clear(tag)?;
+
+		Ok(().into())
 	}
 }

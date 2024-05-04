@@ -26,19 +26,17 @@ if (
 set(res, if(equals(x, 10), "10", "20"))
 println("RES=", res)
 
-
 # Print numbers from zero to ten
-define(i, 0)
+define(i, 500)
 repeat(10, do(
-	print(i),
-	set(i, sum(i -1.5E-3)),
+	println(i),
+	set(i, multiply(i -1.5e-1)),
 ))
 
 # Simple print statement
 println("Hello, grab a cup of tea or a beer if that's more your thing")
 
 # Demonstration of println
-println(res)
 println("I have nil knowledge indeed")
 
 # Variable inspection and manipulation

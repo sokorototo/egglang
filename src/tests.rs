@@ -1,4 +1,4 @@
-use crate::{evaluator, operators, parser, scope};
+use crate::{evaluator, operators, parser};
 use std::fs::{read_dir, read_to_string};
 
 #[test]
@@ -17,7 +17,7 @@ fn test() {
 	};
 
 	scripts.for_each(|(path, script)| {
-		let mut scope = scope::default();
+		let mut scope = Default::default();
 
 		println!("\nRunning script: [{}]", path.display());
 		let ast = parser::parse(script).unwrap();
