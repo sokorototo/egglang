@@ -12,7 +12,7 @@ use alloc::{
 	string::{String, ToString},
 };
 
-static NOT_NUMBER_OR_BOOLEAN: &str = "please provide numbers or booleans as arguments for boolean operations";
+static NOT_BOOLEAN: &str = "Please provide booleans as arguments for boolean operations";
 
 // AND
 pub struct AND;
@@ -25,9 +25,8 @@ impl Operator for AND {
 		let val2 = evaluate(&args[1], scope, builtins)?;
 
 		match (val1, val2) {
-			(Value::Number(a), Value::Number(b)) => Ok((a & b).into()),
 			(Value::Boolean(a), Value::Boolean(b)) => Ok((a && b).into()),
-			_ => Err(EggError::OperatorComplaint(NOT_NUMBER_OR_BOOLEAN.to_string())),
+			_ => Err(EggError::OperatorComplaint(NOT_BOOLEAN.to_string())),
 		}
 	}
 }
@@ -43,9 +42,8 @@ impl Operator for OR {
 		let val2 = evaluate(&args[1], scope, builtins)?;
 
 		match (val1, val2) {
-			(Value::Number(a), Value::Number(b)) => Ok((a | b).into()),
 			(Value::Boolean(a), Value::Boolean(b)) => Ok((a || b).into()),
-			_ => Err(EggError::OperatorComplaint(NOT_NUMBER_OR_BOOLEAN.to_string())),
+			_ => Err(EggError::OperatorComplaint(NOT_BOOLEAN.to_string())),
 		}
 	}
 }
@@ -57,9 +55,8 @@ impl Operator for NOT {
 	fn evaluate(&self, args: &[Expression], scope: &mut BTreeMap<String, Value>, builtins: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		match evaluate(&args[0], scope, builtins)? {
-			Value::Number(a) => Ok((!a).into()),
 			Value::Boolean(a) => Ok((!a).into()),
-			_ => Err(EggError::OperatorComplaint(NOT_NUMBER_OR_BOOLEAN.to_string())),
+			_ => Err(EggError::OperatorComplaint(NOT_BOOLEAN.to_string())),
 		}
 	}
 }

@@ -1,5 +1,6 @@
 use alloc::{string::String, vec::Vec};
 use arcstr::ArcStr;
+use ordered_float::OrderedFloat;
 
 /// An expression is the smallest unit of code in egg.
 #[derive(Debug, Clone)]
@@ -13,7 +14,7 @@ pub enum Expression {
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
 	Nil,
-	Number(isize),
+	Number(OrderedFloat<f32>),
 	Boolean(bool),
 	String(ArcStr),
 }
@@ -60,9 +61,9 @@ impl From<&str> for Value {
 	}
 }
 
-impl From<isize> for Value {
-	fn from(val: isize) -> Self {
-		Value::Number(val)
+impl From<f32> for Value {
+	fn from(val: f32) -> Self {
+		Value::Number(OrderedFloat(val))
 	}
 }
 

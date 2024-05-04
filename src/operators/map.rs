@@ -188,6 +188,6 @@ impl Operator for Size {
 			None => return Err(EggError::MapNotFound(tag)),
 		};
 
-		Ok(Value::Number(res as _))
+		Ok(Value::Number((res as f32).into()))
 	}
 }

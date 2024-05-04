@@ -30,7 +30,7 @@ impl Operator for If {
 		// Evaluate
 		let condition = evaluate(&args[0], scope, builtins)?;
 		let value = match condition {
-			Value::Number(num) => num != 0,
+			Value::Number(num) => num != 0.0,
 			Value::Boolean(b) => b,
 			#[rustfmt::skip]
             _ => return Err(EggError::OperatorComplaint("if(--) expects a boolean (a number that if zero equals false) as it's parameter".to_string())),
@@ -53,19 +53,13 @@ impl Operator for While {
 		debug_assert_eq!(args.len(), 2);
 
 		// Loop
-		let mut iterations = 0usize;
 		let mut loop_result = Value::Nil;
 
 		loop {
-			if iterations == usize::MAX {
-				#[rustfmt::skip]
-                return Err(EggError::OperatorComplaint("Max loop iterations met".to_string()));
-			}
-
 			let condition = evaluate(&args[0], scope, builtins)?;
 
 			let continue_condition = match condition {
-				Value::Number(num) => num != 0,
+				Value::Number(num) => num != 0.0,
 				Value::Boolean(b) => b,
 				#[rustfmt::skip]
                 _ => return Err(EggError::OperatorComplaint("while(--) expects a number as it's parameter".to_string())),
@@ -77,8 +71,6 @@ impl Operator for While {
 
 			// Evaluate expression
 			loop_result = evaluate(&args[1], scope, builtins)?;
-
-			iterations += 1;
 		}
 	}
 }
@@ -92,7 +84,7 @@ impl Operator for Repeat {
 		debug_assert_eq!(args.len(), 2);
 
 		// Loop
-		let mut iterations = 0;
+		let mut iterations = 0.0;
 		let mut loop_value = Value::Nil;
 
 		let max_iter = match evaluate(&args[0], scope, builtins)? {
@@ -103,14 +95,14 @@ impl Operator for Repeat {
 
 		loop {
 			// Repeat X times
-			if iterations >= max_iter || iterations == isize::MAX {
+			if iterations >= max_iter.0 {
 				break Ok(loop_value);
 			}
 
 			// Evaluate expression
 			loop_value = evaluate(&args[1], scope, builtins)?;
 
-			iterations += 1;
+			iterations += 1.0;
 		}
 	}
 }
@@ -168,7 +160,6 @@ impl Operator for Assert {
 		debug_assert_eq!(args.len(), 2);
 
 		let message = match &evaluate(&args[0], scope, builtins)? {
-			Value::Number(value) if *value == 0 => Some(evaluate(&args[1], scope, builtins)?),
 			Value::Boolean(b) if !b => Some(evaluate(&args[1], scope, builtins)?),
 			_ => None,
 		};

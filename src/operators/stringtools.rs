@@ -43,7 +43,7 @@ impl Operator for Length {
             _ => return Err(EggError::OperatorComplaint("Cannot get length of non-string".to_string())),
 		};
 
-		Ok(Value::Number(value as isize))
+		Ok(Value::Number((value as f32).into()))
 	}
 }
 
@@ -70,14 +70,14 @@ impl Operator for Slice {
             _ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
 		};
 
-		(start < 0).then(|| start += base.len() as isize);
+		(start.0 < 0.0).then(|| start += base.len() as f32);
 		let length = match evaluate(&args[2], scope, builtins)? {
-			Value::Number(num) => num as usize,
+			Value::Number(num) => num.0 as usize,
 			#[rustfmt::skip]
             _ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
 		};
 
-		let start = start as usize;
+		let start = start.0 as usize;
 		let result = &base[start..start + length];
 
 		Ok(Value::String(result.into()))

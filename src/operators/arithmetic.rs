@@ -18,8 +18,8 @@ impl Operator for Sum {
 				Ok(v) => Err(EggError::OperatorComplaint(format!("Invalid argument: {v}, please provide a number"))),
 				Err(e) => Err(e),
 			})
-			.try_fold(0, |acc, d| d.map(|d| acc + d))
-			.map(Value::Number)
+			.try_fold(0.0, |acc, d| d.map(|d| acc + d.0))
+			.map(|f| f.into())
 	}
 }
 
@@ -35,8 +35,8 @@ impl Operator for Multiply {
 				Ok(v) => Err(EggError::OperatorComplaint(format!("Invalid argument: {v}, please provide a number"))),
 				Err(e) => Err(e),
 			})
-			.try_fold(0, |acc, d| d.map(|d| acc * d))
-			.map(Value::Number)
+			.try_fold(0.0, |acc, d| d.map(|d| acc * d.0))
+			.map(|f| f.into())
 	}
 }
 
