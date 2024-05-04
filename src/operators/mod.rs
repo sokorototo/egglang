@@ -87,6 +87,18 @@ pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a m
 	map.insert("map.remove", Box::new(map::Remove));
 	map.insert("map.size", Box::new(map::Size));
 
+	// String tools
+	map.insert("string.length", Box::new(stringtools::Length));
+	map.insert("string.slice", Box::new(stringtools::Slice));
+	map.insert("string.concat", Box::new(stringtools::Concat));
+	map.insert("string.to_upper", Box::new(stringtools::ToUpper));
+	map.insert("string.to_lower", Box::new(stringtools::ToLower));
+	map.insert("string.trim", Box::new(stringtools::Trim));
+
+	// Type conversion functions
+	map.insert("str", Box::new(convert::ToString));
+	map.insert("num", Box::new(convert::ToNumber));
+
 	#[cfg(feature = "std")]
 	{
 		map.insert("sleep", Box::new(control_flow::Sleep));

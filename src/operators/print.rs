@@ -6,6 +6,7 @@ use crate::{
 	evaluator::evaluate,
 	expression::{Expression, Value},
 };
+
 // Prints it's data and a newline
 pub struct PrintLine;
 
