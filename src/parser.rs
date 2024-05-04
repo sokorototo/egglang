@@ -11,8 +11,8 @@ use crate::{
 enum Token {
 	#[regex("\"([^\"\n])*\"")]
 	String,
-	#[regex(r"-?\d+", priority = 2)]
-	Number,
+	#[regex(r"-?\d+(\.\d+)?([eE]-?\d+)?", priority = 2)]
+	Float,
 	#[regex(r#"[^\s\(\),#"]+"#, priority = 1)]
 	Word,
 	#[regex("True|False")]
@@ -58,7 +58,7 @@ fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<
 		Token::String => exprs.push(Expression::Value {
 			value: Value::String(data[1..data.len() - 1].into()),
 		}),
-		Token::Number => exprs.push(Expression::Value {
+		Token::Float => exprs.push(Expression::Value {
 			value: Value::Number(data.parse().unwrap()),
 		}),
 		Token::Word => exprs.push(Expression::Word { name: data.into() }),

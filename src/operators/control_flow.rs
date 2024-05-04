@@ -122,7 +122,7 @@ impl Operator for Sleep {
 		// Loop
 		let sleep_time = evaluate(&args[0], scope, builtins)?;
 		if let Value::Number(value) = sleep_time {
-			let duration = Duration::from_millis(value as u64);
+			let duration = Duration::from_millis(value.0 as u64);
 			sleep(duration)
 		} else {
 			#[rustfmt::skip]

@@ -1,0 +1,9 @@
+# Simple Tests for float parsing and handling
+define(x, 0.5)
+println(multiply(10 200))
+define(res, "20")
+set(x, multiply(-10 x 200))
+
+# Print Result
+define(msg, string.concat("Result: ", str(x)))
+println(x)

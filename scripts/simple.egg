@@ -33,7 +33,7 @@ println("")
 define(i, 0)
 repeat(10, do(
 	print(i),
-	set(i, sum(i 1)),
+	set(i, sum(i -1.5E3)),
 )),
 
 # Simple print statement
