@@ -1,33 +1,33 @@
 define(nice, "get rickrolled NOOB")
-print_line(string.concat("The nice variable is: ", nice))
+println(string.concat("The nice variable is: ", nice))
 
 # Prints length of given variable
 define(nice_length, string.length(nice))
-print_line(string.concat("nice variable has a length of: ", str(nice_length)))
+println(string.concat("nice variable has a length of: ", str(nice_length)))
 
 # Prints the first character of given variable
 define(first_character, string.slice(nice, 0, 1))
-print_line(string.concat("first character of nice variable is: ", first_character))
+println(string.concat("first character of nice variable is: ", first_character))
 
 # Prints the last character of given variable, negative indexing starts from the end of the string
 define(last_character, string.slice(nice, -1, 1))
-print_line(string.concat("last character of nice variable is: ", last_character))
+println(string.concat("last character of nice variable is: ", last_character))
 
 # Prints the first 3 characters of given variable
 define(first_3_characters, string.slice(nice, 0, 3))
-print_line(string.concat("first 3 characters of nice variable is: ", first_3_characters))
+println(string.concat("first 3 characters of nice variable is: ", first_3_characters))
 
 # Prints the last 4 characters of given variable, negative indexing starts from the end of the string
 define(last_4_characters, string.slice(nice, -4, 4))
-print_line(string.concat("last 4 characters of nice variable is: ", last_4_characters))
+println(string.concat("last 4 characters of nice variable is: ", last_4_characters))
 
 # Convert the given variable to uppercase
 define(upper_case, string.to_upper(nice))
-print_line(string.concat("nice variable in upper case is: ", upper_case))
+println(string.concat("nice variable in upper case is: ", upper_case))
 
 # Convert the given variable to lowercase
 define(lower_case, string.to_lower(nice))
-print_line(string.concat("nice variable in lower case is: ", lower_case))
+println(string.concat("nice variable in lower case is: ", lower_case))
 
 # Use a loop to reverse the string and concatenate separated using commas
 define(reversed_nice, "")
@@ -44,7 +44,7 @@ while(
 )
 
 # Prints the reversed string
-print_line(string.concat("reversed nice variable is: ", reversed_nice))
+println(string.concat("reversed nice variable is: ", reversed_nice))
 
 # Get the type of a strin
 assert(equals(STRING, typeof (nice)), "Somehow 'nice' is not a string?")

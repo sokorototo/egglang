@@ -1,9 +1,9 @@
 # Defines a new variable
 define(toilet, "STINKS")
-print_line(toilet)
+println(toilet)
 
 # You can't redefine a variable
 # -- CAUSES ERROR -- define(toilet, "STINKS")
 # You can only use 'set' to change a variable's value
 set(toilet, "STINKS A LOT MORE")
-print_line(toilet)
+println(toilet)

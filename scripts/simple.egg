@@ -16,18 +16,18 @@ if (
 	equals(typeof(x), NUMBER),
 	if (
 		greater_than(x, 10),
-		print_line("x is a number and is greater than 10"),
-		print_line("x is a number, but is not greater than 10")
+		println("x is a number and is greater than 10"),
+		println("x is a number, but is not greater than 10")
 	),
 	panic("x is not a number")
 )
 
 # Expressions as values
-print_line("")
+println("")
 set(res, if(equals(x, 10), "10", "20"))
-print_line(string.concat("RES=", res))
+println(string.concat("RES=", res))
 
-print_line("")
+println("")
 
 # Print numbers from zero to ten
 define(i, 0)
@@ -37,13 +37,13 @@ repeat(10, do(
 )),
 
 # Simple print statement
-print_line("")
-print_line("Hello, grab a cup of tea or a beer if that's more your thing")
+println("")
+println("Hello, grab a cup of tea or a beer if that's more your thing")
 
 # Demonstration of println
-print_line("")
-print_line(res)
-print_line("I have nil knowledge indeed")
+println("")
+println(res)
+println("I have nil knowledge indeed")
 
 # Variable inspection and manipulation
 delete(res)
