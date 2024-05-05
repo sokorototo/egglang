@@ -2,7 +2,7 @@ pub mod functions;
 pub mod map;
 
 use crate::expression::Value;
-use alloc::{collections::BTreeMap, vec::Vec};
+use alloc::collections::BTreeMap;
 use arcstr::ArcStr;
 
 #[derive(Debug)]
@@ -68,6 +68,10 @@ impl Scope {
 
 	/// Delete a variable if it is the present scope, otherwise delete it from the parent scope.
 	pub fn remove(&mut self, key: &str) -> Option<Value> {
+		if let Some(index) = self.get_function(&key) {
+			self.delete_function(index);
+		}
+
 		match self {
 			Scope::Global { source, .. } => source.remove(key),
 			Scope::Local { overlay, source: parent, .. } => unsafe { overlay.remove(key).or_else(|| parent.as_mut().and_then(|p| p.remove(key))) },
@@ -97,8 +101,10 @@ impl Scope {
 }
 
 /// Extra data stored on the scope, like function definitions and dictionaries
+/// Only the Global scope has this, meaning Maps and Functions are always global.
 #[derive(Debug, Default)]
 pub struct ScopeExtras {
 	maps: BTreeMap<ArcStr, BTreeMap<Value, Value>>,
-	functions: Vec<functions::FunctionDefinition>,
+	functions: BTreeMap<usize, functions::FunctionDefinition>,
+	max_function_index: usize,
 }

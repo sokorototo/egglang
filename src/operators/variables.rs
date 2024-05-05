@@ -82,7 +82,6 @@ impl Operator for Delete {
 			expression::Expression::Word { name } => scope.remove(name.as_str()),
 			expression::Expression::Value { value } => match value {
 				Value::String(name) => scope.remove(name.as_str()),
-
 				val => return Err(EggError::OperatorComplaint(format!("Cannot delete {val}"))),
 			},
 			v => return Err(EggError::OperatorComplaint(format!("Cannot delete {v:?}"))),
@@ -104,7 +103,6 @@ impl Operator for Exists {
 			expression::Expression::Word { name } => scope.exists(name.as_str()),
 			expression::Expression::Value { value } => match value {
 				Value::String(name) => scope.exists(name.as_str()),
-
 				val => return Err(EggError::OperatorComplaint(format!("Cannot check if {val} exists"))),
 			},
 			_ => {
