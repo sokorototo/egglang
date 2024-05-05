@@ -1,7 +1,10 @@
 use crate::{
 	errors::EggResult,
 	expression::{Expression, Value},
-	scope::Scope,
+	scope::{
+		map,
+		Scope,
+	},
 };
 use alloc::{boxed::Box, collections::BTreeMap};
 
@@ -11,8 +14,6 @@ mod boolean;
 mod comparison;
 mod control_flow;
 mod convert;
-mod functions;
-mod map;
 
 #[cfg(feature = "std")]
 mod print;

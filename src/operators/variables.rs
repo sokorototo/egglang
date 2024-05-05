@@ -127,10 +127,10 @@ impl super::Operator for TypeOf {
 		let value = evaluate(&args[0], scope, operators)?;
 
 		Ok(match value {
-			Value::Number(_) => Value::String("__NUMBER".into()),
-			Value::String(_) => Value::String("__STRING".into()),
-			Value::Nil => Value::String("__NIL".into()),
-			Value::Boolean(_) => Value::String("__BOOLEAN".into()),
+			Value::Number(_) => Value::String("__TYPE__NUMBER".into()),
+			Value::String(_) => Value::String("__TYPE__STRING".into()),
+			Value::Nil => Value::String("__CONSTANT__NIL".into()),
+			Value::Boolean(_) => Value::String("__TYPE__BOOLEAN".into()),
 		})
 	}
 }

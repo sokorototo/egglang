@@ -1,11 +1,13 @@
-mod extras;
+pub mod functions;
+pub mod map;
 
 use crate::expression::Value;
 use alloc::{collections::BTreeMap, string::String};
+use arcstr::ArcStr;
 
 #[derive(Debug)]
 pub enum Scope {
-	Global { source: BTreeMap<String, Value>, extras: extras::ScopeExtras },
+	Global { source: BTreeMap<String, Value>, extras: ScopeExtras },
 	Local { overlay: BTreeMap<String, Value>, source: *mut Scope },
 }
 
@@ -17,10 +19,10 @@ impl Default for Scope {
 		source.insert("false".into(), false.into());
 
 		// Globals identifying type
-		source.insert("NUMBER".into(), Value::String("__NUMBER".into()));
-		source.insert("STRING".into(), Value::String("__STRING".into()));
-		source.insert("NIL".into(), Value::String("__NIL".into()));
-		source.insert("BOOLEAN".into(), Value::String("__BOOLEAN".into()));
+		source.insert("Number".into(), Value::String("__TYPE__NUMBER".into()));
+		source.insert("String".into(), Value::String("__TYPE__STRING".into()));
+		source.insert("Nil".into(), Value::String("__CONSTANT__NIL".into()));
+		source.insert("Boolean".into(), Value::String("__TYPE__BOOLEAN".into()));
 
 		Scope::Global { source, extras: Default::default() }
 	}
@@ -80,7 +82,7 @@ impl Scope {
 	}
 
 	/// Get extra metadata attached to the scope.
-	pub fn extras(&self) -> &extras::ScopeExtras {
+	pub fn extras(&self) -> &ScopeExtras {
 		match self {
 			Scope::Global { extras, .. } => extras,
 			Scope::Local { source, .. } => unsafe { source.as_ref().map(|s| s.extras()).unwrap_unchecked() },
@@ -88,10 +90,16 @@ impl Scope {
 	}
 
 	/// Get mutable extra metadata attached to the scope.
-	pub fn extras_mut(&mut self) -> &mut extras::ScopeExtras {
+	pub fn extras_mut(&mut self) -> &mut ScopeExtras {
 		match self {
 			Scope::Global { extras, .. } => extras,
 			Scope::Local { source, .. } => unsafe { source.as_mut().map(|s| s.extras_mut()).unwrap_unchecked() },
 		}
 	}
+}
+
+/// Extra data stored on the scope, like function definitions and dictionaries
+#[derive(Debug, Default)]
+pub struct ScopeExtras {
+	maps: BTreeMap<ArcStr, BTreeMap<Value, Value>>,
 }
