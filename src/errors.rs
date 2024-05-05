@@ -32,6 +32,6 @@ pub enum EggError {
 	ParserError(Range<usize>, String),
 	#[error("Unknown Token found in TokenStream")]
 	UnknownToken,
-	#[error("Invalid Function Call: {0}")]
+	#[error("{0}")]
 	InvalidFunctionCall(String),
 }

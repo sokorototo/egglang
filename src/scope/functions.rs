@@ -73,6 +73,7 @@ impl super::Scope {
 	}
 }
 
+/// Create a new Function
 pub struct CreateFunction;
 
 impl Operator for CreateFunction {
