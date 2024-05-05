@@ -16,18 +16,7 @@ impl Operator for Define {
 		let name = &args[0];
 
 		match name {
-			expression::Expression::Word { name } => {
-				let value = evaluate(&args[1], scope, operators)?;
-
-				if scope.exists(name.as_str()) {
-					return Err(EggError::OperatorComplaint(format!("variable {} already defined", name)));
-				} else {
-					scope.insert(name.clone(), value.clone());
-				}
-
-				Ok(value)
-			}
-			expression::Expression::Value { value: Value::String(name) } => {
+			expression::Expression::Word { name } | expression::Expression::Value { value: Value::String(name) } => {
 				let value = evaluate(&args[1], scope, operators)?;
 
 				if scope.exists(name.as_str()) {
