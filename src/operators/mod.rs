@@ -1,10 +1,7 @@
 use crate::{
 	errors::EggResult,
 	expression::{Expression, Value},
-	scope::{
-		map,
-		Scope,
-	},
+	scope::{self, Scope},
 };
 use alloc::{boxed::Box, collections::BTreeMap};
 
@@ -71,6 +68,9 @@ pub fn minimal<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'
 	map.insert("str", Box::new(convert::ToString));
 	map.insert("num", Box::new(convert::ToNumber));
 
+	// Function creation
+	map.insert("fn", Box::new(scope::functions::CreateFunction));
+
 	map
 }
 
@@ -79,17 +79,17 @@ pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a m
 	minimal(map);
 
 	// Map creation functions
-	map.insert("map.new", Box::new(map::NewMap));
-	map.insert("map.exists", Box::new(map::ExistsMap));
-	map.insert("map.delete", Box::new(map::DeleteMap));
+	map.insert("map.new", Box::new(scope::map::NewMap));
+	map.insert("map.exists", Box::new(scope::map::ExistsMap));
+	map.insert("map.delete", Box::new(scope::map::DeleteMap));
 
 	// Map manipulation functions
-	map.insert("map.get", Box::new(map::Get));
-	map.insert("map.insert", Box::new(map::Insert));
-	map.insert("map.has", Box::new(map::Has));
-	map.insert("map.remove", Box::new(map::Remove));
-	map.insert("map.size", Box::new(map::Size));
-	map.insert("map.clear", Box::new(map::Clear));
+	map.insert("map.get", Box::new(scope::map::Get));
+	map.insert("map.insert", Box::new(scope::map::Insert));
+	map.insert("map.has", Box::new(scope::map::Has));
+	map.insert("map.remove", Box::new(scope::map::Remove));
+	map.insert("map.size", Box::new(scope::map::Size));
+	map.insert("map.clear", Box::new(scope::map::Clear));
 
 	// String tools
 	map.insert("string.length", Box::new(stringtools::Length));
@@ -106,7 +106,7 @@ pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a m
 	#[cfg(feature = "std")]
 	{
 		map.insert("sleep", Box::new(control_flow::Sleep));
-		map.insert("map.print", Box::new(map::PrintMap));
+		map.insert("map.print", Box::new(scope::map::PrintMap));
 		map.insert("print", Box::new(print::Print));
 		map.insert("println", Box::new(print::PrintLine));
 	}

@@ -17,6 +17,7 @@ pub enum Value {
 	Number(OrderedFloat<f32>),
 	Boolean(bool),
 	String(ArcStr),
+	Function(usize),
 }
 
 impl alloc::fmt::Debug for Value {
@@ -26,6 +27,7 @@ impl alloc::fmt::Debug for Value {
 			Self::Number(arg0) => arg0.0.fmt(f),
 			Self::String(arg0) => arg0.fmt(f),
 			Self::Boolean(arg0) => arg0.fmt(f),
+			Self::Function(arg0) => write!(f, "FunctionDefinition @ {}", arg0),
 		}
 	}
 }
@@ -39,6 +41,7 @@ impl alloc::fmt::Display for Value {
 			Self::Boolean(b) => {
 				write!(f, "{}", if *b { "True" } else { "False" })
 			}
+			Self::Function(_) => write!(f, "Function"),
 		}
 	}
 }

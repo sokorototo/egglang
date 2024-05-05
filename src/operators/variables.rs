@@ -23,8 +23,7 @@ impl Operator for Define {
 					#[rustfmt::skip]
                     return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
 				} else {
-					// THIS IS BASICALLY A CLONE
-					scope.insert(name.to_string(), value.clone());
+					scope.insert(name.clone(), value.clone());
 				}
 
 				Ok(value)
@@ -36,7 +35,7 @@ impl Operator for Define {
 					#[rustfmt::skip]
                     return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
 				} else {
-					scope.insert(name.to_string(), value.clone());
+					scope.insert(name.clone(), value.clone());
 				}
 
 				Ok(value)
@@ -131,6 +130,7 @@ impl super::Operator for TypeOf {
 			Value::String(_) => Value::String("__TYPE__STRING".into()),
 			Value::Nil => Value::String("__CONSTANT__NIL".into()),
 			Value::Boolean(_) => Value::String("__TYPE__BOOLEAN".into()),
+			Value::Function(_) => Value::String("__TYPE__FUNCTION".into()),
 		})
 	}
 }

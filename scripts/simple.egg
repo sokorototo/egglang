@@ -13,7 +13,7 @@ set(res, 0)
 
 # Basic conditional
 if (
-	equals(typeof(x), NUMBER),
+	equals(typeof(x), Number),
 	if (
 		greater_than(x, 10),
 		println("x is a number and is greater than 10"),

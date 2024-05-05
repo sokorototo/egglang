@@ -16,9 +16,15 @@ pub fn evaluate(expr: &Expression, scope: &mut Scope, operators: &BTreeMap<&str,
 		Expression::Value { value } => Ok(value.clone()),
 		Expression::Word { name } => scope.get(name.as_str()).ok_or_else(|| EggError::UndefinedBinding(name.to_string())).map(|d| d.clone()),
 		Expression::FnCall { name, parameters } => {
-			// Fetch operation
-			let operator = operators.get(name.as_str()).ok_or_else(|| EggError::SpecialFormNotFound(name.clone()))?;
-			operator.evaluate(parameters, scope, operators)
+			// Search for a user-defined function in the scope
+			if let Some(function) = scope.get_function_idx(name.as_str()) {
+				// Evaluate the function
+				scope.call_function(function, parameters, operators)
+			} else {
+				// Fetch operation
+				let operator = operators.get(name.as_str()).ok_or_else(|| EggError::SpecialFormNotFound(name.clone()))?;
+				operator.evaluate(parameters, scope, operators)
+			}
 		}
 	}
 }

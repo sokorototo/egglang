@@ -19,6 +19,10 @@ impl Operator for PrintLine {
 				Value::String(string) => print!("{string}"),
 				Value::Nil => print!("Nil"),
 				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
+				Value::Function(idx) => {
+					let function = scope.get_function(idx)?;
+					print!("{:?}", function);
+				}
 			}
 		}
 
@@ -39,6 +43,10 @@ impl Operator for Print {
 				Value::String(string) => print!("{string}"),
 				Value::Nil => print!("Nil"),
 				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
+				Value::Function(idx) => {
+					let function = scope.get_function(idx)?;
+					print!("{:?}", function);
+				}
 			}
 
 			if len > 1 && idx != len - 1 {

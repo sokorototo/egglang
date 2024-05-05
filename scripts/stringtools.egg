@@ -47,4 +47,4 @@ while(
 println("reversed nice variable is: ", reversed_nice)
 
 # Get the type of a strin
-assert(equals(STRING, typeof (nice)), "Somehow 'nice' is not a string?")
+assert(equals(String, typeof (nice)), "Somehow 'nice' is not a string?")

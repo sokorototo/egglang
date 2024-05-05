@@ -1,0 +1,9 @@
+# Simple Function Defintions
+fn(plusOne, num, sum(1, num))
+fn(print10, input, repeat(10, print(input)))
+fn(poop, print("POOOOP!"))
+
+print10(plusOne(19))
+
+# Internals calling user defined functions
+repeat(10, poop())

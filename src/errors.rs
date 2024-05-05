@@ -24,10 +24,14 @@ pub enum EggError {
 	MapNotFound(ArcStr),
 	#[error("The provided map tag: {0}, is invalid. Reason {1}")]
 	InvalidMapTag(Value, String),
+	#[error("Invalid Function Definition: {0}")]
+	InvalidFunctionDefinition(String),
 	#[error("Assertion failed: {0}")]
 	AssertionFailed(Value),
 	#[error("Generic parsing error at: {0:?}. Reason: {1}")]
 	ParserError(Range<usize>, String),
 	#[error("Unknown Token found in TokenStream")]
 	UnknownToken,
+	#[error("Invalid Function Call: {0}")]
+	InvalidFunctionCall(String),
 }

@@ -2,13 +2,13 @@ pub mod functions;
 pub mod map;
 
 use crate::expression::Value;
-use alloc::{collections::BTreeMap, string::String};
+use alloc::{collections::BTreeMap, vec::Vec};
 use arcstr::ArcStr;
 
 #[derive(Debug)]
 pub enum Scope {
-	Global { source: BTreeMap<String, Value>, extras: ScopeExtras },
-	Local { overlay: BTreeMap<String, Value>, source: *mut Scope },
+	Global { source: BTreeMap<ArcStr, Value>, extras: ScopeExtras },
+	Local { overlay: BTreeMap<ArcStr, Value>, source: *mut Scope },
 }
 
 impl Default for Scope {
@@ -23,6 +23,7 @@ impl Default for Scope {
 		source.insert("String".into(), Value::String("__TYPE__STRING".into()));
 		source.insert("Nil".into(), Value::String("__CONSTANT__NIL".into()));
 		source.insert("Boolean".into(), Value::String("__TYPE__BOOLEAN".into()));
+		source.insert("Function".into(), Value::String("__TYPE__FUNCTION".into()));
 
 		Scope::Global { source, extras: Default::default() }
 	}
@@ -54,7 +55,7 @@ impl Scope {
 	}
 
 	/// Insert a new variable into the current scope.
-	pub fn insert(&mut self, key: String, value: Value) {
+	pub fn insert(&mut self, key: ArcStr, value: Value) {
 		match self {
 			Scope::Global { source, .. } => {
 				source.insert(key, value);
@@ -74,11 +75,8 @@ impl Scope {
 	}
 
 	/// Create a new local scope.
-	pub fn new_local(&mut self) -> Scope {
-		Scope::Local {
-			overlay: Default::default(),
-			source: self as _,
-		}
+	pub fn overlay(&mut self, overlay: BTreeMap<ArcStr, Value>) -> Scope {
+		Scope::Local { overlay, source: self as _ }
 	}
 
 	/// Get extra metadata attached to the scope.
@@ -102,4 +100,5 @@ impl Scope {
 #[derive(Debug, Default)]
 pub struct ScopeExtras {
 	maps: BTreeMap<ArcStr, BTreeMap<Value, Value>>,
+	functions: Vec<functions::FunctionDefinition>,
 }
