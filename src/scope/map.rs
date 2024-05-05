@@ -7,80 +7,71 @@ use crate::{
 	scope::Scope,
 };
 use alloc::{boxed::Box, collections::BTreeMap};
-use arcstr::ArcStr;
 
-fn validate_map_tag(value: Value) -> EggResult<ArcStr> {
+fn validate_map_tag(value: Value) -> EggResult<usize> {
 	match value {
-		Value::String(s) => Ok(s),
+		Value::Object(s) => Ok(s),
 		i => Err(EggError::InvalidMapTag(i, "Map tag must be a string".into())),
 	}
 }
 
 impl Scope {
-	pub fn contains_map(&self, tag: Value) -> EggResult<bool> {
-		let tag = validate_map_tag(tag)?;
-		Ok(self.extras().maps.contains_key(&tag))
+	pub fn get_map(&self, tag: usize) -> EggResult<&BTreeMap<Value, Value>> {
+		self.extras().maps.get(&tag).ok_or_else(|| EggError::MapNotFound(tag))
 	}
 
-	pub fn new_map(&mut self, tag: Value) -> EggResult<ArcStr> {
-		let tag = validate_map_tag(tag)?;
+	pub fn get_map_mut(&mut self, tag: usize) -> EggResult<&mut BTreeMap<Value, Value>> {
+		self.extras_mut().maps.get_mut(&tag).ok_or_else(|| EggError::MapNotFound(tag))
+	}
 
+	pub fn get_map_tag(&self, tag: Value) -> EggResult<usize> {
+		let tag = validate_map_tag(tag)?;
 		if self.extras().maps.contains_key(&tag) {
-			Err(EggError::InvalidMapTag(tag.into(), "Map tag already exists".into()))
-		} else {
-			self.extras_mut().maps.insert(tag.clone(), BTreeMap::new());
 			Ok(tag)
+		} else {
+			Err(EggError::MapNotFound(tag))
 		}
 	}
 
+	pub fn new_map(&mut self) -> EggResult<Value> {
+		self.extras_mut().current_map_index += 1;
+		let index = self.extras().current_map_index;
+
+		self.extras_mut().maps.insert(index, BTreeMap::new());
+		Ok(Value::Object(index))
+	}
+
 	#[cfg(feature = "std")]
-	pub fn print_map(&self, tag: Value) -> EggResult<()> {
-		let tag = validate_map_tag(tag)?;
-		let map = self.extras().maps.get(&tag).ok_or_else(|| EggError::MapNotFound(tag))?;
-		println!("{:#?}", map);
-		Ok(())
+	pub fn print_map(&self, tag: usize) -> EggResult<()> {
+		self.get_map(tag).map(|m| println!("Map: {:?}", m))
 	}
 
-	pub fn delete_map(&mut self, tag: Value) -> EggResult<bool> {
-		let tag = validate_map_tag(tag)?;
-		Ok(self.extras_mut().maps.remove(&tag).is_some())
+	pub fn delete_map(&mut self, tag: usize) -> bool {
+		self.extras_mut().maps.remove(&tag).is_some()
 	}
 
-	pub fn map_get(&self, map_tag: Value, key: Value) -> EggResult<Value> {
-		let tag = validate_map_tag(map_tag)?;
-		let map = self.extras().maps.get(&tag).ok_or_else(|| EggError::MapNotFound(tag))?;
-		Ok(map.get(&key).cloned().unwrap_or(Value::Nil))
+	pub fn map_get(&self, tag: usize, key: Value) -> EggResult<Value> {
+		self.get_map(tag).map(|m| m.get(&key).cloned().unwrap_or(Value::Nil))
 	}
 
-	pub fn map_insert(&mut self, map_tag: Value, key: Value, value: Value) -> EggResult<Option<Value>> {
-		let tag = validate_map_tag(map_tag)?;
-		let map = self.extras_mut().maps.get_mut(&tag).ok_or_else(|| EggError::MapNotFound(tag))?;
-		Ok(map.insert(key, value))
+	pub fn map_insert(&mut self, tag: usize, key: Value, value: Value) -> EggResult<Option<Value>> {
+		self.get_map_mut(tag).map(|m| m.insert(key, value))
 	}
 
-	pub fn map_has(&self, map_tag: Value, key: Value) -> EggResult<bool> {
-		let tag = validate_map_tag(map_tag)?;
-		let map = self.extras().maps.get(&tag).ok_or_else(|| EggError::MapNotFound(tag))?;
-		Ok(map.contains_key(&key))
+	pub fn map_has(&self, tag: usize, key: Value) -> EggResult<bool> {
+		self.get_map(tag).map(|m| m.contains_key(&key))
 	}
 
-	pub fn map_remove(&mut self, map_tag: Value, key: Value) -> EggResult<Option<Value>> {
-		let tag = validate_map_tag(map_tag)?;
-		let map = self.extras_mut().maps.get_mut(&tag).ok_or_else(|| EggError::MapNotFound(tag))?;
-		Ok(map.remove(&key))
+	pub fn map_remove(&mut self, tag: usize, key: Value) -> EggResult<Option<Value>> {
+		self.get_map_mut(tag).map(|m| m.remove(&key))
 	}
 
-	pub fn map_clear(&mut self, map_tag: Value) -> EggResult<()> {
-		let tag = validate_map_tag(map_tag)?;
-		let map = self.extras_mut().maps.get_mut(&tag).ok_or_else(|| EggError::MapNotFound(tag))?;
-		map.clear();
-		Ok(())
+	pub fn map_clear(&mut self, tag: usize) -> EggResult<()> {
+		self.get_map_mut(tag).map(|m| m.clear())
 	}
 
-	pub fn map_size(&self, map_tag: Value) -> EggResult<usize> {
-		let tag = validate_map_tag(map_tag)?;
-		let map = self.extras().maps.get(&tag).ok_or_else(|| EggError::MapNotFound(tag))?;
-		Ok(map.len())
+	pub fn map_size(&self, tag: usize) -> EggResult<usize> {
+		self.get_map(tag).map(|m| m.len())
 	}
 }
 
@@ -88,34 +79,8 @@ impl Scope {
 pub struct NewMap;
 
 impl Operator for NewMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		assert!(args.len() == 1);
-
-		let map_ref = evaluate(&args[0], scope, operators)?;
-		scope.new_map(map_ref).map(|v| v.into())
-	}
-}
-
-/// Checks if the specified Map exists
-pub struct ExistsMap;
-
-impl Operator for ExistsMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		assert!(args.len() == 1);
-		let tag = evaluate(&args[0], scope, operators)?;
-		scope.contains_map(tag).map(|v| v.into())
-	}
-}
-
-/// Delete the map at the given map_ref
-/// Returns true if the map was deleted, false otherwise
-pub struct DeleteMap;
-
-impl Operator for DeleteMap {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		assert!(args.len() == 1);
-		let tag = evaluate(&args[0], scope, operators)?;
-		scope.delete_map(tag).map(|v| v.into())
+	fn evaluate(&self, _: &[Expression], scope: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+		scope.new_map()
 	}
 }
 
@@ -130,6 +95,7 @@ impl Operator for Insert {
 		let key = evaluate(&args[1], scope, operators)?;
 		let value = evaluate(&args[2], scope, operators)?;
 
+		let tag = scope.get_map_tag(tag)?;
 		scope.map_insert(tag, key, value).map(|v| v.unwrap_or(Value::Nil))
 	}
 }
@@ -142,11 +108,9 @@ pub struct PrintMap;
 impl Operator for PrintMap {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		assert!(args.len() == 1);
-
 		let tag = evaluate(&args[0], scope, operators)?;
-		scope.print_map(tag)?;
-
-		Ok(().into())
+		let tag = scope.get_map_tag(tag)?;
+		scope.print_map(tag).map(|_| Value::Nil)
 	}
 }
 
@@ -160,6 +124,7 @@ impl Operator for Get {
 		let tag = evaluate(&args[0], scope, operators)?;
 		let key = evaluate(&args[1], scope, operators)?;
 
+		let tag = scope.get_map_tag(tag)?;
 		scope.map_get(tag, key)
 	}
 }
@@ -174,6 +139,7 @@ impl Operator for Has {
 		let tag = evaluate(&args[0], scope, operators)?;
 		let key = evaluate(&args[1], scope, operators)?;
 
+		let tag = scope.get_map_tag(tag)?;
 		scope.map_has(tag, key).map(|v| v.into())
 	}
 }
@@ -188,6 +154,7 @@ impl Operator for Remove {
 		let tag = evaluate(&args[0], scope, operators)?;
 		let key = evaluate(&args[1], scope, operators)?;
 
+		let tag = scope.get_map_tag(tag)?;
 		scope.map_remove(tag, key).map(|v| v.unwrap_or(Value::Nil))
 	}
 }
@@ -200,6 +167,8 @@ impl Operator for Size {
 		assert!(args.len() == 1);
 
 		let tag = evaluate(&args[0], scope, operators)?;
+		let tag = scope.get_map_tag(tag)?;
+
 		scope.map_size(tag).map(|v| (v as f32).into())
 	}
 }
@@ -212,8 +181,8 @@ impl Operator for Clear {
 		assert!(args.len() == 1);
 
 		let tag = evaluate(&args[0], scope, operators)?;
-		scope.map_clear(tag)?;
+		let tag = scope.get_map_tag(tag)?;
 
-		Ok(().into())
+		scope.map_clear(tag).map(|_| Value::Nil)
 	}
 }

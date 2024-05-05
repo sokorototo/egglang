@@ -24,6 +24,7 @@ impl Default for Scope {
 		source.insert("Nil".into(), Value::String("__CONSTANT__NIL".into()));
 		source.insert("Boolean".into(), Value::String("__TYPE__BOOLEAN".into()));
 		source.insert("Function".into(), Value::String("__TYPE__FUNCTION".into()));
+		source.insert("Object".into(), Value::String("__TYPE__OBJECT".into()));
 
 		Scope::Global { source, extras: Default::default() }
 	}
@@ -68,8 +69,12 @@ impl Scope {
 
 	/// Delete a variable if it is the present scope, otherwise delete it from the parent scope.
 	pub fn remove(&mut self, key: &str) -> Option<Value> {
-		if let Some(index) = self.get_function(&key) {
-			self.delete_function(index);
+		if let Some(Value::Function(index)) = self.get(key) {
+			self.delete_function(*index);
+		}
+
+		if let Some(Value::Object(tag)) = self.get(key) {
+			self.delete_map(*tag);
 		}
 
 		match self {
@@ -104,7 +109,8 @@ impl Scope {
 /// Only the Global scope has this, meaning Maps and Functions are always global.
 #[derive(Debug, Default)]
 pub struct ScopeExtras {
-	maps: BTreeMap<ArcStr, BTreeMap<Value, Value>>,
+	maps: BTreeMap<usize, BTreeMap<Value, Value>>,
+	current_map_index: usize,
 	functions: BTreeMap<usize, functions::FunctionDefinition>,
-	max_function_index: usize,
+	current_function_index: usize,
 }

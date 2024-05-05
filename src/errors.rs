@@ -21,7 +21,7 @@ pub enum EggError {
 	#[error("Operator Complaint: {0}")]
 	OperatorComplaint(String),
 	#[error("No map found with the identifier: {0:?}")]
-	MapNotFound(ArcStr),
+	MapNotFound(usize),
 	#[error("The provided map tag: {0}, is invalid. Reason {1}")]
 	InvalidMapTag(Value, String),
 	#[error("Invalid Function Definition: {0}")]

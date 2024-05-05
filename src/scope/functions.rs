@@ -90,10 +90,10 @@ impl Operator for CreateFunction {
 		let body = args[args.len() - 1].clone();
 		let parameter_names = args.iter().take(args.len() - 1).map(get_parameter_name).collect::<EggResult<Vec<ArcStr>>>()?;
 
-		scope.extras_mut().max_function_index += 1;
-		let index = scope.extras().max_function_index;
+		scope.extras_mut().current_function_index += 1;
+		let index = scope.extras().current_function_index;
 		scope.extras_mut().functions.insert(index, FunctionDefinition { parameter_names, body });
 
-		Ok(crate::expression::Value::Function(scope.extras_mut().max_function_index))
+		Ok(crate::expression::Value::Function(scope.extras_mut().current_function_index))
 	}
 }

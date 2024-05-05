@@ -80,8 +80,6 @@ pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a m
 
 	// Map creation functions
 	map.insert("map.new", Box::new(scope::map::NewMap));
-	map.insert("map.exists", Box::new(scope::map::ExistsMap));
-	map.insert("map.delete", Box::new(scope::map::DeleteMap));
 
 	// Map manipulation functions
 	map.insert("map.get", Box::new(scope::map::Get));

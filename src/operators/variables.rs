@@ -118,6 +118,7 @@ impl super::Operator for TypeOf {
 			Value::Nil => Value::String("__CONSTANT__NIL".into()),
 			Value::Boolean(_) => Value::String("__TYPE__BOOLEAN".into()),
 			Value::Function(_) => Value::String("__TYPE__FUNCTION".into()),
+			Value::Object(_) => Value::String("__TYPE__OBJECT".into()),
 		})
 	}
 }

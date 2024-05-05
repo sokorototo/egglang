@@ -37,7 +37,8 @@ impl Operator for ToNumber {
 			Value::Number(n) => Ok(Value::Number(n)),
 			Value::Boolean(b) => Ok((if b { 0.0 } else { 1.0 }).into()),
 			Value::Nil => Err(EggError::OperatorComplaint("Can't convert Nil to a number".to_string())),
-			Value::Function(_) => Err(EggError::OperatorComplaint("Can't convert a function to a number".to_string())),
+			Value::Function(_) => Err(EggError::OperatorComplaint("Can't convert a Function to a number".to_string())),
+			Value::Object(_) => Err(EggError::OperatorComplaint("Can't convert an Object to a number".to_string())),
 		}
 	}
 }

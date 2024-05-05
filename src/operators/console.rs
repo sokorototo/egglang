@@ -23,6 +23,10 @@ impl Operator for PrintLine {
 					let function = scope.get_function_definition(idx)?;
 					print!("{:?}", function);
 				}
+				Value::Object(tag) => {
+					let map = scope.get_map(tag)?;
+					println!("{:?}", map);
+				}
 			}
 		}
 
@@ -46,6 +50,10 @@ impl Operator for Print {
 				Value::Function(idx) => {
 					let function = scope.get_function_definition(idx)?;
 					print!("{:?}", function);
+				}
+				Value::Object(tag) => {
+					let map = scope.get_map(tag)?;
+					println!("{:?}", map);
 				}
 			}
 

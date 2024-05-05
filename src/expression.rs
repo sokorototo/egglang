@@ -18,6 +18,7 @@ pub enum Value {
 	Boolean(bool),
 	String(ArcStr),
 	Function(usize),
+	Object(usize),
 }
 
 impl alloc::fmt::Debug for Value {
@@ -28,6 +29,7 @@ impl alloc::fmt::Debug for Value {
 			Self::String(arg0) => arg0.fmt(f),
 			Self::Boolean(arg0) => arg0.fmt(f),
 			Self::Function(arg0) => write!(f, "FunctionDefinition @ {}", arg0),
+			Self::Object(arg0) => write!(f, "Object @ {}", arg0),
 		}
 	}
 }
@@ -42,6 +44,7 @@ impl alloc::fmt::Display for Value {
 				write!(f, "{}", if *b { "True" } else { "False" })
 			}
 			Self::Function(_) => write!(f, "Function"),
+			Self::Object(_) => write!(f, "Object"),
 		}
 	}
 }
