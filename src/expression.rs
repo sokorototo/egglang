@@ -7,7 +7,7 @@ use ordered_float::OrderedFloat;
 pub enum Expression {
 	Value { value: Value },
 	Word { name: ArcStr },
-	Operation { name: ArcStr, parameters: Vec<Expression> },
+	FnCall { name: ArcStr, parameters: Vec<Expression> },
 }
 
 /// A value is the smallest unit of data in egg.

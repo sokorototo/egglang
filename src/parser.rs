@@ -73,7 +73,7 @@ fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<
 
 			// Get name of operation
 			let name = exprs.pop().ok_or(EggError::UnbalancedBrackets(span.start))?;
-			let operation = Expression::Operation {
+			let operation = Expression::FnCall {
 				name: match name {
 					Expression::Word { name } => name.clone(),
 					_ => return Err(EggError::ParserError(span, "Cannot use non-word as operation name".into())),

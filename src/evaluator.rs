@@ -15,7 +15,7 @@ pub fn evaluate(expr: &Expression, scope: &mut Scope, operators: &BTreeMap<&str,
 	match expr {
 		Expression::Value { value } => Ok(value.clone()),
 		Expression::Word { name } => scope.get(name.as_str()).ok_or_else(|| EggError::UndefinedBinding(name.to_string())).map(|d| d.clone()),
-		Expression::Operation { name, parameters } => {
+		Expression::FnCall { name, parameters } => {
 			// Fetch operation
 			let operator = operators.get(name.as_str()).ok_or_else(|| EggError::SpecialFormNotFound(name.clone()))?;
 			operator.evaluate(parameters, scope, operators)
