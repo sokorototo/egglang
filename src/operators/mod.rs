@@ -18,7 +18,7 @@ mod console;
 mod stringtools;
 mod variables;
 
-/// Any function callable in Egg
+/// Functions defined in Rust, callable in Egg
 pub trait Operator {
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value>;
 }
@@ -74,32 +74,30 @@ pub fn minimal<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'
 	map
 }
 
-/// All operations available in Egg
-pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a mut BTreeMap<&'static str, Box<dyn Operator>> {
-	minimal(map);
-
-	// Map creation functions
+// Object Functions
+pub fn map_tools(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	map.insert("map.new", Box::new(scope::map::NewMap));
-
-	// Map manipulation functions
 	map.insert("map.get", Box::new(scope::map::Get));
 	map.insert("map.insert", Box::new(scope::map::Insert));
 	map.insert("map.has", Box::new(scope::map::Has));
 	map.insert("map.remove", Box::new(scope::map::Remove));
 	map.insert("map.size", Box::new(scope::map::Size));
 	map.insert("map.clear", Box::new(scope::map::Clear));
+}
 
-	// String tools
+/// Strings tools
+pub fn string_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	map.insert("string.length", Box::new(stringtools::Length));
 	map.insert("string.slice", Box::new(stringtools::Slice));
 	map.insert("string.concat", Box::new(stringtools::Concat));
 	map.insert("string.to_upper", Box::new(stringtools::ToUpper));
 	map.insert("string.to_lower", Box::new(stringtools::ToLower));
 	map.insert("string.trim", Box::new(stringtools::Trim));
-
-	// Type conversion functions
-	map.insert("str", Box::new(convert::ToString));
-	map.insert("num", Box::new(convert::ToNumber));
+}
+/// All operations available in Egg
+pub fn ful<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
+	minimal(map);
+	map_tools(map);
 
 	#[cfg(feature = "std")]
 	{
@@ -109,6 +107,4 @@ pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a m
 		map.insert("println", Box::new(console::PrintLine));
 		map.insert("readline", Box::new(console::ReadLine));
 	}
-
-	map
 }
