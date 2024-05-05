@@ -57,7 +57,9 @@ impl Operator for Set {
 				let new_value = evaluate(&args[1], scope, operators)?;
 				old_value = evaluate(variable_name, scope, operators);
 
-				scope.get_mut(name.as_str()).map(|val| *val = new_value);
+				if let Some(val) = scope.get_mut(name.as_str()) {
+					*val = new_value
+				};
 			}
 			_ => {
 				return Err(EggError::OperatorComplaint("Numbers and Nil cannot be used as variable names".to_string()));

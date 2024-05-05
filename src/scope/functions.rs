@@ -17,7 +17,7 @@ pub struct FunctionDefinition {
 
 impl core::fmt::Debug for FunctionDefinition {
 	fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-		let parameters = self.parameter_names.get(0).map(|s| s.as_str()).unwrap_or("");
+		let parameters = self.parameter_names.first().map(|s| s.as_str()).unwrap_or("");
 		let parameters = self.parameter_names.iter().skip(1).fold(parameters.to_string(), |acc, s| format!("{}, {}", acc, s.as_str()));
 
 		write!(f, "Function ({})", parameters)
@@ -77,7 +77,7 @@ pub struct CreateFunction;
 
 impl Operator for CreateFunction {
 	fn evaluate(&self, args: &[Expression], scope: &mut super::Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<crate::expression::Value> {
-		if args.len() == 0 {
+		if args.is_empty() {
 			return Err(EggError::InvalidFunctionDefinition("Function Definition requires at least a body".to_string()));
 		}
 

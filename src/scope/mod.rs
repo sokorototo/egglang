@@ -42,7 +42,7 @@ impl Scope {
 	pub fn get(&self, key: &str) -> Option<&Value> {
 		match self {
 			Scope::Global { source, .. } => source.get(key),
-			Scope::Local { overlay, source: parent, .. } => overlay.get(key).or_else(|| unsafe { parent.as_mut().map(|p| p.get(key)).flatten() }),
+			Scope::Local { overlay, source: parent, .. } => overlay.get(key).or_else(|| unsafe { parent.as_mut().and_then(|p| p.get(key)) }),
 		}
 	}
 
@@ -50,7 +50,7 @@ impl Scope {
 	pub fn get_mut(&mut self, key: &str) -> Option<&mut Value> {
 		match self {
 			Scope::Global { source, .. } => source.get_mut(key),
-			Scope::Local { overlay, source: parent, .. } => overlay.get_mut(key).or_else(|| unsafe { parent.as_mut().map(|p| p.get_mut(key)).flatten() }),
+			Scope::Local { overlay, source: parent, .. } => overlay.get_mut(key).or_else(|| unsafe { parent.as_mut().and_then(|p| p.get_mut(key)) }),
 		}
 	}
 
@@ -70,7 +70,7 @@ impl Scope {
 	pub fn remove(&mut self, key: &str) -> Option<Value> {
 		match self {
 			Scope::Global { source, .. } => source.remove(key),
-			Scope::Local { overlay, source: parent, .. } => unsafe { overlay.remove(key).or_else(|| parent.as_mut().map(|p| p.remove(key)).flatten()) },
+			Scope::Local { overlay, source: parent, .. } => unsafe { overlay.remove(key).or_else(|| parent.as_mut().and_then(|p| p.remove(key))) },
 		}
 	}
 
