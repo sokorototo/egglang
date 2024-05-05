@@ -3,7 +3,7 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
-	scope::Scope
+	scope::Scope,
 };
 use alloc::{boxed::Box, collections::BTreeMap, format};
 

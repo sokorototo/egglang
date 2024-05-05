@@ -13,7 +13,7 @@ mod control_flow;
 mod convert;
 
 #[cfg(feature = "std")]
-mod print;
+mod console;
 
 mod stringtools;
 mod variables;
@@ -107,8 +107,9 @@ pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a m
 	{
 		map.insert("sleep", Box::new(control_flow::Sleep));
 		map.insert("map.print", Box::new(scope::map::PrintMap));
-		map.insert("print", Box::new(print::Print));
-		map.insert("println", Box::new(print::PrintLine));
+		map.insert("print", Box::new(console::Print));
+		map.insert("println", Box::new(console::PrintLine));
+		map.insert("readline", Box::new(console::ReadLine));
 	}
 
 	map

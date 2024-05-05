@@ -20,7 +20,7 @@ impl Operator for PrintLine {
 				Value::Nil => print!("Nil"),
 				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
 				Value::Function(idx) => {
-					let function = scope.get_function(idx)?;
+					let function = scope.get_function_definition(idx)?;
 					print!("{:?}", function);
 				}
 			}
@@ -44,7 +44,7 @@ impl Operator for Print {
 				Value::Nil => print!("Nil"),
 				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
 				Value::Function(idx) => {
-					let function = scope.get_function(idx)?;
+					let function = scope.get_function_definition(idx)?;
 					print!("{:?}", function);
 				}
 			}
@@ -55,5 +55,23 @@ impl Operator for Print {
 		}
 
 		Ok(Value::Nil)
+	}
+}
+
+/// Reads a line of input from the console
+pub struct ReadLine;
+
+impl Operator for ReadLine {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+		// Print prompt if any
+		if let Some(prompt) = args.get(0) {
+			Print.evaluate(core::slice::from_ref(prompt), scope, operators)?;
+		}
+
+		// read line
+		let mut input = String::new();
+		std::io::stdin().read_line(&mut input).map_err(|err| crate::errors::EggError::OperatorComplaint(err.to_string()))?;
+
+		Ok(input.trim().into())
 	}
 }

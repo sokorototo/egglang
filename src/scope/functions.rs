@@ -11,7 +11,6 @@ use crate::{
 use super::Scope;
 
 pub struct FunctionDefinition {
-	name: ArcStr,
 	parameter_names: Vec<ArcStr>,
 	body: Expression,
 }
@@ -21,45 +20,27 @@ impl core::fmt::Debug for FunctionDefinition {
 		let parameters = self.parameter_names.get(0).map(|s| s.as_str()).unwrap_or("");
 		let parameters = self.parameter_names.iter().skip(1).fold(parameters.to_string(), |acc, s| format!("{}, {}", acc, s.as_str()));
 
-		write!(f, "Function {}({})", self.name, parameters)
+		write!(f, "Function ({})", parameters)
 	}
 }
 
-impl FunctionDefinition {
-	pub fn call(&self, parameters: &[Expression], scope: &mut super::Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		if parameters.len() != self.parameter_names.len() {
-			return Err(EggError::InvalidFunctionCall(format!(
-				"Function {} expects {} parameters, but {} were given",
-				self.name,
-				self.parameter_names.len(),
-				parameters.len()
-			)));
-		}
-
-		let mut new_scope = BTreeMap::new();
-		for (name, expression) in self.parameter_names.iter().zip(parameters.iter()) {
-			let value = evaluate(expression, scope, operators)?;
-			new_scope.insert(name.clone(), value);
-		}
-
-		let mut new_scope = scope.overlay(new_scope);
-		evaluate(&self.body, &mut new_scope, operators)
-	}
-}
-
-fn get_function_name(expr: &Expression) -> EggResult<ArcStr> {
+fn get_parameter_name(expr: &Expression) -> EggResult<ArcStr> {
 	match expr {
 		Expression::Word { name } => Ok(name.clone()),
-		_ => Err(EggError::InvalidFunctionDefinition("Function or Parameter name must be a word".to_string())),
+		_ => Err(EggError::InvalidFunctionDefinition("Parameter name must be a word".to_string())),
 	}
 }
 
 impl super::Scope {
-	pub fn get_function_idx(&self, name: &str) -> Option<usize> {
-		self.extras().functions.iter().enumerate().find(|(_, f)| f.name.as_str() == name).map(|(idx, _)| idx)
+	pub fn get_function(&self, name: &str) -> Option<usize> {
+		let value = self.get(name);
+		match value {
+			Some(Value::Function(idx)) => Some(*idx),
+			_ => None,
+		}
 	}
 
-	pub fn get_function(&self, idx: usize) -> EggResult<&FunctionDefinition> {
+	pub fn get_function_definition(&self, idx: usize) -> EggResult<&FunctionDefinition> {
 		self.extras()
 			.functions
 			.get(idx)
@@ -72,11 +53,10 @@ impl super::Scope {
 			&*(self as *const Scope)
 		};
 
-		let function = new_self.get_function(idx)?;
+		let function = new_self.get_function_definition(idx)?;
 		if parameters.len() != function.parameter_names.len() {
 			return Err(EggError::InvalidFunctionCall(format!(
-				"Function {} expects {} parameters, but {} were given",
-				function.name,
+				"Function expects {} parameters, but {} were given",
 				function.parameter_names.len(),
 				parameters.len()
 			)));
@@ -97,16 +77,15 @@ pub struct CreateFunction;
 
 impl Operator for CreateFunction {
 	fn evaluate(&self, args: &[Expression], scope: &mut super::Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<crate::expression::Value> {
-		if args.len() < 2 {
-			return Err(EggError::InvalidFunctionDefinition("Function definition requires at least 2 arguments: A name and a body".to_string()));
+		if args.len() == 0 {
+			return Err(EggError::InvalidFunctionDefinition("Function Definition requires at least a body".to_string()));
 		}
 
-		// get function name
-		let name = get_function_name(&args[0])?;
+		// assemble function parts
 		let body = args[args.len() - 1].clone();
-		let parameter_names = args.iter().skip(1).take(args.len() - 2).map(get_function_name).collect::<EggResult<Vec<ArcStr>>>()?;
+		let parameter_names = args.iter().take(args.len() - 1).map(get_parameter_name).collect::<EggResult<Vec<ArcStr>>>()?;
 
-		let function = FunctionDefinition { name, parameter_names, body };
+		let function = FunctionDefinition { parameter_names, body };
 		let functions = &mut scope.extras_mut().functions;
 		functions.push(function);
 

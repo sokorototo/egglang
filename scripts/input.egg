@@ -1,0 +1,3 @@
+define(readNumber, fn(msg ,num(readline(msg))))
+define(samba, readNumber("How times do you want to Samba?: "))
+repeat(samba, println("Samba!"))

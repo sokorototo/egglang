@@ -52,7 +52,7 @@ impl super::Operator for GreaterThan {
 	}
 }
 
-// Greater than
+/// Lesser than
 pub struct LessThan;
 
 impl super::Operator for LessThan {
@@ -69,7 +69,7 @@ impl super::Operator for LessThan {
 	}
 }
 
-// Write a form that checks if a value is nil, returns a boolean if true
+/// Checks if the value is nil
 pub struct IsNil;
 
 impl super::Operator for IsNil {

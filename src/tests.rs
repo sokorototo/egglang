@@ -19,11 +19,13 @@ fn test() {
 	scripts.for_each(|(path, script)| {
 		let mut scope = Default::default();
 
-		println!("\nRunning script: [{}]", path.display());
+		println!("\n[{}]", path.display());
 		let ast = parser::parse(script).unwrap();
 
 		ast.iter().for_each(|expr| {
 			evaluator::evaluate(expr, &mut scope, &operators).unwrap();
 		});
 	});
+
+	println!("\n[Calls to evaluate(...)] {}", unsafe { evaluator::EVALUATIONS });
 }

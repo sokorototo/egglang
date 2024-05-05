@@ -1,9 +1,19 @@
-# Simple Function Defintions
-fn(plusOne, num, sum(1, num))
-fn(print10, input, repeat(10, print(input)))
-fn(poop, print("POOOOP!"))
+# Simple
+define(poop, fn(print("POOOOP! ")))
 
-print10(plusOne(19))
+# Functions can take arguments
+define(plusOne, fn(num, sum(1, num)))
+
+# Functions as Values, and thus arguments
+define(do10, fn(func, repeat(10, func())))
+do10(poop)
 
 # Internals calling user defined functions
 repeat(10, poop())
+
+# All functions have type Function
+println("poop has type: ", typeof(poop), Function)
+assert(equals(typeof(poop), Function), "Type Signature messed up")
+
+# You can print functions to the Console
+println("plusOne ", plusOne)

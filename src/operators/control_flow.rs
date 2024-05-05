@@ -3,7 +3,7 @@ use crate::{
 	errors::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{self, Value},
-	scope::Scope
+	scope::Scope,
 };
 use alloc::{boxed::Box, collections::BTreeMap, string::ToString};
 
@@ -29,8 +29,12 @@ impl Operator for If {
 		let value = match condition {
 			Value::Number(num) => num != 0.0,
 			Value::Boolean(b) => b,
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("if(--) expects a boolean (a number that if zero equals false) as it's parameter".to_string())),
+
+			_ => {
+				return Err(EggError::OperatorComplaint(
+					"if(--) expects a boolean (a number that if zero equals false) as it's parameter".to_string(),
+				))
+			}
 		};
 
 		if value {
@@ -58,8 +62,8 @@ impl Operator for While {
 			let continue_condition = match condition {
 				Value::Number(num) => num != 0.0,
 				Value::Boolean(b) => b,
-				#[rustfmt::skip]
-                _ => return Err(EggError::OperatorComplaint("while(--) expects a number as it's parameter".to_string())),
+
+				_ => return Err(EggError::OperatorComplaint("while(--) expects a number as it's parameter".to_string())),
 			};
 
 			if !continue_condition {
@@ -86,8 +90,7 @@ impl Operator for Repeat {
 
 		let max_iter = match evaluate(&args[0], scope, operators)? {
 			Value::Number(num) => num,
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("repeat(--, ...) expects a number as it's first parameter".to_string())),
+			_ => return Err(EggError::OperatorComplaint("repeat(--, ...) expects a number as it's first parameter".to_string())),
 		};
 
 		loop {
@@ -122,8 +125,7 @@ impl Operator for Sleep {
 			let duration = Duration::from_millis(value.0 as u64);
 			sleep(duration)
 		} else {
-			#[rustfmt::skip]
-            return Err(EggError::OperatorComplaint("sleep(--) expects a number as it's parameter".to_string()));
+			return Err(EggError::OperatorComplaint("sleep(--) expects a number as it's parameter".to_string()));
 		}
 
 		Ok(sleep_time)

@@ -20,8 +20,7 @@ impl Operator for Define {
 				let value = evaluate(&args[1], scope, operators)?;
 
 				if scope.exists(name.as_str()) {
-					#[rustfmt::skip]
-                    return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
+					return Err(EggError::OperatorComplaint(format!("variable {} already defined", name)));
 				} else {
 					scope.insert(name.clone(), value.clone());
 				}
@@ -32,8 +31,7 @@ impl Operator for Define {
 				let value = evaluate(&args[1], scope, operators)?;
 
 				if scope.exists(name.as_str()) {
-					#[rustfmt::skip]
-                    return Err(EggError::OperatorComplaint(format!( "variable {} already defined", name )));
+					return Err(EggError::OperatorComplaint(format!("variable {} already defined", name)));
 				} else {
 					scope.insert(name.clone(), value.clone());
 				}
@@ -82,8 +80,8 @@ impl Operator for Delete {
 			expression::Expression::Word { name } => scope.remove(name.as_str()),
 			expression::Expression::Value { value } => match value {
 				Value::String(name) => scope.remove(name.as_str()),
-				#[rustfmt::skip]
-                val => return Err(EggError::OperatorComplaint(format!("Cannot delete {val}"))),
+
+				val => return Err(EggError::OperatorComplaint(format!("Cannot delete {val}"))),
 			},
 			v => return Err(EggError::OperatorComplaint(format!("Cannot delete {v:?}"))),
 		};
@@ -104,8 +102,8 @@ impl Operator for Exists {
 			expression::Expression::Word { name } => scope.exists(name.as_str()),
 			expression::Expression::Value { value } => match value {
 				Value::String(name) => scope.exists(name.as_str()),
-				#[rustfmt::skip]
-                val => return Err(EggError::OperatorComplaint(format!( "Cannot check if {val} exists" ))),
+
+				val => return Err(EggError::OperatorComplaint(format!("Cannot check if {val} exists"))),
 			},
 			_ => {
 				return Err(EggError::OperatorComplaint("Operations cannot be used as variable names".to_string()));

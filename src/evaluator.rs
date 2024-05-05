@@ -14,15 +14,14 @@ pub fn evaluate(expr: &Expression, scope: &mut Scope, operators: &BTreeMap<&str,
 
 	match expr {
 		Expression::Value { value } => Ok(value.clone()),
-		Expression::Word { name } => scope.get(name.as_str()).ok_or_else(|| EggError::UndefinedBinding(name.to_string())).map(|d| d.clone()),
+		Expression::Word { name } => scope.get(name.as_str()).ok_or_else(|| EggError::UndefinedBinding(name.clone())).map(|d| d.clone()),
 		Expression::FnCall { name, parameters } => {
 			// Search for a user-defined function in the scope
-			if let Some(function) = scope.get_function_idx(name.as_str()) {
-				// Evaluate the function
+			if let Some(function) = scope.get_function(name) {
 				scope.call_function(function, parameters, operators)
 			} else {
-				// Fetch operation
-				let operator = operators.get(name.as_str()).ok_or_else(|| EggError::SpecialFormNotFound(name.clone()))?;
+				// Search for a built-in operator with the given name
+				let operator = operators.get(name.as_str()).ok_or_else(|| EggError::FunctionNotFound(name.clone()))?;
 				operator.evaluate(parameters, scope, operators)
 			}
 		}

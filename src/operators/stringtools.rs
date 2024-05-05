@@ -20,8 +20,7 @@ impl Operator for Concat {
 		for arg in args {
 			match evaluate(arg, scope, operators)? {
 				Value::String(string) => result.push_str(&string),
-				#[rustfmt::skip]
-                _ => return Err(EggError::OperatorComplaint("Cannot concatenate non-string".to_string())),
+				_ => return Err(EggError::OperatorComplaint("Cannot concatenate non-string".to_string())),
 			}
 		}
 
@@ -40,15 +39,14 @@ impl Operator for Length {
 		let res = evaluate(&args[0], scope, operators)?;
 		let value = match res {
 			Value::String(string) => string.len(),
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("Cannot get length of non-string".to_string())),
+			_ => return Err(EggError::OperatorComplaint("Cannot get length of non-string".to_string())),
 		};
 
 		Ok(Value::Number((value as f32).into()))
 	}
 }
 
-// Define a special form that extracts a slice from a string and produces a new string given a start and a length
+/// Builtin for slicing and indexing into strings
 pub struct Slice;
 
 impl Operator for Slice {
@@ -61,21 +59,18 @@ impl Operator for Slice {
 
 		let base = match res {
 			Value::String(string) => string,
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("Cannot slice non-string".to_string())),
+			_ => return Err(EggError::OperatorComplaint("Cannot slice non-string".to_string())),
 		};
 
 		let mut start = match evaluate(&args[1], scope, operators)? {
 			Value::Number(num) => num,
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
+			_ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
 		};
 
 		(start.0 < 0.0).then(|| start += base.len() as f32);
 		let length = match evaluate(&args[2], scope, operators)? {
 			Value::Number(num) => num.0 as usize,
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
+			_ => return Err(EggError::OperatorComplaint("Cannot slice with non-number".to_string())),
 		};
 
 		let start = start.0 as usize;
@@ -85,7 +80,7 @@ impl Operator for Slice {
 	}
 }
 
-// Define two special forms that take a string and convert to uppercase and lowercase respectively
+/// Converts a String to UpperCase
 pub struct ToUpper;
 
 impl Operator for ToUpper {
@@ -97,14 +92,14 @@ impl Operator for ToUpper {
 		let res = evaluate(&args[0], scope, operators)?;
 		let value = match res {
 			Value::String(string) => string.to_uppercase(),
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("Cannot convert non-string to uppercase".to_string())),
+			_ => return Err(EggError::OperatorComplaint("Cannot convert non-string to uppercase".to_string())),
 		};
 
 		Ok(Value::String(value.into()))
 	}
 }
 
+/// Converts a String to Upper case
 pub struct ToLower;
 
 impl Operator for ToLower {
@@ -116,14 +111,14 @@ impl Operator for ToLower {
 		let res = evaluate(&args[0], scope, operators)?;
 		let value = match res {
 			Value::String(string) => string.to_lowercase(),
-			#[rustfmt::skip]
-            _ => return Err(EggError::OperatorComplaint("Cannot convert non-string to lowercase".to_string())),
+			_ => return Err(EggError::OperatorComplaint("Cannot convert non-string to lowercase".to_string())),
 		};
 
 		Ok(Value::String(value.into()))
 	}
 }
 
+/// Trims whitespace from the start and end of a string
 pub struct Trim;
 
 impl Operator for Trim {
@@ -135,8 +130,7 @@ impl Operator for Trim {
 		let res = evaluate(&args[0], scope, operators)?;
 		match res {
 			Value::String(string) => Ok(Value::String(string.trim().into())),
-			#[rustfmt::skip]
-            _ => Err(EggError::OperatorComplaint("Cannot trim non-string".to_string())),
+			_ => Err(EggError::OperatorComplaint("Cannot trim non-string".to_string())),
 		}
 	}
 }

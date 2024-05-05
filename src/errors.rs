@@ -11,9 +11,9 @@ pub type EggResult<T = ()> = Result<T, EggError>;
 #[derive(Clone, Debug, thiserror_no_std::Error)]
 pub enum EggError {
 	#[error("Binding not found in current scope: {0}")]
-	UndefinedBinding(String),
-	#[error("No special form with the identifier ({0}) was found")]
-	SpecialFormNotFound(ArcStr),
+	UndefinedBinding(ArcStr),
+	#[error("No Function with the identifier ({0}) was found")]
+	FunctionNotFound(ArcStr),
 	#[error("Unbalanced bracket found at location: {0}")]
 	UnbalancedBrackets(usize),
 	#[error("Unable to parse string as number: {0}")]
