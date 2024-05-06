@@ -101,7 +101,7 @@ impl Scope {
 
 	/// Updates the value of a variable if it is in the present scope, otherwise updates it in the parent scope.
 	pub fn update(&mut self, key: ArcStr, value: Value) {
-		let is_local = matches!(self, Scope::Local { overlay, .. } if overlay.contains_key(&key));
+		let was_local = matches!(self, Scope::Local { overlay, .. } if overlay.contains_key(&key));
 		self.delete(&key);
 
 		match self {
@@ -109,7 +109,7 @@ impl Scope {
 				source.insert(key, value);
 			}
 			Scope::Local { overlay, source } => {
-				if is_local {
+				if was_local {
 					overlay.insert(key, value);
 				} else {
 					unsafe { source.as_mut().map(|s| s.insert(key, value)) };
