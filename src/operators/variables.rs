@@ -43,22 +43,7 @@ impl Operator for Set {
 		match variable_name {
 			expression::Expression::Word { name } => {
 				let new_value = evaluate(&args[1], scope, operators)?;
-				let old_value = evaluate(variable_name, scope, operators)?;
-
-				// overwriting a function deletes it
-				match old_value {
-					Value::Function(idx) => {
-						scope.delete_function(idx);
-					}
-					Value::Object(idx) => {
-						scope.delete_object(idx);
-					}
-					_ => {}
-				}
-
-				if let Some(val) = scope.get_mut(name.as_str()) {
-					*val = new_value
-				};
+				scope.update(name.clone(), new_value)
 			}
 			v => {
 				return Err(EggError::OperatorComplaint(format!("Non-word variable name. Got: {:?}", v)));
@@ -78,9 +63,9 @@ impl Operator for Delete {
 		let name = &args[0];
 
 		let res = match name {
-			expression::Expression::Word { name } => scope.remove(name.as_str()),
+			expression::Expression::Word { name } => scope.delete(name.as_str()),
 			expression::Expression::Value { value } => match value {
-				Value::String(name) => scope.remove(name.as_str()),
+				Value::String(name) => scope.delete(name.as_str()),
 				val => return Err(EggError::OperatorComplaint(format!("Cannot delete {val}"))),
 			},
 			v => return Err(EggError::OperatorComplaint(format!("Cannot delete {v:?}"))),

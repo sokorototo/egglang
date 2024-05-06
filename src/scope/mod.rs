@@ -99,8 +99,27 @@ impl Scope {
 		}
 	}
 
+	/// Updates the value of a variable if it is in the present scope, otherwise updates it in the parent scope.
+	pub fn update(&mut self, key: ArcStr, value: Value) {
+		let is_local = matches!(self, Scope::Local { overlay, .. } if overlay.contains_key(&key));
+		self.delete(&key);
+
+		match self {
+			Scope::Global { source, .. } => {
+				source.insert(key, value);
+			}
+			Scope::Local { overlay, source } => {
+				if is_local {
+					overlay.insert(key, value);
+				} else {
+					unsafe { source.as_mut().map(|s| s.insert(key, value)) };
+				}
+			}
+		};
+	}
+
 	/// Delete a variable if it is the present scope, otherwise delete it from the parent scope.
-	pub fn remove(&mut self, key: &str) -> Option<Value> {
+	pub fn delete(&mut self, key: &str) -> Option<Value> {
 		if let Some(Value::Function(index)) = self.get(key) {
 			self.delete_function(*index);
 		}
@@ -111,7 +130,7 @@ impl Scope {
 
 		match self {
 			Scope::Global { source, .. } => source.remove(key),
-			Scope::Local { overlay, source: parent, .. } => unsafe { overlay.remove(key).or_else(|| parent.as_mut().and_then(|p| p.remove(key))) },
+			Scope::Local { overlay, source: parent, .. } => unsafe { overlay.remove(key).or_else(|| parent.as_mut().and_then(|p| p.delete(key))) },
 		}
 	}
 
