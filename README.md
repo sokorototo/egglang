@@ -1,4 +1,3 @@
-<h2 style="text-align: center">egglang</h2>
 <h4 style="text-align: center">A Rust implementation of the Egg Programming Language</h4>
 <p align=center>
   <a href="https://crates.io/crates/egglang"><img alt="Crate Version on Crates.io" src="https://img.shields.io/crates/v/egglang?style=flat-square"></a>
@@ -90,3 +89,8 @@ let _ = evaluate(expression, &mut scope, &operators).unwrap();
 ```
 
 > Example Egg scripts can be found in the `scripts` directory;
+
+<p style="text-align: center">
+	<img src="https://i.redd.it/hlgxxtijupyc1.jpeg">
+	<h6 style="text-align: center">Credit: <a href="https://new.reddit.com/r/Art/comments/1cl84vd/%E9%99%85_j%C3%AC_the_frontier_upenguinwarrior3105_chalk_on/">u/Penguin-warrior-3105</a></h6>
+</p>
