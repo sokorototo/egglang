@@ -20,10 +20,8 @@ pub enum EggError {
 	UnableToParseNumber(#[from] core::num::ParseFloatError),
 	#[error("Operator Complaint: {0}")]
 	OperatorComplaint(String),
-	#[error("No map found with the identifier: {0:?}")]
-	MapNotFound(usize),
-	#[error("The provided map tag: {0}, is invalid. Reason {1}")]
-	InvalidMapTag(Value, String),
+	#[error("The provided Value: {0} is not an Object Reference")]
+	InvalidObjectReference(Value),
 	#[error("Invalid Function Definition: {0}")]
 	InvalidFunctionDefinition(String),
 	#[error("Assertion failed: {0}")]

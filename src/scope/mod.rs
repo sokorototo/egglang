@@ -1,9 +1,10 @@
 pub mod functions;
-pub mod map;
+pub mod object;
 
 use crate::expression::Value;
 use alloc::collections::BTreeMap;
 use arcstr::ArcStr;
+use core::f32::consts;
 
 #[derive(Debug)]
 pub enum Scope {
@@ -25,6 +26,11 @@ impl Default for Scope {
 		source.insert("Boolean".into(), Value::String("__TYPE__BOOLEAN".into()));
 		source.insert("Function".into(), Value::String("__TYPE__FUNCTION".into()));
 		source.insert("Object".into(), Value::String("__TYPE__OBJECT".into()));
+
+		// Float constants
+		source.insert("PI".into(), consts::PI.into());
+		source.insert("TAU".into(), consts::TAU.into());
+		source.insert("E".into(), consts::E.into());
 
 		Scope::Global { source, extras: Default::default() }
 	}
@@ -74,7 +80,9 @@ impl Scope {
 		}
 
 		if let Some(Value::Object(tag)) = self.get(key) {
-			self.delete_map(*tag);
+			// the borrow checker can be annoying
+			let tag = tag.clone();
+			self.extras_mut().maps.remove(&tag);
 		}
 
 		match self {
@@ -84,12 +92,12 @@ impl Scope {
 	}
 
 	/// Create a new local scope.
-	pub fn overlay(&mut self, overlay: BTreeMap<ArcStr, Value>) -> Scope {
+	pub(crate) fn overlay(&mut self, overlay: BTreeMap<ArcStr, Value>) -> Scope {
 		Scope::Local { overlay, source: self as _ }
 	}
 
 	/// Get extra metadata attached to the scope.
-	pub fn extras(&self) -> &ScopeExtras {
+	pub(crate) fn extras(&self) -> &ScopeExtras {
 		match self {
 			Scope::Global { extras, .. } => extras,
 			Scope::Local { source, .. } => unsafe { source.as_ref().map(|s| s.extras()).unwrap_unchecked() },
@@ -97,7 +105,7 @@ impl Scope {
 	}
 
 	/// Get mutable extra metadata attached to the scope.
-	pub fn extras_mut(&mut self) -> &mut ScopeExtras {
+	pub(crate) fn extras_mut(&mut self) -> &mut ScopeExtras {
 		match self {
 			Scope::Global { extras, .. } => extras,
 			Scope::Local { source, .. } => unsafe { source.as_mut().map(|s| s.extras_mut()).unwrap_unchecked() },
@@ -105,12 +113,13 @@ impl Scope {
 	}
 }
 
-/// Extra data stored on the scope, like function definitions and dictionaries
-/// Only the Global scope has this, meaning Maps and Functions are always global.
+/// Extra data stored on the scope, like function definitions and dictionaries.
+/// Only the Global scope has this, meaning Objects and Functions are accessible globally. Even when defined in a local scope.
+/// You will still need access to the Function or Object's reference [`Value`]
 #[derive(Debug, Default)]
 pub struct ScopeExtras {
 	maps: BTreeMap<usize, BTreeMap<Value, Value>>,
-	current_map_index: usize,
+	current_object_index: usize,
 	functions: BTreeMap<usize, functions::FunctionDefinition>,
 	current_function_index: usize,
 }

@@ -2,7 +2,7 @@
 
 use super::Operator;
 use crate::{
-	errors::{EggError, EggResult},
+	error::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
 	scope::Scope,

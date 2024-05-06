@@ -2,7 +2,7 @@ use alloc::vec::Vec;
 use arcstr::ArcStr;
 use ordered_float::OrderedFloat;
 
-/// An expression is the smallest unit of code in egg.
+/// An expression is a piece of code that can be evaluated into a [`Value`].
 #[derive(Debug, Clone)]
 pub enum Expression {
 	Value { value: Value },
@@ -10,14 +10,38 @@ pub enum Expression {
 	FnCall { name: ArcStr, parameters: Vec<Expression> },
 }
 
-/// A value is the smallest unit of data in egg.
+/// A primitive in Egg; can be a number, boolean, string, function, or an object.
+/// Primitives are immutable, to mutate create a new value.
+/// This applies to both user-code and built-in functions.
+///
+/// Some Rust primitives can be converted into a [`Value`] using the [`From`] trait.
+///
+/// ```rust
+/// use egglang::expression::Value;
+///
+/// let number: Value = 42.0.into();
+/// let string: Value = "Hello, World!".into();
+/// let boolean: Value = true.into();
+/// let nil: Value = ().into();
+///
+/// // Option<T: Into<Value>> can be converted into Value
+/// assert_eq!(Value::Nil, None::<f32>.into());
+/// let five: Value = Some(5.0).into();
+/// assert_eq!(Value::from(5.0), five);
+/// ```
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Value {
+	/// Represents the absence of a value.
 	Nil,
+	/// A 32-bit floating-point number.
 	Number(OrderedFloat<f32>),
+	/// A boolean value.
 	Boolean(bool),
+	/// Atomically reference-counted string.
 	String(ArcStr),
+	/// A function definition. Stores a index to the function in the scope.
 	Function(usize),
+	/// An object. Stores a index to the object in the scope.
 	Object(usize),
 }
 
@@ -76,5 +100,14 @@ impl From<ArcStr> for Value {
 impl From<()> for Value {
 	fn from(_: ()) -> Self {
 		Value::Nil
+	}
+}
+
+impl<T: Into<Value>> From<Option<T>> for Value {
+	fn from(val: Option<T>) -> Self {
+		match val {
+			Some(val) => val.into(),
+			None => Value::Nil,
+		}
 	}
 }

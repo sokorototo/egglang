@@ -1,5 +1,5 @@
 use crate::{
-	errors::EggResult,
+	error::EggResult,
 	expression::{Expression, Value},
 	scope::{self, Scope},
 };
@@ -18,8 +18,17 @@ mod console;
 mod stringtools;
 mod variables;
 
-/// Functions defined in Rust, callable in Egg
+/// Trait for functions defined Rust, callable in Egg.
+/// Operators then need to be registered into the operators map, during script [evaluation](crate::evaluator::evaluate).
 pub trait Operator {
+	/// Invokes this Operator.
+	///
+	/// `[args]` are the arguments to the Operator, as [`Expressions`](Expression). To get a [`Value`] from an argument, use the [`evaluate`](crate::evaluator::evaluate) function.
+	///
+	/// `[scope]` is the current scope, where variables are stored. A local scope if the function is called from a user-defined function, or the global scope if called from the main script.
+	///
+	/// `[operators]` is a map of all other operators; Can be used directly, but it's main use is to invoke [`evaluate`](crate::evaluator::evaluate) on arguments.
+	///
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value>;
 }
 
@@ -28,7 +37,7 @@ pub fn empty() -> BTreeMap<&'static str, Box<dyn Operator>> {
 	BTreeMap::new()
 }
 
-/// Only the basic operations available in Egg. No print, stringtools or maps
+/// Only the basic operations available in Egg
 pub fn minimal<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'a mut BTreeMap<&'static str, Box<dyn Operator>> {
 	// Insert language statements
 	map.insert("define", Box::new(variables::Define));
@@ -74,15 +83,15 @@ pub fn minimal<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'
 	map
 }
 
-// Object Functions
-pub fn map_tools(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
-	map.insert("map.new", Box::new(scope::map::NewMap));
-	map.insert("map.get", Box::new(scope::map::Get));
-	map.insert("map.insert", Box::new(scope::map::Insert));
-	map.insert("map.has", Box::new(scope::map::Has));
-	map.insert("map.remove", Box::new(scope::map::Remove));
-	map.insert("map.size", Box::new(scope::map::Size));
-	map.insert("map.clear", Box::new(scope::map::Clear));
+/// Create, interact with and delete objects
+pub fn object_tools(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
+	map.insert("object.new", Box::new(scope::object::CreateObject));
+	map.insert("object.get", Box::new(scope::object::Get));
+	map.insert("object.insert", Box::new(scope::object::Insert));
+	map.insert("object.has", Box::new(scope::object::Has));
+	map.insert("object.remove", Box::new(scope::object::Remove));
+	map.insert("object.size", Box::new(scope::object::Size));
+	map.insert("object.clear", Box::new(scope::object::Clear));
 }
 
 /// Strings tools
@@ -94,17 +103,25 @@ pub fn string_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) 
 	map.insert("string.to_lower", Box::new(stringtools::ToLower));
 	map.insert("string.trim", Box::new(stringtools::Trim));
 }
-/// All operations available in Egg
-pub fn ful<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
+
+/// Console Functions
+#[cfg(feature = "std")]
+pub fn console_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
+	map.insert("print", Box::new(console::Print));
+	map.insert("println", Box::new(console::PrintLine));
+	map.insert("readline", Box::new(console::ReadLine));
+	map.insert("object.print", Box::new(scope::object::PrintMap));
+}
+
+/// All Internal functions defined in `Egg`
+pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	minimal(map);
-	map_tools(map);
+	object_tools(map);
+	string_tools(map);
 
 	#[cfg(feature = "std")]
 	{
 		map.insert("sleep", Box::new(control_flow::Sleep));
-		map.insert("map.print", Box::new(scope::map::PrintMap));
-		map.insert("print", Box::new(console::Print));
-		map.insert("println", Box::new(console::PrintLine));
-		map.insert("readline", Box::new(console::ReadLine));
+		console_tools(map);
 	}
 }

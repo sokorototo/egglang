@@ -2,7 +2,7 @@ use alloc::{boxed::Box, collections::BTreeMap, format, string::ToString, vec::Ve
 use arcstr::ArcStr;
 
 use crate::{
-	errors::{EggError, EggResult},
+	error::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
 	operators::Operator,
@@ -32,7 +32,7 @@ fn get_parameter_name(expr: &Expression) -> EggResult<ArcStr> {
 }
 
 impl super::Scope {
-	pub fn get_function(&self, name: &str) -> Option<usize> {
+	pub(crate) fn get_function(&self, name: &str) -> Option<usize> {
 		let value = self.get(name);
 		match value {
 			Some(Value::Function(idx)) => Some(*idx),
@@ -47,13 +47,19 @@ impl super::Scope {
 			.ok_or_else(|| EggError::InvalidFunctionCall(format!("Function with index {} not found", idx)))
 	}
 
+	pub fn get_function_definition_mut(&mut self, idx: usize) -> EggResult<&mut FunctionDefinition> {
+		self.extras_mut()
+			.functions
+			.get_mut(&idx)
+			.ok_or_else(|| EggError::InvalidFunctionCall(format!("Function with index {} not found", idx)))
+	}
+
 	pub fn call_function(&mut self, idx: usize, parameters: &[Expression], operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		let new_self = unsafe {
+		let function = unsafe {
 			// SAFETY: We are not modifying the scope, only reading from the function definition from it
-			&*(self as *const Scope)
+			(&*(self as *const Scope)).get_function_definition(idx)?
 		};
 
-		let function = new_self.get_function_definition(idx)?;
 		if parameters.len() != function.parameter_names.len() {
 			return Err(EggError::InvalidFunctionCall(format!(
 				"Function expects {} parameters, but {} were given",
@@ -72,8 +78,8 @@ impl super::Scope {
 		evaluate(&function.body, &mut new_scope, operators)
 	}
 
-	pub fn delete_function(&mut self, idx: usize) {
-		let _ = self.extras_mut().functions.remove(&idx);
+	pub fn delete_function(&mut self, idx: usize) -> Option<FunctionDefinition> {
+		self.extras_mut().functions.remove(&idx)
 	}
 }
 

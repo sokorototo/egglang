@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use super::Operator;
 use crate::{
-	errors::EggResult,
+	error::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
 	scope::Scope,
@@ -19,14 +19,8 @@ impl Operator for PrintLine {
 				Value::String(string) => print!("{string}"),
 				Value::Nil => print!("Nil"),
 				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
-				Value::Function(idx) => {
-					let function = scope.get_function_definition(idx)?;
-					print!("{:?}", function);
-				}
-				Value::Object(tag) => {
-					let map = scope.get_map(tag)?;
-					println!("{:?}", map);
-				}
+				Value::Function(idx) => print!("{:?}", scope.get_function_definition(idx)?),
+				Value::Object(tag) => println!("{:?}", scope.get_object(tag)),
 			}
 		}
 
@@ -47,14 +41,8 @@ impl Operator for Print {
 				Value::String(string) => print!("{string}"),
 				Value::Nil => print!("Nil"),
 				Value::Boolean(b) => print!("{}", if b { "True" } else { "False" }),
-				Value::Function(idx) => {
-					let function = scope.get_function_definition(idx)?;
-					print!("{:?}", function);
-				}
-				Value::Object(tag) => {
-					let map = scope.get_map(tag)?;
-					println!("{:?}", map);
-				}
+				Value::Function(idx) => print!("{:?}", scope.get_function_definition(idx)?),
+				Value::Object(tag) => println!("{:?}", scope.get_object(tag)),
 			}
 
 			if len > 1 && idx != len - 1 {
@@ -78,7 +66,7 @@ impl Operator for ReadLine {
 
 		// read line
 		let mut input = String::new();
-		std::io::stdin().read_line(&mut input).map_err(|err| crate::errors::EggError::OperatorComplaint(err.to_string()))?;
+		std::io::stdin().read_line(&mut input).map_err(|err| EggError::OperatorComplaint(err.to_string()))?;
 
 		Ok(input.trim().into())
 	}

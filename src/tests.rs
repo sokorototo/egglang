@@ -27,5 +27,5 @@ fn test() {
 		});
 	});
 
-	println!("\n[Calls to evaluate(...)] {}", unsafe { evaluator::EVALUATIONS });
+	println!("\nCalls to evaluate(...): {}", unsafe { evaluator::EVALUATIONS });
 }

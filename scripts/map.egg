@@ -1,37 +1,36 @@
-# Define a new map, this returns a map tag, which is just a stirng
-# The map tag is used to identify the map when we want to perfom actions on it
-# Here the tag is just String("map")
-define(class_mates, map.new())
+# Create a new object, retering an Object Reference
+# The Object Reference is used to identify the object when we want to perfom actions on it
+define(class_mates, object.new())
 
-# Check if a map tag points to a valid map, you can also just type out the map tag
-assert(equals(Object, typeof(class_mates)), "Map should exist here")
+# Objects have type "Object"
+assert(equals(Object, typeof(class_mates)), "object should exist here")
 
-# Insertion values into the map
-map.insert(class_mates, "Steve", "Goofy Ahh Block Puncher")
-map.insert(class_mates, "Alex", "Who even?")
-map.insert(class_mates, "Newton Toto", "Me, :P")
+# Insertion values into the object
+object.insert(class_mates, "Steve", "Goofy Ahh Block Puncher")
+object.insert(class_mates, "Alex", "Who even?")
+object.insert(class_mates, "Newton Toto", "Me, :P")
 
-# Get values from the map
-define(steve, map.get(class_mates, "Steve"))
+# Get values from the object
+define(steve, object.get(class_mates, "Steve"))
 assert(equals(steve, "Goofy Ahh Block Puncher"), "Steve should be Goofy Ahh Block Puncher")
 println("Steve: ", steve)
 
-# Check if a map has a value
-assert(map.has(class_mates, "Steve"), "Map should have Steve")
+# Check if a object has a value
+assert(object.has(class_mates, "Steve"), "object should have Steve")
 
-# Check the size of the map
-assert(equals(map.size(class_mates), 3), "Map size should be 3")
+# Check the size of the object
+assert(equals(object.size(class_mates), 3), "object size should be 3")
 
-# Remove a value from the map
-map.remove(class_mates, "Steve")
-assert(equals(map.size(class_mates), 2), "Map size should be 2, one less than before")
+# Remove a value from the object
+object.remove(class_mates, "Steve")
+assert(equals(object.size(class_mates), 2), "object size should be 2, one less than before")
 
 # Use numbers as keys
-map.insert(class_mates, 1, "Look at me, I'm just a statistic")
+object.insert(class_mates, 1, "Look at me, I'm just a statistic")
 
-# Log a Map to the console
-map.print(class_mates)
+# Log a object to the console
+object.print(class_mates)
 
-# You can delete a map using delete
+# You can delete a object using delete
 delete(class_mates)
-assert(not(exists(class_mates)), "Map should not exist here")
+assert(not(exists(class_mates)), "object should not exist here")

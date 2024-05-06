@@ -1,6 +1,6 @@
 use super::Operator;
 use crate::{
-	errors::{EggError, EggResult},
+	error::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{self, Value},
 	scope::Scope,

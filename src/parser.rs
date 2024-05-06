@@ -3,7 +3,7 @@ use core::ops::Range;
 use logos::Logos;
 
 use crate::{
-	errors::{EggError, EggResult},
+	error::{EggError, EggResult},
 	expression::{Expression, Value},
 };
 
