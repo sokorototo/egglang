@@ -1,7 +1,7 @@
 # Simple Tests for float parsing and handling
-define(x, 0.5)
+define(x, 5E-1) # 0.5
 define(res, "20")
-set(x, multiply(-10 x 200))
+set(x, multiply(-10 x 2E2))
 
 # Print Result
 assert(equals(x, -1000), print("Float Arithmetic Test Failed: ", x))
