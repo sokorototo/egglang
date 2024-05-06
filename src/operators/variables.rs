@@ -39,23 +39,33 @@ impl Operator for Set {
 	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 		let variable_name = &args[0];
-		let old_value;
 
 		match variable_name {
 			expression::Expression::Word { name } => {
 				let new_value = evaluate(&args[1], scope, operators)?;
-				old_value = evaluate(variable_name, scope, operators);
+				let old_value = evaluate(variable_name, scope, operators)?;
+
+				// overwriting a function deletes it
+				match old_value {
+					Value::Function(idx) => {
+						scope.delete_function(idx);
+					}
+					Value::Object(idx) => {
+						scope.delete_object(idx);
+					}
+					_ => {}
+				}
 
 				if let Some(val) = scope.get_mut(name.as_str()) {
 					*val = new_value
 				};
 			}
-			_ => {
-				return Err(EggError::OperatorComplaint("Numbers and Nil cannot be used as variable names".to_string()));
+			v => {
+				return Err(EggError::OperatorComplaint(format!("Non-word variable name. Got: {:?}", v)));
 			}
 		}
 
-		old_value
+		Ok(Value::Nil)
 	}
 }
 

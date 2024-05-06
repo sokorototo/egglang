@@ -19,6 +19,8 @@ fn test() {
 	scripts.for_each(|(path, script)| {
 		let mut scope = Default::default();
 
+		dbg!(&scope);
+
 		println!("\n[{}]", path.display());
 		let ast = parser::parse(script).unwrap();
 

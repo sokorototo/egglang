@@ -42,6 +42,11 @@ impl Scope {
 	pub fn get_object_mut(&mut self, tag: usize) -> &mut BTreeMap<Value, Value> {
 		self.extras_mut().maps.get_mut(&tag).expect("Object Not Found")
 	}
+
+	#[inline]
+	pub fn delete_object(&mut self, tag: usize) -> Option<BTreeMap<Value, Value>> {
+		self.extras_mut().maps.remove(&tag)
+	}
 }
 
 /// Creates a new Object and binds it to the specified [`Value`]

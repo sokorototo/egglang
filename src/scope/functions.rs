@@ -10,9 +10,16 @@ use crate::{
 
 use super::Scope;
 
+/// A function defined withing the Egg script.
+///
+/// Functions are defined using the `fn` operator.
+/// They keep track of their argument names. These are later used to construct a local [`Scope`] during function invocation.
+/// The body of the function is an [`Expression`], which is [`evaluated`](evaluate) using the newly created local [`Scope`].
 pub struct FunctionDefinition {
-	parameter_names: Vec<ArcStr>,
-	body: Expression,
+	/// The names of the parameters of the function.
+	pub parameter_names: Vec<ArcStr>,
+	/// The body of the function.
+	pub body: Expression,
 }
 
 impl core::fmt::Debug for FunctionDefinition {

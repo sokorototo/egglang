@@ -110,7 +110,7 @@ pub fn console_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>)
 	map.insert("print", Box::new(console::Print));
 	map.insert("println", Box::new(console::PrintLine));
 	map.insert("readline", Box::new(console::ReadLine));
-	map.insert("object.print", Box::new(scope::object::PrintMap));
+	map.insert("object.print", Box::new(scope::object::PrintObject));
 }
 
 /// All Internal functions defined in `Egg`

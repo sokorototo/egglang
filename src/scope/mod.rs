@@ -1,12 +1,38 @@
-pub mod functions;
-pub mod object;
+pub(crate) mod functions;
+pub(crate) mod object;
+
+pub use functions::FunctionDefinition;
 
 use crate::expression::Value;
 use alloc::collections::BTreeMap;
 use arcstr::ArcStr;
 use core::f32::consts;
 
+/// A [`Scope`] is responsible for keeping track of script state.
+///
+/// This includes storing variables, which are plain [`Values`](Value).
+/// Function and Objects values are simple indexes|references to [`FunctionDefinitions`](functions::FunctionDefinition) and [`BTreeMaps`](BTreeMap), stored in `ScopeExtras`.
+///
+/// `ScopeExtras` is only attached to the Global Scope, meaning Functions and Objects are always global, even if defined in a script function.
+///
+/// The [`default`](Default) scope comes with several constants built-in:
+/// ```json
+/// {
+///      "Boolean": "__TYPE__BOOLEAN",
+///      "Function": "__TYPE__FUNCTION",
+///      "Nil": "__CONSTANT__NIL",
+///      "Number": "__TYPE__NUMBER",
+///      "Object": "__TYPE__OBJECT",
+///      "String": "__TYPE__STRING",
+///      "PI": 3.1415927,
+///      "E": 2.7182817,
+///      "TAU": 6.2831855,
+///      "false": false,
+///      "true": true
+///  }
+/// ```
 #[derive(Debug)]
+#[allow(private_interfaces)]
 pub enum Scope {
 	Global { source: BTreeMap<ArcStr, Value>, extras: ScopeExtras },
 	Local { overlay: BTreeMap<ArcStr, Value>, source: *mut Scope },
@@ -80,9 +106,7 @@ impl Scope {
 		}
 
 		if let Some(Value::Object(tag)) = self.get(key) {
-			// the borrow checker can be annoying
-			let tag = tag.clone();
-			self.extras_mut().maps.remove(&tag);
+			self.delete_object(*tag);
 		}
 
 		match self {
@@ -113,11 +137,8 @@ impl Scope {
 	}
 }
 
-/// Extra data stored on the scope, like function definitions and dictionaries.
-/// Only the Global scope has this, meaning Objects and Functions are accessible globally. Even when defined in a local scope.
-/// You will still need access to the Function or Object's reference [`Value`]
 #[derive(Debug, Default)]
-pub struct ScopeExtras {
+pub(crate) struct ScopeExtras {
 	maps: BTreeMap<usize, BTreeMap<Value, Value>>,
 	current_object_index: usize,
 	functions: BTreeMap<usize, functions::FunctionDefinition>,
