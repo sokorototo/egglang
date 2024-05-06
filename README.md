@@ -68,11 +68,11 @@ operators::minimal(&mut operators);
 struct Random;
 
 impl Operator for Random {
-    	fn evaluate(&self, _: &[Expression], _: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+    	fn evaluate(&self, _: &[Expression], _: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
     		// totally random value ;)
     		Ok(0.15.into())
     }
-}	
+}
 
 // Insert `random(...)` into Operators map
 operators.insert("random", Box::new(Random));
