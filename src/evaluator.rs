@@ -6,7 +6,7 @@ use crate::{
 };
 use alloc::{boxed::Box, collections::BTreeMap};
 
-/// Counts calls to the [`evaluate`] function
+/// Counts calls to the [`evaluate`] function. Used as a statistic, thus object safety is not of importance.
 pub static mut EVALUATIONS: u64 = 0;
 
 /// Given an [`Expression`], evaluate and yield a [`Value`].
@@ -22,7 +22,7 @@ pub static mut EVALUATIONS: u64 = 0;
 /// let mut operators = operators::empty();
 /// operators::minimal(&mut operators);
 ///
-/// // Parse a Script into an expression
+/// // Parse a Script into a list of expressions
 /// let expression = parse("sum(1 multiply(2 5))").unwrap();
 ///
 /// // Evaluate the expression

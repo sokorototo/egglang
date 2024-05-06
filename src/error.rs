@@ -16,8 +16,6 @@ pub enum EggError {
 	FunctionNotFound(ArcStr),
 	#[error("Unbalanced bracket found at location: {0}")]
 	UnbalancedBrackets(usize),
-	#[error("Unable to parse string as number: {0}")]
-	UnableToParseNumber(#[from] core::num::ParseFloatError),
 	#[error("Operator Complaint: {0}")]
 	OperatorComplaint(String),
 	#[error("The provided Value: {0} is not an Object Reference")]

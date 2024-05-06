@@ -46,12 +46,12 @@ impl Default for Scope {
 		source.insert("false".into(), false.into());
 
 		// Globals identifying type
-		source.insert("Number".into(), Value::String("__TYPE__NUMBER".into()));
-		source.insert("String".into(), Value::String("__TYPE__STRING".into()));
-		source.insert("Nil".into(), Value::String("__CONSTANT__NIL".into()));
-		source.insert("Boolean".into(), Value::String("__TYPE__BOOLEAN".into()));
-		source.insert("Function".into(), Value::String("__TYPE__FUNCTION".into()));
-		source.insert("Object".into(), Value::String("__TYPE__OBJECT".into()));
+		source.insert("Number".into(), Value::String(arcstr::literal!("__TYPE__NUMBER")));
+		source.insert("String".into(), Value::String(arcstr::literal!("__TYPE__STRING")));
+		source.insert("Nil".into(), Value::String(arcstr::literal!("__CONSTANT__NIL")));
+		source.insert("Boolean".into(), Value::String(arcstr::literal!("__TYPE__BOOLEAN")));
+		source.insert("Function".into(), Value::String(arcstr::literal!("__TYPE__FUNCTION")));
+		source.insert("Object".into(), Value::String(arcstr::literal!("__TYPE__OBJECT")));
 
 		// Float constants
 		source.insert("PI".into(), consts::PI.into());

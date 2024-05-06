@@ -31,7 +31,10 @@ enum Token {
 	Comment,
 }
 
-/// Parse a string into a list of expression, then calls `discover` with each expression
+/// Given a valid script: `S`, parses and returns a vector of [`Expressions`](Expression).
+/// Iterate over result and execute each expression using [`evaluate`](crate::evaluator::evaluate).
+///
+/// See [`evaluate`](crate::evaluator::evaluate) docs for sample usage.
 pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
 	let script = script.as_ref();
 	let lex = Token::lexer(script);

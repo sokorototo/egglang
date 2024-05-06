@@ -1,5 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
-#[doc = include_str!("../README.md")]
+#![doc = include_str!("../README.md")]
 extern crate alloc;
 
 /// Easy access to the crate's most important types and functions

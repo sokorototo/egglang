@@ -11,10 +11,10 @@ pub enum Expression {
 }
 
 /// A primitive in Egg; can be a number, boolean, string, function, or an object.
+///
 /// Most primitives are immutable, to mutate create a new value.
 /// `Objects` are mutable, and can be modified in-place.
-/// `Functions` are technically also mutable as they are stored by reference, but there's no actual built-in way to mutate them.
-/// This applies to both user-code and built-in functions.
+/// `Functions` are technically also mutable as they are stored by reference, but there's no actual built-in path to mutation.
 ///
 /// Some Rust primitives can be converted into a [`Value`] using the [`From`] trait.
 ///
