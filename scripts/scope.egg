@@ -18,6 +18,7 @@ define(local_x,
 	))
 )
 
+# Test
 set(res, equals(local_x(10), 20))
 assert(res, "Scope Error, local_x should return 20. Rather than yielding a ReferenceError")
 assert(equals(x, 50), "Scope Error, Global x should be 50. Implying it wasn't mutated by local_x")

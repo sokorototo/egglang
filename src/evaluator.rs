@@ -6,7 +6,7 @@ use crate::{
 };
 use alloc::{boxed::Box, collections::BTreeMap};
 
-/// Counts calls to the [`evaluate`] function. Used as a statistic, thus object safety is not of importance.
+/// Counts calls to the [`evaluate`] function. Used as a statistic, thus object safety is not of
 pub static mut EVALUATIONS: u64 = 0;
 
 /// Given an [`Expression`], evaluate and yield a [`Value`].
