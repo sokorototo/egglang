@@ -3,8 +3,11 @@ pub(crate) mod object;
 
 pub use functions::FunctionDefinition;
 
-use crate::expression::Value;
-use alloc::collections::BTreeMap;
+use crate::{
+	error::{EggError, EggResult},
+	expression::Value,
+};
+use alloc::{collections::BTreeMap, format};
 use arcstr::ArcStr;
 use core::f32::consts;
 
@@ -63,7 +66,7 @@ impl Default for Scope {
 }
 
 impl Scope {
-	/// Check if a variable exists in the current scope or its parent scopes.
+	/// Check if a variable exists anywhere in the scope chain.
 	pub fn exists(&self, key: &str) -> bool {
 		match self {
 			Scope::Global { source, .. } => source.contains_key(key),
@@ -71,6 +74,14 @@ impl Scope {
 		}
 	}
 
+	/// Check if a variable exists in the current scope. Has similar behaviour to [`exists`](Scope::exists) for the Global Scope.
+	/// Used to check if a variable is defined in the current scope, and not in the parent scope.
+	pub fn exists_locally(&self, key: &str) -> bool {
+		match self {
+			Scope::Global { source, .. } => source.contains_key(key),
+			Scope::Local { overlay, .. } => overlay.contains_key(key),
+		}
+	}
 	/// Fetch for a variable in the current scope and its parent scopes.
 	pub fn get(&self, key: &str) -> Option<&Value> {
 		match self {
@@ -88,15 +99,25 @@ impl Scope {
 	}
 
 	/// Insert a new variable into the current scope.
-	pub fn insert(&mut self, key: ArcStr, value: Value) {
+	pub fn insert(&mut self, key: ArcStr, value: Value) -> EggResult<()> {
+		let exists_locally = self.exists_locally(&key);
+
 		match self {
 			Scope::Global { source, .. } => {
+				if exists_locally {
+					return Err(EggError::OperatorComplaint(format!("Variable {} already defined in Global Scope", key)));
+				}
 				source.insert(key, value);
 			}
 			Scope::Local { overlay, .. } => {
+				if exists_locally {
+					return Err(EggError::OperatorComplaint(format!("Variable {} already defined in Global Scope", key)));
+				}
 				overlay.insert(key, value);
 			}
-		}
+		};
+
+		Ok(())
 	}
 
 	/// Updates the value of a variable if it is in the present scope, otherwise updates it in the parent scope.

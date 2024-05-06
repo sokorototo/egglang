@@ -18,14 +18,8 @@ impl Operator for Define {
 		match name {
 			expression::Expression::Word { name } | expression::Expression::Value { value: Value::String(name) } => {
 				let value = evaluate(&args[1], scope, operators)?;
-
-				if scope.exists(name.as_str()) {
-					return Err(EggError::OperatorComplaint(format!("variable {} already defined", name)));
-				} else {
-					scope.insert(name.clone(), value.clone());
-				}
-
-				Ok(value)
+				scope.insert(name.clone(), value)?;
+				Ok(Value::Nil)
 			}
 			_ => Err(EggError::OperatorComplaint("Numbers and Nil cannot be used as variable names".to_string())),
 		}

@@ -9,3 +9,16 @@ setx(50),
 define(res, equals(x, 50))
 assert(res, "Scope Error, set should mutate Global varialbe x. Rather than yielding a ReferenceError")
 println("x == 50: ", res)
+
+# Local Scope Test
+define(local_x,
+	fn(val, do(
+		define(x, sum(val, 10)),
+		x
+	))
+)
+
+set(res, equals(local_x(10), 20))
+assert(res, "Scope Error, local_x should return 20. Rather than yielding a ReferenceError")
+assert(equals(x, 50), "Scope Error, Global x should be 50. Implying it wasn't mutated by local_x")
+println("local_x(10) == 20: ", res)
