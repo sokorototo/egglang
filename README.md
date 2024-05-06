@@ -22,7 +22,7 @@
 - **User-Defined Functions**: Create functions in Egg using the `fn` keyword.
 - **Higher Order Functions**: Pass functions as values to other functions or to built-in `Operators`.
 - **Extensible**: Create your own builtin functions by implementing the [`Operator`](https://docs.rs/egglang/latest/egglang/operators/trait.Operator.html) trait.
-- **no_std**: Only depends on `alloc`.
+- **no_std**: Only depends on `alloc`. Enabling the `std` feature adds the `Print`, `PrintLine`, `PrintObject` and `Sleep` builtins.
 
 
 
