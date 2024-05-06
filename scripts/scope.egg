@@ -1,0 +1,11 @@
+# x defined Globaly
+define(x, 10)
+
+# user defined function setx that sets value of Global Variable
+define(setx, fn(val, set(x, val))),
+
+# Test
+setx(50),
+define(res, equals(x, 50))
+assert(res, "Scope Error, set should mutate Global varialbe x. Rather than yielding a ReferenceError")
+println("x == 50: ", res)
