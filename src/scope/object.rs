@@ -76,24 +76,6 @@ impl Operator for Insert {
 	}
 }
 
-/// Print a Map's value to the console
-#[cfg(feature = "std")]
-pub struct PrintObject;
-
-#[cfg(feature = "std")]
-impl Operator for PrintObject {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		assert!(args.len() == 1);
-
-		let tag = evaluate(&args[0], scope, operators)?;
-		let tag = scope.get_object_tag(tag)?;
-		let map = scope.get_object(tag);
-
-		println!("{:?}", map);
-		Ok(Value::Nil)
-	}
-}
-
 /// Fetch a [Value] the specified map
 pub struct Get;
 

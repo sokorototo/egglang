@@ -29,7 +29,7 @@ assert(equals(object.size(class_mates), 2), "object size should be 2, one less t
 object.insert(class_mates, 1, "Look at me, I'm just a statistic")
 
 # Log a object to the console
-object.print(class_mates)
+println(class_mates)
 
 # You can delete a object using delete
 delete(class_mates)
