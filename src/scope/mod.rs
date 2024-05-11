@@ -180,7 +180,7 @@ impl Scope {
 #[derive(Debug, Default)]
 pub(crate) struct ScopeExtras {
 	maps: BTreeMap<usize, BTreeMap<Value, Value>>,
-	current_object_index: usize,
 	functions: BTreeMap<usize, functions::FunctionDefinition>,
-	current_function_index: usize,
+	counter: usize,
+	_unsend: core::marker::PhantomData<*mut ()>,
 }

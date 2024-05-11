@@ -17,8 +17,8 @@ fn validate_object_tag(value: &Value) -> EggResult<usize> {
 
 impl Scope {
 	pub fn create_object(&mut self) -> EggResult<Value> {
-		self.extras_mut().current_object_index += 1;
-		let index = self.extras().current_object_index;
+		self.extras_mut().counter += 1;
+		let index = self.extras().counter;
 
 		self.extras_mut().maps.insert(index, BTreeMap::new());
 		Ok(Value::Object(index))
