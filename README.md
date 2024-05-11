@@ -60,9 +60,10 @@ use std::collections::BTreeMap;
 // Create the default Scope, with necessary constants set
 let mut scope = Scope::default();
 
-// Create a minimal set of operators
+// Insert base operators, and add console functions; Adds println
 let mut operators = operators::empty();
 operators::minimal(&mut operators);
+operators::console(&mut operators);
 
 // Define a `random(...)` builtin
 struct Random;
@@ -84,9 +85,10 @@ repeat(iterations, println("oi oi oi oi oi"))
 "#;
 let expressions = parse(script).unwrap();
 
-// Evaluate the expression
-let expression = &expressions[0]; // the call to `sum`
-let _ = evaluate(expression, &mut scope, &operators).unwrap();
+// Evaluate the expressions; define -> repeat -> ...
+for expression in expressions {
+  let _ = evaluate(&expression, &mut scope, &operators).unwrap();
+}
 ```
 
 > Example Egg scripts can be found in the `scripts` directory;

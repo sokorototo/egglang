@@ -84,7 +84,7 @@ pub fn minimal<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'
 }
 
 /// Create, interact with and delete objects
-pub fn object_tools(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
+pub fn objects(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	map.insert("object.new", Box::new(scope::object::CreateObject));
 	map.insert("object.get", Box::new(scope::object::Get));
 	map.insert("object.insert", Box::new(scope::object::Insert));
@@ -95,7 +95,7 @@ pub fn object_tools(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
 }
 
 /// Strings tools
-pub fn string_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
+pub fn strings<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	map.insert("string.length", Box::new(stringtools::Length));
 	map.insert("string.slice", Box::new(stringtools::Slice));
 	map.insert("string.concat", Box::new(stringtools::Concat));
@@ -106,7 +106,7 @@ pub fn string_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) 
 
 /// Console Functions
 #[cfg(feature = "std")]
-pub fn console_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
+pub fn console<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	map.insert("print", Box::new(console::Print));
 	map.insert("println", Box::new(console::PrintLine));
 	map.insert("readline", Box::new(console::ReadLine));
@@ -115,12 +115,12 @@ pub fn console_tools<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>)
 /// All Internal functions defined in `Egg`
 pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	minimal(map);
-	object_tools(map);
-	string_tools(map);
+	objects(map);
+	strings(map);
 
 	#[cfg(feature = "std")]
 	{
 		map.insert("sleep", Box::new(control_flow::Sleep));
-		console_tools(map);
+		console(map);
 	}
 }
