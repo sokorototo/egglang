@@ -1,6 +1,6 @@
 [package]
 name = "egglang"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 description = "The Egg Programming Language From Eloquent JavaScript, but in Rust"
 license = "MIT"
@@ -14,7 +14,7 @@ keywords = ["egg", "interpreter", "parser", "language", "scripting"]
 categories = ["compilers", "parser-implementations", "no-std"]
 
 [dependencies]
-arcstr = { version = "1.1.5", default-features = false }
+arcstr = { version = "1.2.0", default-features = false }
 logos = "0.14.0"
 ordered-float = { version = "4.2.0", default-features = false }
 thiserror-no-std = "2.0.2"
