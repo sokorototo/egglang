@@ -21,3 +21,8 @@ thiserror-no-std = "2.0.2"
 
 [features]
 std = []
+
+[[bin]]
+name = "runner"
+path = "scripts/runner.rs"
+required-features = ["std"]
