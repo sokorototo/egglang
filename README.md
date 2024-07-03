@@ -3,7 +3,7 @@
   <a href="https://crates.io/crates/egglang"><img alt="Crate Version on Crates.io" src="https://img.shields.io/crates/v/egglang?style=flat-square"></a>
   <a href="https://docs.rs/egglang"><img alt="docs.rs" src="https://img.shields.io/docsrs/egglang?style=flat-square"></a>
   <br/>
-  <a href="https://github.com/sokorototo/vach/blob/main/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/sokorototo/egglang?style=flat-square"></a>
+  <img alt="GitHub" src="https://img.shields.io/github/license/sokorototo/egglang?style=flat-square">
   <a href="https://github.com/sokorototo/egglang/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues-raw/sokorototo/egglang?style=flat-square"></a>
 </p>
 <p align=center>
@@ -11,7 +11,7 @@
 </p>
 
 
-##### `egg` is a toy Programming Language from the book Eloquest Javascript by Marijn Haverbeke, [Chapter 12](https://eloquentjavascript.net/12_language.html). The Book was pivotal to my early Programming journey. I moved to Rust some time back and in a fit of nostalgia I decided to rewrite `egg` in Rust.
+##### `egg` is a toy Programming Language from the book Eloquent Javascript by Marijn Haverbeke, [Chapter 12](https://eloquentjavascript.net/12_language.html). The Book was pivotal to my early Programming journey. I moved to Rust some time back and in a fit of nostalgia I decided to rewrite `egg` in Rust.
 
 
 
@@ -23,7 +23,6 @@
 - **Higher Order Functions**: Pass functions as values to other functions or to built-in `Operators`.
 - **Extensible**: Create your own builtin functions by implementing the [`Operator`](https://docs.rs/egglang/latest/egglang/operators/trait.Operator.html) trait.
 - **no_std**: Only depends on `alloc`. Enabling the `std` feature adds the `Print`, `PrintLine`, `ReadLine`  and `Sleep` builtins.
-
 
 
 ### 🏋️‍♂️ Examples
