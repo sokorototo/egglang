@@ -39,7 +39,7 @@ pub fn evaluate(expr: &Expression, scope: &mut Scope) -> EggResult<Value> {
 				scope.call_function(idx, parameters)
 			}
 			either::Either::Right(op) => {
-				let op = unsafe { op.as_ref().unwrap() };
+				let op = unsafe { op.as_ref().unwrap_unchecked() };
 				op.evaluate(parameters, scope)
 			}
 		},
