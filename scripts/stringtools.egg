@@ -1,4 +1,4 @@
-define(nice, "get rickrolled NOOB")
+define(nice, "# get rickrolled NOOB")
 println("The nice variable is: ", nice)
 
 # Prints length of given variable
