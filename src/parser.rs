@@ -27,7 +27,7 @@ enum Token {
 	Comma,
 	#[regex(r"\s+", logos::skip)]
 	WhiteSpace,
-	#[regex(r"#.*(\s)*", logos::skip)]
+	#[regex(r"#.*(\s)+", logos::skip)]
 	Comment,
 }
 
