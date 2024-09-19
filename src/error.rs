@@ -26,8 +26,8 @@ pub enum EggError {
 	AssertionFailed(Value),
 	#[error("Generic parsing error at: {0:?}. Reason: {1}")]
 	ParserError(Range<usize>, String),
-	#[error("Unknown Token found in TokenStream")]
-	UnknownToken,
+	#[error("Unknown Token found in TokenStream: {0}")]
+	UnknownToken(String),
 	#[error("{0}")]
 	InvalidFunctionCall(String),
 }

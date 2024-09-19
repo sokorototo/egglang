@@ -1,4 +1,4 @@
-use alloc::vec::Vec;
+use alloc::{string::ToString, vec::Vec};
 use core::ops::Range;
 use logos::Logos;
 
@@ -11,9 +11,9 @@ use crate::{
 enum Token {
 	#[regex("\"([^\"\n])*\"")]
 	String,
-	#[regex(r"-?\d+(\.\d+)?([eE]-?\d+)?", priority = 2)]
+	#[regex(r"-?\d+(\.\d+)?([eE]-?\d+)?")]
 	Float,
-	#[regex(r#"[^\s\(\),#"]+"#, priority = 1)]
+	#[regex(r#"[\p{L}_][\p{L}\d_.]*"#)]
 	Word,
 	#[regex("True|False")]
 	Boolean,
@@ -43,7 +43,7 @@ pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
 	let mut stack = Vec::with_capacity(16);
 
 	for (token, span) in lex.spanned() {
-		let token = token.map_err(|_| EggError::UnknownToken)?;
+		let token = token.map_err(|_| EggError::UnknownToken(script[span.clone()].to_string()))?;
 		parse_token(&token, script, span, &mut exprs, &mut stack)?;
 	}
 
