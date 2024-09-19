@@ -36,6 +36,8 @@ enum Token {
 /// Iterate over result and execute each expression using [`evaluate`](crate::evaluator::evaluate).
 ///
 /// See [`evaluate`](crate::evaluator::evaluate) docs for sample usage.
+///
+/// > IMPORTANT: Mutating `operators` after Expression is generated is undefined behaviour, as Expression holds several pointers to the data in `operators`
 pub fn parse<S: AsRef<str>>(script: S, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Vec<Expression>> {
 	let script = script.as_ref();
 	let lex = Token::lexer(script);

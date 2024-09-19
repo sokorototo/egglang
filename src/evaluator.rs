@@ -1,10 +1,8 @@
 use crate::{
 	error::{EggError, EggResult},
 	expression::{Expression, Value},
-	operators::Operator,
 	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap};
 
 /// Counts calls to the [`evaluate`] function. Used as a statistic, thus object safety is not of
 pub static mut EVALUATIONS: u64 = 0;
@@ -29,7 +27,7 @@ pub static mut EVALUATIONS: u64 = 0;
 /// let result = evaluate(&expression[0], &mut scope, &operators).unwrap();
 /// assert_eq!(result, 11.0.into());
 /// ```
-pub fn evaluate(expr: &Expression, scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+pub fn evaluate(expr: &Expression, scope: &mut Scope) -> EggResult<Value> {
 	unsafe { EVALUATIONS += 1 };
 
 	match expr {
@@ -38,11 +36,11 @@ pub fn evaluate(expr: &Expression, scope: &mut Scope, operators: &BTreeMap<&str,
 		Expression::FnCall { identifier, parameters } => match identifier {
 			either::Either::Left(name) => {
 				let idx = scope.get_function(name).ok_or_else(|| EggError::FunctionNotFound(name.clone()))?;
-				scope.call_function(idx, parameters, operators)
+				scope.call_function(idx, parameters)
 			}
 			either::Either::Right(op) => {
 				let op = unsafe { op.as_ref().unwrap() };
-				op.evaluate(parameters, scope, operators)
+				op.evaluate(parameters, scope)
 			}
 		},
 	}

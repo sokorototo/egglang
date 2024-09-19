@@ -5,19 +5,19 @@ use crate::{
 	expression::{self, Value},
 	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap, format, string::ToString};
+use alloc::{format, string::ToString};
 
 /// Defines a new variable
 pub struct Define;
 
 impl Operator for Define {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 		let name = &args[0];
 
 		match name {
 			expression::Expression::Word { name } | expression::Expression::Value { value: Value::String(name) } => {
-				let value = evaluate(&args[1], scope, operators)?;
+				let value = evaluate(&args[1], scope)?;
 				scope.insert(name.clone(), value)?;
 				Ok(Value::Nil)
 			}
@@ -30,13 +30,13 @@ impl Operator for Define {
 pub struct Set;
 
 impl Operator for Set {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 		let variable_name = &args[0];
 
 		match variable_name {
 			expression::Expression::Word { name } => {
-				let new_value = evaluate(&args[1], scope, operators)?;
+				let new_value = evaluate(&args[1], scope)?;
 				scope.update(name.clone(), new_value)
 			}
 			v => {
@@ -52,7 +52,7 @@ impl Operator for Set {
 pub struct Delete;
 
 impl Operator for Delete {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		let name = &args[0];
 
@@ -73,7 +73,7 @@ impl Operator for Delete {
 pub struct Exists;
 
 impl Operator for Exists {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		let name = &args[0];
 
@@ -96,10 +96,10 @@ impl Operator for Exists {
 pub struct TypeOf;
 
 impl super::Operator for TypeOf {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 
-		let value = evaluate(&args[0], scope, operators)?;
+		let value = evaluate(&args[0], scope)?;
 
 		Ok(match value {
 			Value::Number(_) => Value::String("__TYPE__NUMBER".into()),

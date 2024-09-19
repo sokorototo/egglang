@@ -23,7 +23,7 @@ fn test() {
 		let ast = parser::parse(script, &operators).unwrap();
 
 		ast.iter().for_each(|expr| {
-			evaluator::evaluate(expr, &mut scope, &operators).unwrap();
+			evaluator::evaluate(expr, &mut scope).unwrap();
 		});
 	});
 

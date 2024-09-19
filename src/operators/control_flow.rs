@@ -5,14 +5,14 @@ use crate::{
 	expression::{self, Value},
 	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap, string::ToString};
+use alloc::string::ToString;
 
 // Evaluates all expressions defined within it's operands
 pub struct Do;
 
 impl Operator for Do {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
-		args.iter().try_fold(Value::Nil, |_, nxt| evaluate(nxt, scope, operators))
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
+		args.iter().try_fold(Value::Nil, |_, nxt| evaluate(nxt, scope))
 	}
 }
 
@@ -20,12 +20,12 @@ impl Operator for Do {
 pub struct If;
 
 impl Operator for If {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 3);
 
 		// Evaluate
-		let condition = evaluate(&args[0], scope, operators)?;
+		let condition = evaluate(&args[0], scope)?;
 		let value = match condition {
 			Value::Number(num) => num != 0.0,
 			Value::Boolean(b) => b,
@@ -38,9 +38,9 @@ impl Operator for If {
 		};
 
 		if value {
-			evaluate(&args[1], scope, operators)
+			evaluate(&args[1], scope)
 		} else {
-			evaluate(&args[2], scope, operators)
+			evaluate(&args[2], scope)
 		}
 	}
 }
@@ -49,7 +49,7 @@ impl Operator for If {
 pub struct While;
 
 impl Operator for While {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 2);
 
@@ -57,7 +57,7 @@ impl Operator for While {
 		let mut loop_result = Value::Nil;
 
 		loop {
-			let condition = evaluate(&args[0], scope, operators)?;
+			let condition = evaluate(&args[0], scope)?;
 
 			let continue_condition = match condition {
 				Value::Number(num) => num != 0.0,
@@ -71,7 +71,7 @@ impl Operator for While {
 			}
 
 			// Evaluate expression
-			loop_result = evaluate(&args[1], scope, operators)?;
+			loop_result = evaluate(&args[1], scope)?;
 		}
 	}
 }
@@ -80,7 +80,7 @@ impl Operator for While {
 pub struct Repeat;
 
 impl Operator for Repeat {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 2);
 
@@ -88,7 +88,7 @@ impl Operator for Repeat {
 		let mut iterations = 0.0;
 		let mut loop_value = Value::Nil;
 
-		let max_iter = match evaluate(&args[0], scope, operators)? {
+		let max_iter = match evaluate(&args[0], scope)? {
 			Value::Number(num) => num,
 			_ => return Err(EggError::OperatorComplaint("repeat(--, ...) expects a number as it's first parameter".to_string())),
 		};
@@ -100,7 +100,7 @@ impl Operator for Repeat {
 			}
 
 			// Evaluate expression
-			loop_value = evaluate(&args[1], scope, operators)?;
+			loop_value = evaluate(&args[1], scope)?;
 
 			iterations += 1.0;
 		}
@@ -113,14 +113,14 @@ pub struct Sleep;
 
 #[cfg(feature = "std")]
 impl Operator for Sleep {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		use std::{thread::sleep, time::Duration};
 
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
 		// Loop
-		let sleep_time = evaluate(&args[0], scope, operators)?;
+		let sleep_time = evaluate(&args[0], scope)?;
 		if let Value::Number(value) = sleep_time {
 			let duration = Duration::from_millis(value.0 as u64);
 			sleep(duration)
@@ -136,12 +136,12 @@ impl Operator for Sleep {
 pub struct Panic;
 
 impl Operator for Panic {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 1);
 
 		// Loop
-		match evaluate(&args[0], scope, operators)? {
+		match evaluate(&args[0], scope)? {
 			Value::Number(error_code) => {
 				panic!("Program has met an unexpected error: ErrorCode: {error_code}")
 			}
@@ -154,12 +154,12 @@ impl Operator for Panic {
 pub struct Assert;
 
 impl Operator for Assert {
-	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		// Assert correct length of arguments
 		debug_assert_eq!(args.len(), 2);
 
-		let message = match &evaluate(&args[0], scope, operators)? {
-			Value::Boolean(b) if !b => Some(evaluate(&args[1], scope, operators)?),
+		let message = match &evaluate(&args[0], scope)? {
+			Value::Boolean(b) if !b => Some(evaluate(&args[1], scope)?),
 			_ => None,
 		};
 

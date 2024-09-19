@@ -1,4 +1,4 @@
-use alloc::{boxed::Box, collections::BTreeMap, format, string::ToString, vec::Vec};
+use alloc::{collections::BTreeMap, format, string::ToString, vec::Vec};
 use arcstr::ArcStr;
 
 use crate::{
@@ -61,10 +61,10 @@ impl super::Scope {
 			.ok_or_else(|| EggError::InvalidFunctionCall(format!("Function with index {} not found", idx)))
 	}
 
-	pub fn call_function(&mut self, idx: usize, parameters: &[Expression], operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	pub fn call_function(&mut self, idx: usize, parameters: &[Expression]) -> EggResult<Value> {
 		let function = unsafe {
 			// SAFETY: We are not modifying the scope, only reading from the function definition from it
-			(&*(self as *const Scope)).get_function_definition(idx)?
+			(*(self as *const Scope)).get_function_definition(idx)?
 		};
 
 		if parameters.len() != function.parameter_names.len() {
@@ -77,12 +77,12 @@ impl super::Scope {
 
 		let mut new_scope = BTreeMap::new();
 		for (name, expression) in function.parameter_names.iter().zip(parameters.iter()) {
-			let value = evaluate(expression, self, operators)?;
+			let value = evaluate(expression, self)?;
 			new_scope.insert(name.clone(), value);
 		}
 
 		let mut new_scope = self.overlay(new_scope);
-		evaluate(&function.body, &mut new_scope, operators)
+		evaluate(&function.body, &mut new_scope)
 	}
 
 	pub fn delete_function(&mut self, idx: usize) -> Option<FunctionDefinition> {
@@ -94,7 +94,7 @@ impl super::Scope {
 pub struct CreateFunction;
 
 impl Operator for CreateFunction {
-	fn evaluate(&self, args: &[Expression], scope: &mut super::Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<crate::expression::Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut super::Scope) -> EggResult<crate::expression::Value> {
 		if args.is_empty() {
 			return Err(EggError::InvalidFunctionDefinition("Function Definition requires at least a body".to_string()));
 		}

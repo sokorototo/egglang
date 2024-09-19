@@ -6,7 +6,7 @@ use crate::{
 	operators::Operator,
 	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap};
+use alloc::collections::BTreeMap;
 
 fn validate_object_tag(value: &Value) -> EggResult<usize> {
 	match value.clone() {
@@ -53,7 +53,7 @@ impl Scope {
 pub struct CreateObject;
 
 impl Operator for CreateObject {
-	fn evaluate(&self, _: &[Expression], scope: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, _: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		scope.create_object()
 	}
 }
@@ -62,12 +62,12 @@ impl Operator for CreateObject {
 pub struct Insert;
 
 impl Operator for Insert {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		assert!(args.len() == 3);
 
-		let tag = evaluate(&args[0], scope, operators)?;
-		let key = evaluate(&args[1], scope, operators)?;
-		let value = evaluate(&args[2], scope, operators)?;
+		let tag = evaluate(&args[0], scope)?;
+		let key = evaluate(&args[1], scope)?;
+		let value = evaluate(&args[2], scope)?;
 
 		let tag = scope.get_object_tag(tag)?;
 		let map = scope.get_object_mut(tag);
@@ -80,11 +80,11 @@ impl Operator for Insert {
 pub struct Get;
 
 impl Operator for Get {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		assert!(args.len() == 2);
 
-		let tag = evaluate(&args[0], scope, operators)?;
-		let key = evaluate(&args[1], scope, operators)?;
+		let tag = evaluate(&args[0], scope)?;
+		let key = evaluate(&args[1], scope)?;
 
 		let tag = scope.get_object_tag(tag)?;
 		let map = scope.get_object(tag);
@@ -97,11 +97,11 @@ impl Operator for Get {
 pub struct Has;
 
 impl Operator for Has {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		assert!(args.len() == 2);
 
-		let tag = evaluate(&args[0], scope, operators)?;
-		let key = evaluate(&args[1], scope, operators)?;
+		let tag = evaluate(&args[0], scope)?;
+		let key = evaluate(&args[1], scope)?;
 
 		let tag = scope.get_object_tag(tag)?;
 		let map = scope.get_object(tag);
@@ -114,11 +114,11 @@ impl Operator for Has {
 pub struct Remove;
 
 impl Operator for Remove {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		assert!(args.len() == 2);
 
-		let tag = evaluate(&args[0], scope, operators)?;
-		let key = evaluate(&args[1], scope, operators)?;
+		let tag = evaluate(&args[0], scope)?;
+		let key = evaluate(&args[1], scope)?;
 
 		let tag = scope.get_object_tag(tag)?;
 		let map = scope.get_object_mut(tag);
@@ -131,10 +131,10 @@ impl Operator for Remove {
 pub struct Size;
 
 impl Operator for Size {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		assert!(args.len() == 1);
 
-		let tag = evaluate(&args[0], scope, operators)?;
+		let tag = evaluate(&args[0], scope)?;
 		let tag = scope.get_object_tag(tag)?;
 
 		let map = scope.get_object(tag);
@@ -146,13 +146,16 @@ impl Operator for Size {
 pub struct Clear;
 
 impl Operator for Clear {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		assert!(args.len() == 1);
 
-		let tag = evaluate(&args[0], scope, operators)?;
+		let tag = evaluate(&args[0], scope)?;
 		let tag = scope.get_object_tag(tag)?;
 
 		let map = scope.get_object_mut(tag);
-		Ok(map.clear().into())
+		Ok({
+      map.clear();
+      ().into()
+  })
 	}
 }

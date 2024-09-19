@@ -29,7 +29,7 @@ pub trait Operator {
 	///
 	/// `[operators]` is a map of all other operators; Can be used directly, but it's main use is to invoke [`evaluate`](crate::evaluator::evaluate) on arguments.
 	///
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value>;
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value>;
 }
 
 /// Create an empty map of operations
@@ -95,7 +95,7 @@ pub fn objects(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
 }
 
 /// Strings tools
-pub fn strings<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
+pub fn strings(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	map.insert("string.length", Box::new(stringtools::Length));
 	map.insert("string.slice", Box::new(stringtools::Slice));
 	map.insert("string.concat", Box::new(stringtools::Concat));
@@ -113,7 +113,7 @@ pub fn console<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
 }
 
 /// All Internal functions defined in `Egg`
-pub fn full<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) {
+pub fn full(map: &mut BTreeMap<&'static str, Box<dyn Operator>>) {
 	minimal(map);
 	objects(map);
 	strings(map);

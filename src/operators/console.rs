@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use super::Operator;
 use crate::{
 	error::{EggError, EggResult},
@@ -12,9 +10,9 @@ use crate::{
 pub struct PrintLine;
 
 impl Operator for PrintLine {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		for arg in args {
-			match evaluate(arg, scope, operators)? {
+			match evaluate(arg, scope)? {
 				Value::Number(num) => print!("{num}"),
 				Value::String(string) => print!("{string}"),
 				Value::Nil => print!("Nil"),
@@ -33,10 +31,10 @@ impl Operator for PrintLine {
 pub struct Print;
 
 impl Operator for Print {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		let len = args.len();
 		for (idx, arg) in args.iter().enumerate() {
-			match evaluate(arg, scope, operators)? {
+			match evaluate(arg, scope)? {
 				Value::Number(num) => print!("{num}"),
 				Value::String(string) => print!("{string}"),
 				Value::Nil => print!("Nil"),
@@ -58,10 +56,10 @@ impl Operator for Print {
 pub struct ReadLine;
 
 impl Operator for ReadLine {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		// Print prompt if any
 		if let Some(prompt) = args.get(0) {
-			Print.evaluate(core::slice::from_ref(prompt), scope, operators)?;
+			Print.evaluate(core::slice::from_ref(prompt), scope)?;
 		}
 
 		// read line

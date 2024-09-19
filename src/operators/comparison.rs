@@ -1,21 +1,20 @@
-use super::Operator;
 use crate::{
 	error::{EggError, EggResult},
 	evaluator::evaluate,
 	expression::{Expression, Value},
 	scope::Scope,
 };
-use alloc::{boxed::Box, collections::BTreeMap, string::ToString};
+use alloc::string::ToString;
 
 // Checks for equality
 pub struct Equals;
 
 impl super::Operator for Equals {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
-		let val1 = evaluate(&args[0], scope, operators)?;
-		let val2 = evaluate(&args[1], scope, operators)?;
+		let val1 = evaluate(&args[0], scope)?;
+		let val2 = evaluate(&args[1], scope)?;
 
 		Ok((val1 == val2).into())
 	}
@@ -25,11 +24,11 @@ impl super::Operator for Equals {
 pub struct NotEquals;
 
 impl super::Operator for NotEquals {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
-		let val1 = evaluate(&args[0], scope, operators)?;
-		let val2 = evaluate(&args[1], scope, operators)?;
+		let val1 = evaluate(&args[0], scope)?;
+		let val2 = evaluate(&args[1], scope)?;
 
 		Ok((val1 != val2).into())
 	}
@@ -39,11 +38,11 @@ impl super::Operator for NotEquals {
 pub struct GreaterThan;
 
 impl super::Operator for GreaterThan {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
-		let val1 = evaluate(&args[0], scope, operators)?;
-		let val2 = evaluate(&args[1], scope, operators)?;
+		let val1 = evaluate(&args[0], scope)?;
+		let val2 = evaluate(&args[1], scope)?;
 
 		match (val1, val2) {
 			(Value::Number(a), Value::Number(b)) => Ok((a > b).into()),
@@ -56,11 +55,11 @@ impl super::Operator for GreaterThan {
 pub struct LessThan;
 
 impl super::Operator for LessThan {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 2);
 
-		let val1 = evaluate(&args[0], scope, operators)?;
-		let val2 = evaluate(&args[1], scope, operators)?;
+		let val1 = evaluate(&args[0], scope)?;
+		let val2 = evaluate(&args[1], scope)?;
 
 		match (val1, val2) {
 			(Value::Number(a), Value::Number(b)) => Ok((a < b).into()),
@@ -73,9 +72,9 @@ impl super::Operator for LessThan {
 pub struct IsNil;
 
 impl super::Operator for IsNil {
-	fn evaluate(&self, args: &[Expression], scope: &mut Scope, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 
-		Ok(matches!(evaluate(&args[0], scope, operators)?, Value::Nil).into())
+		Ok(matches!(evaluate(&args[0], scope)?, Value::Nil).into())
 	}
 }
