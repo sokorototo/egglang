@@ -1,13 +1,23 @@
 use alloc::vec::Vec;
 use arcstr::ArcStr;
+use either::Either;
 use ordered_float::OrderedFloat;
+
+use crate::operators::Operator;
 
 /// An expression is a piece of code that can be evaluated into a [`Value`].
 #[derive(Debug, Clone)]
 pub enum Expression {
-	Value { value: Value },
-	Word { name: ArcStr },
-	FnCall { name: ArcStr, parameters: Vec<Expression> },
+	Value {
+		value: Value,
+	},
+	Word {
+		name: ArcStr,
+	},
+	FnCall {
+		identifier: Either<ArcStr, *const dyn Operator>,
+		parameters: Vec<Expression>,
+	},
 }
 
 /// A primitive in Egg; can be a number, boolean, string, function, or an object.

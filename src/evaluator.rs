@@ -35,15 +35,15 @@ pub fn evaluate(expr: &Expression, scope: &mut Scope, operators: &BTreeMap<&str,
 	match expr {
 		Expression::Value { value } => Ok(value.clone()),
 		Expression::Word { name } => scope.get(name.as_str()).ok_or_else(|| EggError::UndefinedBinding(name.clone())).cloned(),
-		Expression::FnCall { name, parameters } => {
-			// Search for a user-defined function in the scope
-			if let Some(function) = scope.get_function(name) {
-				scope.call_function(function, parameters, operators)
-			} else {
-				// Search for a built-in operator with the given name
-				let operator = operators.get(name.as_str()).ok_or_else(|| EggError::FunctionNotFound(name.clone()))?;
-				operator.evaluate(parameters, scope, operators)
+		Expression::FnCall { identifier, parameters } => match identifier {
+			either::Either::Left(name) => {
+				let idx = scope.get_function(name).ok_or_else(|| EggError::FunctionNotFound(name.clone()))?;
+				scope.call_function(idx, parameters, operators)
 			}
-		}
+			either::Either::Right(op) => {
+				let op = unsafe { op.as_ref().unwrap() };
+				op.evaluate(parameters, scope, operators)
+			}
+		},
 	}
 }

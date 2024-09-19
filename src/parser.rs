@@ -1,10 +1,11 @@
-use alloc::{string::ToString, vec::Vec};
+use alloc::{boxed::Box, collections::btree_map::BTreeMap, string::ToString, vec::Vec};
 use core::ops::Range;
 use logos::Logos;
 
 use crate::{
 	error::{EggError, EggResult},
 	expression::{Expression, Value},
+	operators::Operator,
 };
 
 #[derive(logos::Logos, Debug, PartialEq)]
@@ -35,7 +36,7 @@ enum Token {
 /// Iterate over result and execute each expression using [`evaluate`](crate::evaluator::evaluate).
 ///
 /// See [`evaluate`](crate::evaluator::evaluate) docs for sample usage.
-pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
+pub fn parse<S: AsRef<str>>(script: S, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Vec<Expression>> {
 	let script = script.as_ref();
 	let lex = Token::lexer(script);
 
@@ -44,14 +45,14 @@ pub fn parse<S: AsRef<str>>(script: S) -> EggResult<Vec<Expression>> {
 
 	for (token, span) in lex.spanned() {
 		let token = token.map_err(|_| EggError::UnknownToken(script[span.clone()].to_string()))?;
-		parse_token(&token, script, span, &mut exprs, &mut stack)?;
+		parse_token(&token, script, span, &mut exprs, &mut stack, operators)?;
 	}
 
 	exprs.shrink_to_fit();
 	Ok(exprs)
 }
 
-fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<Expression>, stack: &mut Vec<usize>) -> EggResult<()> {
+fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<Expression>, stack: &mut Vec<usize>, operators: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<()> {
 	let data = &source[span.clone()];
 
 	match token {
@@ -77,8 +78,11 @@ fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<
 			// Get name of operation
 			let name = exprs.pop().ok_or(EggError::UnbalancedBrackets(span.start))?;
 			let operation = Expression::FnCall {
-				name: match name {
-					Expression::Word { name } => name.clone(),
+				identifier: match name {
+					Expression::Word { name } => match operators.get(name.as_str()) {
+						Some(op) => either::Right(op.as_ref() as _),
+						None => either::Either::Left(name.clone()),
+					},
 					_ => return Err(EggError::ParserError(span, "Cannot use non-word as operation name".into())),
 				},
 				parameters,

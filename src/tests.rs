@@ -20,7 +20,7 @@ fn test() {
 		let mut scope = Default::default();
 
 		println!("\n[{}]", path.display());
-		let ast = parser::parse(script).unwrap();
+		let ast = parser::parse(script, &operators).unwrap();
 
 		ast.iter().for_each(|expr| {
 			evaluator::evaluate(expr, &mut scope, &operators).unwrap();
