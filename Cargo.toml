@@ -16,8 +16,8 @@ categories = ["compilers", "parser-implementations", "no-std"]
 [dependencies]
 arcstr = { version = "1.2.0", default-features = false }
 either = { version = "1.13.0", default-features = false }
-logos = "0.14.2"
-ordered-float = { version = "4.2.2", default-features = false }
+logos = "0.15.0"
+ordered-float = { version = "5.0.0", default-features = false }
 thiserror-no-std = "2.0.2"
 
 [features]

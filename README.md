@@ -7,13 +7,11 @@
   <a href="https://github.com/sokorototo/egglang/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues-raw/sokorototo/egglang?style=flat-square"></a>
 </p>
 <p align=center>
- <a href="https://docs.rs/egglang">Docs</a> | <a href="https://github.com/sokorototo/egglang">Repo</a>
+ <a href="https://docs.rs/egglang">Docs</a> | <a href="https://github.com/sokorototo/egglang">Repo</a> | <a href="https://github.com/sokorototo/egglang/tree/master/scripts">Samples</a>
 </p>
 
 
 ##### `egg` is a toy Programming Language from the book Eloquent Javascript by Marijn Haverbeke, [Chapter 12](https://eloquentjavascript.net/12_language.html). The Book was pivotal to my early Programming journey. I moved to Rust some time back and in a fit of nostalgia I decided to rewrite `egg` in Rust.
-
-
 
 ### ✨ Features
 
@@ -23,7 +21,6 @@
 - **Higher Order Functions**: Pass functions as values to other functions or to built-in `Operators`.
 - **Extensible**: Create your own builtin functions by implementing the [`Operator`](https://docs.rs/egglang/latest/egglang/operators/trait.Operator.html) trait.
 - **no_std**: Only depends on `alloc`. Enabling the `std` feature adds the `Print`, `PrintLine`, `ReadLine`  and `Sleep` builtins.
-
 
 ### 🏋️‍♂️ Examples
 
