@@ -1,6 +1,6 @@
 [package]
 name = "egglang"
-version = "0.3.3"
+version = "0.3.5"
 edition = "2024"
 description = "The Egg Programming Language From Eloquent JavaScript, but in Rust"
 license = "MIT"
