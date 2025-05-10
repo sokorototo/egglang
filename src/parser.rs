@@ -4,7 +4,7 @@ use logos::Logos;
 
 use crate::{
 	error::{EggError, EggResult},
-	expression::{Expression, Value},
+	expression::{Expression, Function, Value},
 	operators::Operator,
 };
 
@@ -80,10 +80,10 @@ fn parse_token(token: &Token, source: &str, span: Range<usize>, exprs: &mut Vec<
 			// Get name of operation
 			let name = exprs.pop().ok_or(EggError::UnbalancedBrackets(span.start))?;
 			let operation = Expression::FnCall {
-				identifier: match name {
+				function: match name {
 					Expression::Word { name } => match operators.get(name.as_str()) {
-						Some(op) => either::Right(op.as_ref() as _),
-						None => either::Either::Left(name.clone()),
+						Some(op) => Function::Host(op.as_ref() as _),
+						None => Function::Script(name.clone()),
 					},
 					_ => return Err(EggError::ParserError(span, "Cannot use non-word as operation name".into())),
 				},

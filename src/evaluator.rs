@@ -1,6 +1,6 @@
 use crate::{
 	error::{EggError, EggResult},
-	expression::{Expression, Value},
+	expression::{Expression, Function, Value},
 	scope::Scope,
 };
 
@@ -33,12 +33,12 @@ pub fn evaluate(expr: &Expression, scope: &mut Scope) -> EggResult<Value> {
 	match expr {
 		Expression::Value { value } => Ok(value.clone()),
 		Expression::Word { name } => scope.get(name.as_str()).ok_or_else(|| EggError::UndefinedBinding(name.clone())).cloned(),
-		Expression::FnCall { identifier, parameters } => match identifier {
-			either::Either::Left(name) => {
+		Expression::FnCall { function: identifier, parameters } => match identifier {
+			Function::Script(name) => {
 				let idx = scope.get_function(name).ok_or_else(|| EggError::FunctionNotFound(name.clone()))?;
 				scope.call_function(idx, parameters)
 			}
-			either::Either::Right(op) => {
+			Function::Host(op) => {
 				let op = unsafe { op.as_ref().unwrap_unchecked() };
 				op.evaluate(parameters, scope)
 			}

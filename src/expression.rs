@@ -1,6 +1,5 @@
 use alloc::vec::Vec;
 use arcstr::ArcStr;
-use either::Either;
 use ordered_float::OrderedFloat;
 
 use crate::operators::Operator;
@@ -8,16 +7,16 @@ use crate::operators::Operator;
 /// An expression is a piece of code that can be evaluated into a [`Value`].
 #[derive(Debug, Clone)]
 pub enum Expression {
-	Value {
-		value: Value,
-	},
-	Word {
-		name: ArcStr,
-	},
-	FnCall {
-		identifier: Either<ArcStr, *const dyn Operator>,
-		parameters: Vec<Expression>,
-	},
+	Value { value: Value },
+	Word { name: ArcStr },
+	FnCall { function: Function, parameters: Vec<Expression> },
+}
+
+/// A function call in an expression, can be user-defined (in Egg) or an [`Operator`] (defined in Rust).
+#[derive(Debug, Clone)]
+pub enum Function {
+	Host(*const dyn Operator),
+	Script(ArcStr),
 }
 
 /// A primitive in Egg; can be a number, boolean, string, function, or an object.
