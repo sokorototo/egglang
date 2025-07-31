@@ -38,11 +38,11 @@ operators::minimal(&mut operators);
 
 // Parse a Script into a list of expressions
 let script = "sum(12.5, 12.5, 25)";
-let expressions = parse(script).unwrap();
+let expressions = parse(script, &operators).unwrap();
 
 // Evaluate the expression
 let expression = &expressions[0]; // the call to `sum`
-let result = evaluate(expression, &mut scope, &operators).unwrap();
+let result = evaluate(expression, &mut scope).unwrap();
 
 assert_eq!(result, 50f32.into());
 ```
@@ -65,7 +65,7 @@ operators::console(&mut operators);
 struct Random;
 
 impl Operator for Random {
-    	fn evaluate(&self, _: &[Expression], _: &mut Scope, _: &BTreeMap<&str, Box<dyn Operator>>) -> EggResult<Value> {
+    	fn evaluate(&self, _: &[Expression], _: &mut Scope) -> EggResult<Value> {
     		// totally random value ;)
     		Ok(0.15.into())
     }
@@ -79,11 +79,11 @@ let script = r#"
 define(iterations, random(0, 120))
 repeat(iterations, println("oi oi oi oi oi"))
 "#;
-let expressions = parse(script).unwrap();
 
 // Evaluate the expressions; define -> repeat -> ...
+let expressions = parse(script, &operators).unwrap();
 for expression in expressions {
-  let _ = evaluate(&expression, &mut scope, &operators).unwrap();
+  let _ = evaluate(&expression, &mut scope).unwrap();
 }
 ```
 

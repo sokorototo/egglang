@@ -13,6 +13,7 @@ fn test() {
 			.unwrap()
 			.filter_map(|entry| entry.ok())
 			.filter(|entry| entry.file_type().ok().map(|t| t.is_file()).unwrap_or(false))
+			.filter(|e| e.path().ends_with(".egg"))
 			.filter_map(|entry| read_to_string(entry.path()).ok().map(|s| (entry.path(), s)))
 	};
 

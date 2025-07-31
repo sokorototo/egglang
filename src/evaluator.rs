@@ -21,10 +21,10 @@ pub static mut EVALUATIONS: u128 = 0;
 /// operators::minimal(&mut operators);
 ///
 /// // Parse a Script into a list of expressions
-/// let expression = parse("sum(1 multiply(2 5))").unwrap();
+/// let expression = parse("sum(1 multiply(2 5))", &operators).unwrap();
 ///
 /// // Evaluate the expression
-/// let result = evaluate(&expression[0], &mut scope, &operators).unwrap();
+/// let result = evaluate(&expression[0], &mut scope).unwrap();
 /// assert_eq!(result, 11.0.into());
 /// ```
 pub fn evaluate(expr: &Expression, scope: &mut Scope) -> EggResult<Value> {
