@@ -9,44 +9,37 @@ use crate::{
 	scope::Scope,
 };
 
-fn validate_object_tag(value: &Value) -> EggResult<usize> {
-	match value.clone() {
-		Value::Object(s) => Ok(s),
-		i => Err(EggError::InvalidObjectReference(i)),
-	}
-}
-
 impl Scope {
 	pub fn create_object(&mut self) -> EggResult<Value> {
-		self.globals_mut().counter += 1;
-		let index = self.globals().counter;
+		self.extras_mut().counter += 1;
+		let index = self.extras().counter;
 
-		self.globals_mut().maps.insert(index, BTreeMap::new());
+		self.extras_mut().maps.insert(index, BTreeMap::new());
 		Ok(Value::Object(index))
 	}
 
 	pub fn get_object_tag(&self, tag: Value) -> EggResult<usize> {
-		let idx = validate_object_tag(&tag)?;
-		if self.globals().maps.contains_key(&idx) {
-			Ok(idx)
-		} else {
-			Err(EggError::InvalidObjectReference(tag))
+		let Value::Object(idx) = &tag else { return Err(EggError::InvalidObjectReference(tag)) };
+
+		match self.extras().maps.contains_key(idx) {
+			true => Ok(idx.clone()),
+			false => Err(EggError::InvalidObjectReference(tag)),
 		}
 	}
 
 	#[inline]
 	pub fn get_object(&self, tag: usize) -> &BTreeMap<Value, Value> {
-		self.globals().maps.get(&tag).expect("Object Not Found")
+		self.extras().maps.get(&tag).expect("Object Not Found")
 	}
 
 	#[inline]
 	pub fn get_object_mut(&mut self, tag: usize) -> &mut BTreeMap<Value, Value> {
-		self.globals_mut().maps.get_mut(&tag).expect("Object Not Found")
+		self.extras_mut().maps.get_mut(&tag).expect("Object Not Found")
 	}
 
 	#[inline]
 	pub fn delete_object(&mut self, tag: usize) -> Option<BTreeMap<Value, Value>> {
-		self.globals_mut().maps.remove(&tag)
+		self.extras_mut().maps.remove(&tag)
 	}
 }
 

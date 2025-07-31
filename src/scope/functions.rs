@@ -48,14 +48,14 @@ impl super::Scope {
 	}
 
 	pub fn get_function_definition(&self, idx: usize) -> EggResult<&FunctionDefinition> {
-		self.globals()
+		self.extras()
 			.functions
 			.get(&idx)
 			.ok_or_else(|| EggError::InvalidFunctionCall(format!("Function with index {} not found", idx)))
 	}
 
 	pub fn get_function_definition_mut(&mut self, idx: usize) -> EggResult<&mut FunctionDefinition> {
-		self.globals_mut()
+		self.extras_mut()
 			.functions
 			.get_mut(&idx)
 			.ok_or_else(|| EggError::InvalidFunctionCall(format!("Function with index {} not found", idx)))
@@ -86,7 +86,7 @@ impl super::Scope {
 	}
 
 	pub fn delete_function(&mut self, idx: usize) -> Option<FunctionDefinition> {
-		self.globals_mut().functions.remove(&idx)
+		self.extras_mut().functions.remove(&idx)
 	}
 }
 
@@ -103,9 +103,9 @@ impl Operator for CreateFunction {
 		let body = args[args.len() - 1].clone();
 		let parameter_names = args.iter().take(args.len() - 1).map(get_parameter_name).collect::<EggResult<Vec<ArcStr>>>()?;
 
-		scope.globals_mut().counter += 1;
-		let index = scope.globals().counter;
-		scope.globals_mut().functions.insert(index, FunctionDefinition { parameter_names, body });
+		scope.extras_mut().counter += 1;
+		let index = scope.extras().counter;
+		scope.extras_mut().functions.insert(index, FunctionDefinition { parameter_names, body });
 
 		Ok(crate::expression::Value::Function(index))
 	}

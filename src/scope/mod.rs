@@ -12,9 +12,7 @@ pub(crate) mod object;
 /// A [`Scope`] is responsible for keeping track of script state.
 ///
 /// This includes storing variables, which are plain [`Values`](Value).
-/// Function and Objects values are simple indexes|references to [`FunctionDefinitions`](functions::FunctionDefinition) and [`BTreeMaps`](BTreeMap), stored in [`Globals`].
-///
-/// [`Globals`] are only attached to the Global Scope, meaning Functions and Objects are always global, even if defined in a script function.
+/// Function and Objects values are simple indexes|references to [`FunctionDefinitions`](functions::FunctionDefinition) and [`BTreeMaps`](BTreeMap), stored in [`Extras`].
 ///
 /// The [`default`](Default) scope comes with several constants built-in:
 /// ```json
@@ -32,7 +30,7 @@ pub(crate) mod object;
 #[derive(Debug)]
 #[allow(private_interfaces)]
 pub enum Scope {
-	Global { source: BTreeMap<ArcStr, Value>, globals: Globals },
+	Global { source: BTreeMap<ArcStr, Value>, extras: Extras },
 	Local { overlay: BTreeMap<ArcStr, Value>, source: *mut Scope },
 }
 
@@ -43,7 +41,7 @@ impl Default for Scope {
 		source.insert(arcstr::literal!("true"), true.into());
 		source.insert(arcstr::literal!("false"), false.into());
 
-		// Globals identifying type
+		// type names
 		source.insert(arcstr::literal!("Number"), Value::String(arcstr::literal!("__TYPE__NUMBER")));
 		source.insert(arcstr::literal!("String"), Value::String(arcstr::literal!("__TYPE__STRING")));
 		source.insert(arcstr::literal!("Nil"), Value::String(arcstr::literal!("__CONSTANT__NIL")));
@@ -51,7 +49,7 @@ impl Default for Scope {
 		source.insert(arcstr::literal!("Function"), Value::String(arcstr::literal!("__TYPE__FUNCTION")));
 		source.insert(arcstr::literal!("Object"), Value::String(arcstr::literal!("__TYPE__OBJECT")));
 
-		Scope::Global { source, globals: Default::default() }
+		Scope::Global { source, extras: Default::default() }
 	}
 }
 
@@ -64,14 +62,14 @@ impl Scope {
 		}
 	}
 
-	/// Check if a variable exists in the current scope. Has similar behaviour to [`exists`](Scope::exists) for the Global Scope.
-	/// Used to check if a variable is defined in the current scope, and not in the parent scope.
+	/// Used to check if a variable is defined in the current scope, and specifically not in the parent scope.
 	pub fn exists_locally(&self, key: &str) -> bool {
 		match self {
 			Scope::Global { source, .. } => source.contains_key(key),
 			Scope::Local { overlay, .. } => overlay.contains_key(key),
 		}
 	}
+
 	/// Fetch for a variable in the current scope and its parent scopes.
 	pub fn get(&self, key: &str) -> Option<&Value> {
 		match self {
@@ -90,21 +88,13 @@ impl Scope {
 
 	/// Insert a new variable into the current scope.
 	pub fn insert(&mut self, key: ArcStr, value: Value) -> EggResult<()> {
-		let exists_locally = self.exists_locally(&key);
+		if self.exists_locally(&key) {
+			return Err(EggError::OperatorComplaint(format!("Variable {} already defined", key)));
+		}
 
 		match self {
-			Scope::Global { source, .. } => {
-				if exists_locally {
-					return Err(EggError::OperatorComplaint(format!("Variable {} already defined in Global Scope", key)));
-				}
-				source.insert(key, value);
-			}
-			Scope::Local { overlay, .. } => {
-				if exists_locally {
-					return Err(EggError::OperatorComplaint(format!("Variable {} already defined in Global Scope", key)));
-				}
-				overlay.insert(key, value);
-			}
+			Scope::Global { source, .. } => source.insert(key, value),
+			Scope::Local { overlay, .. } => overlay.insert(key, value),
 		};
 
 		Ok(())
@@ -151,24 +141,24 @@ impl Scope {
 	}
 
 	/// Get extra metadata attached to the scope.
-	pub(crate) fn globals(&self) -> &Globals {
+	pub(crate) fn extras(&self) -> &Extras {
 		match self {
-			Scope::Global { globals, .. } => globals,
-			Scope::Local { source, .. } => unsafe { source.as_ref().map(|s| s.globals()).unwrap_unchecked() },
+			Scope::Global { extras, .. } => extras,
+			Scope::Local { source, .. } => unsafe { source.as_ref().map(|s| s.extras()).unwrap_unchecked() },
 		}
 	}
 
 	/// Get mutable extra metadata attached to the scope.
-	pub(crate) fn globals_mut(&mut self) -> &mut Globals {
+	pub(crate) fn extras_mut(&mut self) -> &mut Extras {
 		match self {
-			Scope::Global { globals, .. } => globals,
-			Scope::Local { source, .. } => unsafe { source.as_mut().map(|s| s.globals_mut()).unwrap_unchecked() },
+			Scope::Global { extras, .. } => extras,
+			Scope::Local { source, .. } => unsafe { source.as_mut().map(|s| s.extras_mut()).unwrap_unchecked() },
 		}
 	}
 }
 
 #[derive(Debug, Default)]
-pub(crate) struct Globals {
+pub(crate) struct Extras {
 	maps: BTreeMap<usize, BTreeMap<Value, Value>>,
 	functions: BTreeMap<usize, functions::FunctionDefinition>,
 	counter: usize,
