@@ -18,6 +18,8 @@ pub enum EggError {
 	UnbalancedBrackets(usize),
 	#[error("Operator Complaint: {0}")]
 	OperatorComplaint(String),
+	#[error("Only primitives can be used as keys in objects, found: {0}")]
+	InvalidObjectKey(Value),
 	#[error("The provided Value: {0} is not an Object Reference")]
 	InvalidObjectReference(Value),
 	#[error("Invalid Function Definition: {0}")]

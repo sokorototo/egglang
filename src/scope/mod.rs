@@ -1,22 +1,20 @@
-pub(crate) mod functions;
-pub(crate) mod object;
-
-pub use functions::FunctionDefinition;
+use alloc::{collections::BTreeMap, format};
+use arcstr::ArcStr;
 
 use crate::{
 	error::{EggError, EggResult},
 	expression::Value,
 };
-use alloc::{collections::BTreeMap, format};
-use arcstr::ArcStr;
-use core::f32::consts;
+
+pub(crate) mod functions;
+pub(crate) mod object;
 
 /// A [`Scope`] is responsible for keeping track of script state.
 ///
 /// This includes storing variables, which are plain [`Values`](Value).
-/// Function and Objects values are simple indexes|references to [`FunctionDefinitions`](functions::FunctionDefinition) and [`BTreeMaps`](BTreeMap), stored in `ScopeExtras`.
+/// Function and Objects values are simple indexes|references to [`FunctionDefinitions`](functions::FunctionDefinition) and [`BTreeMaps`](BTreeMap), stored in [`Globals`].
 ///
-/// `ScopeExtras` is only attached to the Global Scope, meaning Functions and Objects are always global, even if defined in a script function.
+/// [`Globals`] are only attached to the Global Scope, meaning Functions and Objects are always global, even if defined in a script function.
 ///
 /// The [`default`](Default) scope comes with several constants built-in:
 /// ```json
@@ -27,9 +25,6 @@ use core::f32::consts;
 ///      "Number": "__TYPE__NUMBER",
 ///      "Object": "__TYPE__OBJECT",
 ///      "String": "__TYPE__STRING",
-///      "PI": 3.1415927,
-///      "E": 2.7182817,
-///      "TAU": 6.2831855,
 ///      "false": false,
 ///      "true": true
 ///  }
@@ -37,7 +32,7 @@ use core::f32::consts;
 #[derive(Debug)]
 #[allow(private_interfaces)]
 pub enum Scope {
-	Global { source: BTreeMap<ArcStr, Value>, extras: ScopeExtras },
+	Global { source: BTreeMap<ArcStr, Value>, globals: Globals },
 	Local { overlay: BTreeMap<ArcStr, Value>, source: *mut Scope },
 }
 
@@ -45,23 +40,18 @@ impl Default for Scope {
 	fn default() -> Scope {
 		let mut source = BTreeMap::new();
 
-		source.insert("true".into(), true.into());
-		source.insert("false".into(), false.into());
+		source.insert(arcstr::literal!("true"), true.into());
+		source.insert(arcstr::literal!("false"), false.into());
 
 		// Globals identifying type
-		source.insert("Number".into(), Value::String(arcstr::literal!("__TYPE__NUMBER")));
-		source.insert("String".into(), Value::String(arcstr::literal!("__TYPE__STRING")));
-		source.insert("Nil".into(), Value::String(arcstr::literal!("__CONSTANT__NIL")));
-		source.insert("Boolean".into(), Value::String(arcstr::literal!("__TYPE__BOOLEAN")));
-		source.insert("Function".into(), Value::String(arcstr::literal!("__TYPE__FUNCTION")));
-		source.insert("Object".into(), Value::String(arcstr::literal!("__TYPE__OBJECT")));
+		source.insert(arcstr::literal!("Number"), Value::String(arcstr::literal!("__TYPE__NUMBER")));
+		source.insert(arcstr::literal!("String"), Value::String(arcstr::literal!("__TYPE__STRING")));
+		source.insert(arcstr::literal!("Nil"), Value::String(arcstr::literal!("__CONSTANT__NIL")));
+		source.insert(arcstr::literal!("Boolean"), Value::String(arcstr::literal!("__TYPE__BOOLEAN")));
+		source.insert(arcstr::literal!("Function"), Value::String(arcstr::literal!("__TYPE__FUNCTION")));
+		source.insert(arcstr::literal!("Object"), Value::String(arcstr::literal!("__TYPE__OBJECT")));
 
-		// Float constants
-		source.insert("PI".into(), consts::PI.into());
-		source.insert("TAU".into(), consts::TAU.into());
-		source.insert("E".into(), consts::E.into());
-
-		Scope::Global { source, extras: Default::default() }
+		Scope::Global { source, globals: Default::default() }
 	}
 }
 
@@ -156,29 +146,29 @@ impl Scope {
 	}
 
 	/// Create a new local scope.
-	pub(crate) fn overlay(&mut self, overlay: BTreeMap<ArcStr, Value>) -> Scope {
+	pub(crate) fn local(&mut self, overlay: BTreeMap<ArcStr, Value>) -> Scope {
 		Scope::Local { overlay, source: self as _ }
 	}
 
 	/// Get extra metadata attached to the scope.
-	pub(crate) fn extras(&self) -> &ScopeExtras {
+	pub(crate) fn globals(&self) -> &Globals {
 		match self {
-			Scope::Global { extras, .. } => extras,
-			Scope::Local { source, .. } => unsafe { source.as_ref().map(|s| s.extras()).unwrap_unchecked() },
+			Scope::Global { globals, .. } => globals,
+			Scope::Local { source, .. } => unsafe { source.as_ref().map(|s| s.globals()).unwrap_unchecked() },
 		}
 	}
 
 	/// Get mutable extra metadata attached to the scope.
-	pub(crate) fn extras_mut(&mut self) -> &mut ScopeExtras {
+	pub(crate) fn globals_mut(&mut self) -> &mut Globals {
 		match self {
-			Scope::Global { extras, .. } => extras,
-			Scope::Local { source, .. } => unsafe { source.as_mut().map(|s| s.extras_mut()).unwrap_unchecked() },
+			Scope::Global { globals, .. } => globals,
+			Scope::Local { source, .. } => unsafe { source.as_mut().map(|s| s.globals_mut()).unwrap_unchecked() },
 		}
 	}
 }
 
 #[derive(Debug, Default)]
-pub(crate) struct ScopeExtras {
+pub(crate) struct Globals {
 	maps: BTreeMap<usize, BTreeMap<Value, Value>>,
 	functions: BTreeMap<usize, functions::FunctionDefinition>,
 	counter: usize,

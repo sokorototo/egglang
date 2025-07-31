@@ -48,14 +48,14 @@ impl super::Scope {
 	}
 
 	pub fn get_function_definition(&self, idx: usize) -> EggResult<&FunctionDefinition> {
-		self.extras()
+		self.globals()
 			.functions
 			.get(&idx)
 			.ok_or_else(|| EggError::InvalidFunctionCall(format!("Function with index {} not found", idx)))
 	}
 
 	pub fn get_function_definition_mut(&mut self, idx: usize) -> EggResult<&mut FunctionDefinition> {
-		self.extras_mut()
+		self.globals_mut()
 			.functions
 			.get_mut(&idx)
 			.ok_or_else(|| EggError::InvalidFunctionCall(format!("Function with index {} not found", idx)))
@@ -63,7 +63,7 @@ impl super::Scope {
 
 	pub fn call_function(&mut self, idx: usize, parameters: &[Expression]) -> EggResult<Value> {
 		let function = unsafe {
-			// SAFETY: We are not modifying the scope, only reading from the function definition from it
+			// SAFETY: We are not modifying the scope, only reading the function definition from it
 			(*(self as *const Scope)).get_function_definition(idx)?
 		};
 
@@ -81,12 +81,12 @@ impl super::Scope {
 			new_scope.insert(name.clone(), value);
 		}
 
-		let mut new_scope = self.overlay(new_scope);
-		evaluate(&function.body, &mut new_scope)
+		let mut local_scope = self.local(new_scope);
+		evaluate(&function.body, &mut local_scope)
 	}
 
 	pub fn delete_function(&mut self, idx: usize) -> Option<FunctionDefinition> {
-		self.extras_mut().functions.remove(&idx)
+		self.globals_mut().functions.remove(&idx)
 	}
 }
 
@@ -103,9 +103,9 @@ impl Operator for CreateFunction {
 		let body = args[args.len() - 1].clone();
 		let parameter_names = args.iter().take(args.len() - 1).map(get_parameter_name).collect::<EggResult<Vec<ArcStr>>>()?;
 
-		scope.extras_mut().counter += 1;
-		let index = scope.extras().counter;
-		scope.extras_mut().functions.insert(index, FunctionDefinition { parameter_names, body });
+		scope.globals_mut().counter += 1;
+		let index = scope.globals().counter;
+		scope.globals_mut().functions.insert(index, FunctionDefinition { parameter_names, body });
 
 		Ok(crate::expression::Value::Function(index))
 	}

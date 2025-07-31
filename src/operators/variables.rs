@@ -52,6 +52,7 @@ impl Operator for Set {
 pub struct Delete;
 
 impl Operator for Delete {
+	// TODO: Deleting an object should decrease the refcount of any objects stored internally?
 	fn evaluate(&self, args: &[expression::Expression], scope: &mut Scope) -> EggResult<Value> {
 		debug_assert_eq!(args.len(), 1);
 		let name = &args[0];
@@ -102,12 +103,12 @@ impl super::Operator for TypeOf {
 		let value = evaluate(&args[0], scope)?;
 
 		Ok(match value {
-			Value::Number(_) => Value::String("__TYPE__NUMBER".into()),
-			Value::String(_) => Value::String("__TYPE__STRING".into()),
-			Value::Nil => Value::String("__CONSTANT__NIL".into()),
-			Value::Boolean(_) => Value::String("__TYPE__BOOLEAN".into()),
-			Value::Function(_) => Value::String("__TYPE__FUNCTION".into()),
-			Value::Object(_) => Value::String("__TYPE__OBJECT".into()),
+			Value::Number(_) => Value::String(arcstr::literal!("__TYPE__NUMBER")),
+			Value::String(_) => Value::String(arcstr::literal!("__TYPE__STRING")),
+			Value::Nil => Value::String(arcstr::literal!("__CONSTANT__NIL")),
+			Value::Boolean(_) => Value::String(arcstr::literal!("__TYPE__BOOLEAN")),
+			Value::Function(_) => Value::String(arcstr::literal!("__TYPE__FUNCTION")),
+			Value::Object(_) => Value::String(arcstr::literal!("__TYPE__OBJECT")),
 		})
 	}
 }

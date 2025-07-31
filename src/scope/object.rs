@@ -1,3 +1,5 @@
+use alloc::collections::BTreeMap;
+
 use crate::{
 	error::EggError,
 	error::EggResult,
@@ -6,7 +8,6 @@ use crate::{
 	operators::Operator,
 	scope::Scope,
 };
-use alloc::collections::BTreeMap;
 
 fn validate_object_tag(value: &Value) -> EggResult<usize> {
 	match value.clone() {
@@ -17,16 +18,16 @@ fn validate_object_tag(value: &Value) -> EggResult<usize> {
 
 impl Scope {
 	pub fn create_object(&mut self) -> EggResult<Value> {
-		self.extras_mut().counter += 1;
-		let index = self.extras().counter;
+		self.globals_mut().counter += 1;
+		let index = self.globals().counter;
 
-		self.extras_mut().maps.insert(index, BTreeMap::new());
+		self.globals_mut().maps.insert(index, BTreeMap::new());
 		Ok(Value::Object(index))
 	}
 
 	pub fn get_object_tag(&self, tag: Value) -> EggResult<usize> {
 		let idx = validate_object_tag(&tag)?;
-		if self.extras().maps.contains_key(&idx) {
+		if self.globals().maps.contains_key(&idx) {
 			Ok(idx)
 		} else {
 			Err(EggError::InvalidObjectReference(tag))
@@ -35,17 +36,17 @@ impl Scope {
 
 	#[inline]
 	pub fn get_object(&self, tag: usize) -> &BTreeMap<Value, Value> {
-		self.extras().maps.get(&tag).expect("Object Not Found")
+		self.globals().maps.get(&tag).expect("Object Not Found")
 	}
 
 	#[inline]
 	pub fn get_object_mut(&mut self, tag: usize) -> &mut BTreeMap<Value, Value> {
-		self.extras_mut().maps.get_mut(&tag).expect("Object Not Found")
+		self.globals_mut().maps.get_mut(&tag).expect("Object Not Found")
 	}
 
 	#[inline]
 	pub fn delete_object(&mut self, tag: usize) -> Option<BTreeMap<Value, Value>> {
-		self.extras_mut().maps.remove(&tag)
+		self.globals_mut().maps.remove(&tag)
 	}
 }
 
@@ -62,11 +63,18 @@ impl Operator for CreateObject {
 pub struct Insert;
 
 impl Operator for Insert {
+	// TODO: Now we have to think about references, lifetimes and garbage collection
 	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
 		assert!(args.len() == 3);
 
 		let tag = evaluate(&args[0], scope)?;
+
+		// keys can only be primitives
 		let key = evaluate(&args[1], scope)?;
+		if !key.is_primitive() {
+			return Err(EggError::InvalidObjectKey(key));
+		}
+
 		let value = evaluate(&args[2], scope)?;
 
 		let tag = scope.get_object_tag(tag)?;
@@ -154,8 +162,8 @@ impl Operator for Clear {
 
 		let map = scope.get_object_mut(tag);
 		Ok({
-      map.clear();
-      ().into()
-  })
+			map.clear();
+			().into()
+		})
 	}
 }

@@ -1,5 +1,5 @@
-# Create a new object, retering an Object Reference
-# The Object Reference is used to identify the object when we want to perfom actions on it
+# Create a new object, returning an Object Reference
+# The Object Reference is used to identify the object when we want to perform actions on it
 define(class_mates, object.new())
 
 # Objects have type "Object"
@@ -25,12 +25,12 @@ assert(equals(object.size(class_mates), 3), "object size should be 3")
 object.remove(class_mates, "Steve")
 assert(equals(object.size(class_mates), 2), "object size should be 2, one less than before")
 
-# Use numbers as keys
+# Use any primitive as a key
 object.insert(class_mates, 1, "Look at me, I'm just a statistic")
 
-# Log a object to the console
+# Log an object to the console
 println(class_mates)
 
-# You can delete a object using delete
+# You can delete an object using delete
 delete(class_mates)
 assert(not(exists(class_mates)), "object should not exist here")

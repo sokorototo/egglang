@@ -4,8 +4,8 @@ use crate::{
 	scope::Scope,
 };
 
-/// Counts calls to the [`evaluate`] function. Used as a statistic, thus object safety is not of
-pub static mut EVALUATIONS: u64 = 0;
+/// Increments for each call to [`evaluate`], including internal calls
+pub static mut EVALUATIONS: u128 = 0;
 
 /// Given an [`Expression`], evaluate and yield a [`Value`].
 /// Requires that the user assemble a [`Scope`] and a map of [`Operator`]s.

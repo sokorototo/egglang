@@ -48,12 +48,20 @@ pub enum Value {
 	Number(OrderedFloat<f32>),
 	/// A boolean value.
 	Boolean(bool),
-	/// Atomically reference-counted string.
+	/// Atomically reference-counted string. For static strings [`&'static str`] use [`arcstr::literal`]
 	String(ArcStr),
 	/// A function definition. Stores a index to the function in the scope.
 	Function(usize),
 	/// An object. Stores a index to the object in the scope.
 	Object(usize),
+}
+
+impl Value {
+	/// Is this a primitive type?
+	#[inline(always)]
+	pub fn is_primitive(&self) -> bool {
+		matches!(self, Value::Nil | Value::Number(..) | Value::String(..) | Value::Boolean(..))
+	}
 }
 
 impl alloc::fmt::Debug for Value {
