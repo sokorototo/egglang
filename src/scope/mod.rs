@@ -157,6 +157,7 @@ impl Scope {
 	}
 }
 
+// TODO: Make objects local and reference counted, whilst forbidding self-reference
 #[derive(Debug, Default)]
 pub(crate) struct Extras {
 	maps: BTreeMap<usize, BTreeMap<Value, Value>>,
