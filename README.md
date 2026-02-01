@@ -11,7 +11,7 @@
 </p>
 
 
-##### `egg` is a toy Programming Language from the book Eloquent Javascript by Marijn Haverbeke, [Chapter 12](https://eloquentjavascript.net/12_language.html). The Book was pivotal to my early Programming journey. I moved to Rust some time back and in a fit of nostalgia I decided to rewrite `egg` in Rust.
+##### `egg` is a toy Programming Language from the book Eloquent Javascript by Marijn Haverbeke, [Chapter 12](https://eloquentjavascript.net/12_language.html). The Book was pivotal to my early Programming journey. I moved to Rust some time back, then in a fit of nostalgia I decided to rewrite `egg` in Rust.
 
 ### ✨ Features
 
