@@ -68,8 +68,13 @@ pub fn minimal<'a>(map: &'a mut BTreeMap<&'static str, Box<dyn Operator>>) -> &'
 	map.insert("multiply", Box::new(arithmetic::Multiply));
 	map.insert("modulus", Box::new(arithmetic::Modulus));
 	map.insert("is_nan", Box::new(arithmetic::IsNan));
+
+	// Scientific
 	map.insert("powf", Box::new(arithmetic::Powf));
 	map.insert("log", Box::new(arithmetic::Log));
+	map.insert("sin", Box::new(arithmetic::Sin));
+	map.insert("cos", Box::new(arithmetic::Cos));
+	map.insert("tan", Box::new(arithmetic::Tan));
 
 	// Boolean
 	map.insert("and", Box::new(boolean::AND));

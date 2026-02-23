@@ -131,3 +131,44 @@ impl Operator for Log {
 		}
 	}
 }
+
+pub struct Sin;
+
+impl Operator for Sin {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
+		debug_assert_eq!(args.len(), 1);
+
+		match evaluate(&args[0], scope)? {
+			Value::Number(a) => Ok(a.sin().into()),
+			v => Err(EggError::OperatorComplaint(format!("Argument: {v} must both be a number"))),
+		}
+	}
+}
+
+
+pub struct Cos;
+
+impl Operator for Cos {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
+		debug_assert_eq!(args.len(), 1);
+
+		match evaluate(&args[0], scope)? {
+			Value::Number(a) => Ok(a.cos().into()),
+			v => Err(EggError::OperatorComplaint(format!("Argument: {v} must both be a number"))),
+		}
+	}
+}
+
+
+pub struct Tan;
+
+impl Operator for Tan {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
+		debug_assert_eq!(args.len(), 1);
+
+		match evaluate(&args[0], scope)? {
+			Value::Number(a) => Ok(a.tan().into()),
+			v => Err(EggError::OperatorComplaint(format!("Argument: {v} must both be a number"))),
+		}
+	}
+}
