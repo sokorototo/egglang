@@ -9,3 +9,8 @@ assert(equals(x, -1000), println("Float Arithmetic Test Failed: ", x))
 # Simple Tests for float parsing and handling
 repeat(20, set(x, sum(3.5 1E-3 5 -2.0 314159E-5 x)))
 println("The value of x is: ", x)
+
+# Exponentiation and Logarithms
+set(x 100)
+println("x ^ 2 = ", powf(x 2))
+println("log x, 2 = ", log(x 10))

@@ -7,7 +7,6 @@ use crate::{
 };
 use alloc::format;
 
-// Basic add operation
 pub struct Sum;
 
 impl Operator for Sum {
@@ -24,7 +23,6 @@ impl Operator for Sum {
 	}
 }
 
-// Basic multiply operation
 pub struct Multiply;
 
 impl Operator for Multiply {
@@ -41,7 +39,6 @@ impl Operator for Multiply {
 	}
 }
 
-// Basic minus operation
 pub struct Subtract;
 
 impl Operator for Subtract {
@@ -58,7 +55,6 @@ impl Operator for Subtract {
 	}
 }
 
-// Basic divide operation
 pub struct Divide;
 
 impl Operator for Divide {
@@ -75,7 +71,6 @@ impl Operator for Divide {
 	}
 }
 
-// Basic modulus operation
 pub struct Modulus;
 
 impl Operator for Modulus {
@@ -87,6 +82,51 @@ impl Operator for Modulus {
 
 		match (val1, val2) {
 			(Value::Number(a), Value::Number(b)) => Ok(Value::Number(a % b)),
+			(a, b) => Err(EggError::OperatorComplaint(format!("Arguments: {a}, {b} must both be numbers"))),
+		}
+	}
+}
+
+pub struct IsNan;
+
+impl Operator for IsNan {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
+		debug_assert_eq!(args.len(), 1);
+
+		match evaluate(&args[0], scope)? {
+			Value::Number(a) => Ok(a.is_nan().into()),
+			v => Err(EggError::OperatorComplaint(format!("Argument: {v} must both be a number"))),
+		}
+	}
+}
+
+pub struct Powf;
+
+impl Operator for Powf {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
+		debug_assert_eq!(args.len(), 2);
+
+		let base = evaluate(&args[0], scope)?;
+		let power = evaluate(&args[1], scope)?;
+
+		match (base, power) {
+			(Value::Number(a), Value::Number(b)) => Ok(a.powf(b.0).into()),
+			(a, b) => Err(EggError::OperatorComplaint(format!("Arguments: {a}, {b} must both be numbers"))),
+		}
+	}
+}
+
+pub struct Log;
+
+impl Operator for Log {
+	fn evaluate(&self, args: &[Expression], scope: &mut Scope) -> EggResult<Value> {
+		debug_assert_eq!(args.len(), 2);
+
+		let base = evaluate(&args[0], scope)?;
+		let power = evaluate(&args[1], scope)?;
+
+		match (base, power) {
+			(Value::Number(a), Value::Number(b)) => Ok(a.log(b.0).into()),
 			(a, b) => Err(EggError::OperatorComplaint(format!("Arguments: {a}, {b} must both be numbers"))),
 		}
 	}
